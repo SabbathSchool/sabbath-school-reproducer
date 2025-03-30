@@ -359,6 +359,7 @@ body {
     font-size: 16pt;
     font-weight: bold;
     margin-bottom: 15px;
+    page-break-after: avoid;
 }
 
 .notes-content p:first-letter {
@@ -368,6 +369,18 @@ body {
 .notes-content p {
     text-indent: 1.5em;
     margin-bottom: 1em;
+}
+
+/* Keep first paragraph with header */
+.notes-content p:first-child {
+    page-break-before: avoid; /* Keep with header */
+}
+
+/* Allow breaks within other paragraphs */
+.notes-content p {
+    page-break-inside: auto; /* Allow breaks within paragraphs */
+    orphans: 1; /* At least 1 lines at top of page */
+    widows: 1; /* At least 1 lines at bottom of page */
 }
 
 .clearfix {
