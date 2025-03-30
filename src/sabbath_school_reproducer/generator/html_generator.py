@@ -10,7 +10,7 @@ import re
 import os
 import json
 import requests
-from sabbath_school_lessons.generator.css_styles import CSS_TEMPLATE, CssUpdater
+from sabbath_school_reproducer.generator.css_styles import CSS_TEMPLATE, CssUpdater
 
 
 class HtmlGenerator:
@@ -46,9 +46,7 @@ class HtmlGenerator:
                 # Safely convert both year values to strings
                 lesson_year_str = str(lesson["year"])
                 year_str = str(year)
-                
-                print(lesson, normalized_quarter, lesson_year_str, year_str)
-                
+                                
                 if lesson_year_str == year_str and normalized_quarter in lesson["quarter"]:
                     return lesson["title"]
             
@@ -131,9 +129,6 @@ class HtmlGenerator:
             
             # Get title from config or generate a default
             lesson_title = config.get("lesson_title", HtmlGenerator.get_lesson_title(year_orig, quarter_orig))
-
-            print("GETTING LESSON TULE", lesson_title)
-            print("GETTING LESSON TULE", config.get("lesson_title"))
             
             # If we're in reproduction mode, add a note about the original source
             if config.get("reproduce", {}).get("year"):

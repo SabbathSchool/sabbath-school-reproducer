@@ -78,6 +78,7 @@ class SvgUpdater:
         Returns:
             str: Path to updated SVG file
         """
+        return
         if not svg_path or not os.path.exists(svg_path):
             return None
             

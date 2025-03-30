@@ -1,14 +1,18 @@
-# Sabbath School Lesson Downloader and PDF Generator
+# Sabbath School Lessons Reproducer
 
-This project downloads Sabbath School lessons from the GitHub repository and generates a beautifully formatted PDF.
+A tool to download, format, and reproduce Sabbath School lessons from historical archives for modern use.
+
+[![Documentation Status](https://img.shields.io/badge/docs-latest-brightgreen.svg)](https://sabbathschool.github.io/sabbath-school-reproducer/)
+[![PyPI version](https://img.shields.io/pypi/v/sabbath-school-reproducer.svg)](https://pypi.org/project/sabbath-school-reproducer/)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
 ## Features
 
 - YAML-based configuration for easy customization
 - Automatic downloading of lesson content from GitHub
-- Combines multiple files into a properly formatted markdown document
-- Generates a professionally formatted PDF
-- Support for custom cover SVGs
+- Reproduction mode for adapting historical lessons to current dates
+- Professionally formatted PDF generation with customizable styling
+- Support for custom cover designs
 
 ## Requirements
 
@@ -17,121 +21,184 @@ This project downloads Sabbath School lessons from the GitHub repository and gen
 
 ## Installation
 
-1. Clone this repository:
+### From PyPI
+
 ```bash
-git clone https://github.com/SabbathSchool/sabbath-school-reproducer.git
+pip install sabbath-school-reproducer
+```
+
+### From Source
+
+1. Clone the repository:
+```bash
+git clone https://github.com/sabbathschool/sabbath-school-reproducer.git
 cd sabbath-school-reproducer
 ```
 
-2. Install dependencies:
+2. Install the package:
 ```bash
 pip install -e .
 ```
 
-## Usage
+## Quick Start
 
-1. Create or modify a configuration YAML file:
-```yaml
-year: 2025
-quarter: q2
-language: en
-input_file: ./combined_lessons.md
-output_file: ./output/sabbath_school_lessons_2025_q2.pdf
-front_cover_svg: ./assets/front_cover.svg
-back_cover_svg: ./assets/back_cover.svg
-```
-
-2. Run the script:
+1. Generate a configuration file:
 ```bash
-python main.py config.yaml
+sabbath-school-reproducer --generate-config
 ```
 
-Or with debugging options:
+2. Edit the generated `config.yaml` file with your desired settings
+
+3. Run the downloader:
 ```bash
-python main.py config.yaml --debug            # Enable verbose logging
-python main.py config.yaml --debug-html-only  # Only generate debug HTML without PDF
+sabbath-school-reproducer config.yaml
 ```
-
-You can also use the shell script:
-```bash
-./bin/run.sh config.yaml
-./bin/run.sh config.yaml --debug
-./bin/run.sh config.yaml --debug-html-only
-```
-
-## Project Structure
-
-- `main.py` - Main script entry point
-- `config.py` - YAML configuration module
-- `downloader.py` - Handles downloading content from GitHub
-- `aggregator.py` - Combines downloaded content
-- `processor.py` - Processes markdown content into structured data
-- `generator/` - Package for PDF generation
-  - `html_generator.py` - Generates HTML from structured data
-  - `pdf_generator.py` - Converts HTML to PDF
-  - `css_styles.py` - CSS styles for the PDF
-  - `svg_updater.py` - Updates SVG covers with dynamic content
-- `utils/` - Utility modules
-  - `debug_tools.py` - Tools for debugging and inspecting content
-- `bin/` - Command-line scripts
-  - `run.sh` - Runner script
-  - `generate_config.py` - Config generator
 
 ## Configuration Options
 
-- `year` - Year of the lessons (e.g., 2025)
-- `quarter` - Quarter (q1, q2, q3, or q4)
-- `language` - Language code (e.g., en, es)
-- `input_file` - Path to save the combined markdown file
-- `output_file` - Path to save the generated PDF
-- `front_cover_svg` - Path to front cover SVG (optional)
-- `back_cover_svg` - Path to back cover SVG (optional)
-- `title` - Title for the lesson quarterly (optional)
-- `subtitle` - Subtitle for the lesson quarterly (optional)
-- `publisher` - Publisher name (optional)
+Create a YAML configuration file with the following options:
 
-## GitHub Repository Structure
+```yaml
+# Target output options
+year: 2025              # Year for generated lessons
+quarter: q2             # Quarter (q1, q2, q3, q4)
+language: en            # Language code
 
-This script relies on the SabbathSchool/lessons GitHub repository structure:
+# File paths
+input_file: ./combined_lessons_2025_q2.md   # Path for intermediate markdown file
+output_file: ./output/sabbath_school_lessons_2025_q2.pdf  # Final PDF path
 
+# Optional cover SVG files
+front_cover_svg: ./assets/front_cover.svg   # Custom front cover
+back_cover_svg: ./assets/back_cover.svg     # Custom back cover
+
+# Reproduction options
+reproduce:
+  # Original content to adapt
+  year: 1905            # Historical year to source from
+  quarter: q2           # Historical quarter to source from
+  
+  # Lesson selection
+  start_lesson: 1       # First lesson to include (starting from 1)
+  stop_lesson: 13       # Last lesson to include (or null for all)
+  
+  # New date assignment
+  quarter_start_date: 2025-04-01  # First lesson date (YYYY-MM-DD)
+
+# PDF metadata
+title: Sabbath School Lessons      # Title for the lesson quarterly
+subtitle: Quarter 2, 2025          # Subtitle
+publisher: Gospel Sounders         # Publisher name
 ```
-/DECADE/YEAR/QUARTER/LANGUAGE/
-  - contents.json
-  - front-matter.md
-  - back-matter.md
-  - week-01.md
-  - week-02.md
-  - ...
+
+## Reproduction Mode
+
+The reproduction feature allows you to adapt historical Sabbath School lessons for modern use:
+
+1. Source lessons from a specific historical year and quarter
+2. Start from any lesson number (e.g., lesson 5)
+3. Set a limit for the number of lessons to include
+4. Apply modern dates starting from a specified date
+5. Generate a PDF that uses current dates while attributing the source material
+
+Example reproduction configuration:
+```yaml
+reproduce:
+  year: 1888            # Source from 1888
+  quarter: q3           # Third quarter
+  start_lesson: 3       # Start from lesson 3
+  stop_lesson: 10       # Include up to lesson 10
+  quarter_start_date: 2025-04-01  # Use dates starting April 1, 2025
 ```
 
-Where:
-- DECADE is formatted as, e.g., "1880s"
-- YEAR is the full year, e.g., "2025"
-- QUARTER is q1, q2, q3, or q4
-- LANGUAGE is the language code, e.g., "en"
+## Advanced Usage
 
-## Debugging Tools
+### Debug Mode
 
-The project includes several debugging tools to help troubleshoot issues:
+Run with debug output for more detailed information:
+```bash
+sabbath-school-reproducer config.yaml --debug
+```
 
-1. **Debug HTML Generator**:
-   ```bash
-   python main.py config.yaml --debug-html-only
-   ```
-   This generates an interactive HTML file that shows each section of the combined markdown file with tabs for raw markdown and HTML preview.
+### Debug HTML Only
 
-2. **Section Extractor**:
-   ```python
-   from utils.debug_tools import DebugTools
-   content = DebugTools.extract_section("combined_lessons.md", "front-matter.md")
-   ```
-   This extracts a specific section from the combined markdown file for closer inspection.
+Generate only the debug HTML without PDF generation:
+```bash
+sabbath-school-reproducer config.yaml --debug-html-only
+```
 
-3. **Verbose Logging**:
-   ```bash
-   python main.py config.yaml --debug
-   ```
-   This enables detailed logging output during the download and processing steps.
+### Custom CSS
+
+You can customize the PDF styling by modifying the CSS in your project:
+```python
+# In css_styles.py
+CSS_TEMPLATE = """
+/* Your custom CSS here */
+"""
+```
+
+## Documentation
+
+The project documentation is available at [https://sabbathschool.github.io/sabbath-school-reproducer/](https://sabbathschool.github.io/sabbath-school-reproducer/).
+
+To build the documentation locally:
+
+```bash
+# Navigate to docs directory
+cd docs
+
+# Build the documentation
+make html
+
+# View the documentation
+# Open docs/_build/html/index.html in your browser
+```
+
+## Development
+
+### Version Control
+
+The project includes an automated version checker that increments the version number when building:
+
+```bash
+./build.sh
+```
+
+### Testing
+
+Run tests with:
+
+```bash
+pytest tests/
+```
+
+### Building and Publishing
+
+To build the package:
+
+```bash
+# Clean and build
+./build.sh
+```
+
+To upload to PyPI:
+
+```bash
+# Upload to PyPI
+./upload.sh
+```
+
+## Contributing
+
+Contributions are welcome! Please feel free to submit a Pull Request.
+
+### Steps to contribute:
+
+1. Fork the repository
+2. Create a feature branch (`git checkout -b feature/amazing-feature`)
+3. Commit your changes (`git commit -m 'Add amazing feature'`)
+4. Push to the branch (`git push origin feature/amazing-feature`)
+5. Open a Pull Request
 
 ## License
 
