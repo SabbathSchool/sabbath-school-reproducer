@@ -40,6 +40,10 @@ class MarkdownProcessor:
             
             # Apply new dates and lesson numbers
             for i, lesson in enumerate(lessons):
+                # Store original date for reference if needed
+                if lesson.get('date'):
+                    lesson['original_date'] = lesson['date']
+                
                 # Set the new lesson number (1-based)
                 new_lesson_number = i + 1
                 lesson['number'] = str(new_lesson_number)
@@ -50,9 +54,12 @@ class MarkdownProcessor:
                 # Format the date in the expected format (e.g., "April 1, 2025")
                 new_date = lesson_date.strftime('%B %d, %Y')
                 lesson['date'] = new_date
+                
+                # No need to clean preliminary note here as we've already handled
+                # date extraction during initial parsing
             
             return lessons
-            
+                
         except Exception as e:
             print(f"Warning: Error adjusting lesson dates: {e}")
             return lessons  # Return original lessons if date adjustment fails
@@ -146,6 +153,43 @@ class MarkdownProcessor:
                 lessons_content += section_content + "\n\n"
         
         return lessons_content, frontmatter_content, backmatter_content
+    @staticmethod
+    def extract_and_remove_date(markdown_text):
+        """
+        Extract date from markdown and return the text with the date removed
+        
+        Args:
+            markdown_text (str): The markdown text to process
+            
+        Returns:
+            tuple: (extracted_date, cleaned_text)
+        """
+        # Common date formats in lessons
+        date_patterns = [
+            r'([A-Za-z]+ \d+, \d{4})',  # e.g., "May 20, 1905"
+            r'(\d+ [A-Za-z]+, \d{4})',   # e.g., "20 May, 1905"
+            r'(\d{1,2}/\d{1,2}/\d{4})'   # e.g., "5/20/1905"
+        ]
+        
+        extracted_date = ""
+        cleaned_text = markdown_text
+        
+        # Try to find and extract a date
+        for pattern in date_patterns:
+            date_match = re.search(pattern, markdown_text)
+            if date_match:
+                extracted_date = date_match.group(1)
+                # Only remove the date if it appears on its own line
+                date_line_pattern = r'(?m)^(\s*' + re.escape(extracted_date) + r'\s*)$'
+                date_line_match = re.search(date_line_pattern, markdown_text)
+                if date_line_match:
+                    # Remove only the line containing just the date
+                    cleaned_text = re.sub(date_line_pattern, '', markdown_text)
+                    # Clean up any resulting double newlines
+                    cleaned_text = re.sub(r'\n\s*\n\s*\n', '\n\n', cleaned_text)
+                break
+        
+        return extracted_date, cleaned_text.strip()
     
     @staticmethod
     def parse_lessons(markdown_content):
@@ -158,7 +202,6 @@ class MarkdownProcessor:
         Returns:
             list: List of lesson dictionaries
         """
-        # [Existing implementation remains the same]
         # Convert markdown to HTML for structure analysis
         html_content = markdown.markdown(markdown_content)
         soup = BeautifulSoup(html_content, 'html.parser')
@@ -207,24 +250,24 @@ class MarkdownProcessor:
                     
                     lesson_markdown = markdown_content[lesson_start:lesson_end]
                     
-                    # Extract date from markdown
-                    date_match = re.search(r'([A-Za-z]+ \d+, \d{4})', lesson_markdown)
-                    if date_match:
-                        current_lesson['date'] = date_match.group(1)
+                    # Extract date and remove it from the markdown
+                    date, lesson_markdown_without_date = MarkdownProcessor.extract_and_remove_date(lesson_markdown)
+                    if date:
+                        current_lesson['date'] = date
                     
                     # Extract questions section from markdown
-                    questions_match = re.search(r'## Questions\s+(.*?)(?=##|$)', lesson_markdown, re.DOTALL)
+                    questions_match = re.search(r'## Questions\s+(.*?)(?=##|$)', lesson_markdown_without_date, re.DOTALL)
                     if questions_match:
                         questions_text = questions_match.group(1).strip()
                         current_lesson['questions'] = MarkdownProcessor.parse_questions_from_markdown(questions_text)
                     
-                    # Extract preliminary note
-                    preliminary_match = re.search(r'(?<=\n\n)(.*?)(?=## Questions)', lesson_markdown, re.DOTALL)
+                    # Extract preliminary note from the cleaned markdown (without the date)
+                    preliminary_match = re.search(r'(?<=\n\n)(.*?)(?=## Questions)', lesson_markdown_without_date, re.DOTALL)
                     if preliminary_match:
                         current_lesson['preliminary_note'] = preliminary_match.group(1).strip()
                     
                     # Extract notes section
-                    notes_match = re.search(r'## Notes\s+(.*?)(?=##|$)', lesson_markdown, re.DOTALL)
+                    notes_match = re.search(r'## Notes\s+(.*?)(?=##|$)', lesson_markdown_without_date, re.DOTALL)
                     if notes_match:
                         current_lesson['notes'] = notes_match.group(1).strip()
         
