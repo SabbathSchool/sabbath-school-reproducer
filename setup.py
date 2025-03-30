@@ -18,8 +18,8 @@ with open('README.md', 'r', encoding='utf-8') as f:
 
 # Create data files list to include non-Python files
 data_files = [
-    ('bin', ['src/sabbath_school_lessons/bin/run.sh', 
-             'src/sabbath_school_lessons/bin/generate_config.py']),
+    ('bin', ['src/sabbath_school_reproducer/bin/run.sh', 
+             'src/sabbath_school_reproducer/bin/generate_config.py']),
 ]
 
 setup(
@@ -38,7 +38,7 @@ setup(
     install_requires=requirements,
     entry_points={
         "console_scripts": [
-            "sabbath-school-downloader=sabbath_school_lessons.main:main",
+            "sabbath-school-downloader=sabbath_school_reproducer.main:main",
         ],
     },
     classifiers=[

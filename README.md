@@ -66,7 +66,7 @@ language: en            # Language code
 
 # File paths
 input_file: ./combined_lessons_2025_q2.md   # Path for intermediate markdown file
-output_file: ./output/sabbath_school_lessons_2025_q2.pdf  # Final PDF path
+output_file: ./output/sabbath_school_lesson_2025_q2.pdf  # Final PDF path
 
 # Optional cover SVG files
 front_cover_svg: ./assets/front_cover.svg   # Custom front cover

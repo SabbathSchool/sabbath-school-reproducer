@@ -14,7 +14,7 @@ def find_package_name():
                 return match.group(1)
             
         # Fallback to looking in src directory
-        with open(os.path.join("src", "sabbath_school_lessons", "__init__.py"), "r") as f:
+        with open(os.path.join("src", "sabbath_school_reproducer", "__init__.py"), "r") as f:
             init_content = f.read()
             version_match = re.search(r"__version__\s*=\s*[\"']([^\"']*)[\"']", init_content)
             if version_match:
@@ -60,7 +60,7 @@ def get_local_version():
             return local_version_match.group(1)
         
         # Fallback to __init__.py
-        with open(os.path.join("src", "sabbath_school_lessons", "__init__.py"), "r") as f:
+        with open(os.path.join("src", "sabbath_school_reproducer", "__init__.py"), "r") as f:
             init_content = f.read()
         
         init_version_match = re.search(r"__version__\s*=\s*[\"']([^\"']*)[\"']", init_content)
@@ -109,7 +109,7 @@ def update_version_in_files(new_version):
     
     # Update __init__.py
     try:
-        init_path = os.path.join("src", "sabbath_school_lessons", "__init__.py")
+        init_path = os.path.join("src", "sabbath_school_reproducer", "__init__.py")
         with open(init_path, "r") as f:
             init_content = f.read()
         

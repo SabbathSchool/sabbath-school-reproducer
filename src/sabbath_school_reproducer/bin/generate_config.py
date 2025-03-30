@@ -38,7 +38,7 @@ def generate_template_config(output_path="config.yaml"):
         "quarter": quarter,
         "language": "en",
         "input_file": f"./combined_lessons_{year}_{quarter}_en.md",
-        "output_file": f"./output/sabbath_school_lessons_{year}_{quarter}_en.pdf",
+        "output_file": f"./output/sabbath_school_lesson_{year}_{quarter}_en.pdf",
         "front_cover_svg": "./assets/front_cover.svg",
         "back_cover_svg": "./assets/back_cover.svg",
         "reproduce": {
@@ -67,7 +67,7 @@ def generate_template_config(output_path="config.yaml"):
     yaml_output += "# Path to the input markdown file containing the lessons\n"
     yaml_output += f"input_file: ./combined_lessons_{year}_{quarter}_en.md\n"
     yaml_output += "# Path to the output PDF file for the lessons\n"
-    yaml_output += f"output_file: ./output/sabbath_school_lessons_{year}_{quarter}_en.pdf\n"
+    yaml_output += f"output_file: ./output/sabbath_school_lesson_{year}_{quarter}_en.pdf\n"
     yaml_output += "# Path to the front cover SVG file\n"
     yaml_output += "front_cover_svg: ./assets/front_cover.svg\n"
     yaml_output += "# Path to the back cover SVG file\n"
