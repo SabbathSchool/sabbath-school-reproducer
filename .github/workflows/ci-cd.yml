@@ -27,6 +27,7 @@ jobs:
     
     - name: Run tests
       run: |
+        cd src
         pytest --cov=sabbath_school_reproducer tests/
     
     - name: Build package
