@@ -38,10 +38,18 @@ class HtmlGenerator:
             
             # Normalize the quarter format (q1 -> Q1)
             normalized_quarter = quarter.upper()
+
+            
             
             # Find the lesson matching the year and quarter
             for lesson in lessons_data.get("lessons", []):
-                if lesson["year"] == year and lesson["quarter"] == normalized_quarter:
+                # Safely convert both year values to strings
+                lesson_year_str = str(lesson["year"])
+                year_str = str(year)
+                
+                print(lesson, normalized_quarter, lesson_year_str, year_str)
+                
+                if lesson_year_str == year_str and normalized_quarter in lesson["quarter"]:
                     return lesson["title"]
             
             # If no match found, return a default title
@@ -108,16 +116,24 @@ class HtmlGenerator:
         # Set default values
         year = 2025
         quarter = "q1"
-        lesson_title = "Sabbath School Lessons"
+        lesson_title = ""
         
         # Use values from config if available
         if config:
             # Use the target year and quarter for display (not the source/reproduction year)
             year = config.get("year", 2025)
             quarter = config.get("quarter", "q1")
+
+
+            reproduce = config.get("reproduce", {})
+            year_orig = reproduce.get("year", 2025)  # Default to 2025 if 'year' is not found
+            quarter_orig = reproduce.get("quarter", "q1") 
             
             # Get title from config or generate a default
-            lesson_title = config.get("title", HtmlGenerator.get_lesson_title(year, quarter))
+            lesson_title = config.get("lesson_title", HtmlGenerator.get_lesson_title(year_orig, quarter_orig))
+
+            print("GETTING LESSON TULE", lesson_title)
+            print("GETTING LESSON TULE", config.get("lesson_title"))
             
             # If we're in reproduction mode, add a note about the original source
             if config.get("reproduce", {}).get("year"):
