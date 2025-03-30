@@ -8,7 +8,7 @@ This script helps with setting up the required dependencies.
 from setuptools import setup, find_packages
 
 setup(
-    name="sabbath-school-lessons",
+    name="sabbath-school-reproducer",
     version="0.1.0",
     description="Download and process Sabbath School lessons from GitHub",
     author="Gospel Sounders",

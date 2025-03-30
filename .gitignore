@@ -68,3 +68,5 @@ logs/
 # Downloaded content cache
 .cache/
 cache/
+combined.md
+tests.md

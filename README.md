@@ -19,8 +19,8 @@ This project downloads Sabbath School lessons from the GitHub repository and gen
 
 1. Clone this repository:
 ```bash
-git clone https://github.com/yourusername/sabbath-school-lessons.git
-cd sabbath-school-lessons
+git clone https://github.com/SabbathSchool/sabbath-school-reproducer.git
+cd sabbath-school-reproducer
 ```
 
 2. Install dependencies:

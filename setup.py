@@ -23,14 +23,14 @@ data_files = [
 ]
 
 setup(
-    name="sabbath-school-lessons",
+    name="sabbath-school-reproducer",
     version="0.1.0",
     description="Download and process Sabbath School lessons from GitHub",
     long_description=long_description,
     long_description_content_type="text/markdown",
     author="Gospel Sounders",
     author_email="youremail@example.com",
-    url="https://github.com/yourusername/sabbath-school-lessons",
+    url="https://github.com/SabbathSchool/sabbath-school-reproducer",
     package_dir={"": "src"},
     packages=find_packages(where="src"),
     include_package_data=True,
