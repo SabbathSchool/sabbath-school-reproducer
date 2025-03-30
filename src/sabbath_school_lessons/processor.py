@@ -13,6 +13,51 @@ class MarkdownProcessor:
     """Processes markdown files to extract structured content."""
     
     @staticmethod
+    def adjust_dates(lessons, config):
+        """
+        Adjust lesson dates based on the quarter_start_date in config
+        
+        Args:
+            lessons (list): List of lesson dictionaries
+            config (dict): Configuration dictionary with reproduction settings
+            
+        Returns:
+            list: Updated list of lesson dictionaries with adjusted dates
+        """
+        if not config or 'reproduce' not in config or not config['reproduce'].get('quarter_start_date'):
+            return lessons  # No date adjustment needed
+        
+        try:
+            # Parse the quarter start date
+            from datetime import datetime, timedelta
+            quarter_start = datetime.strptime(config['reproduce']['quarter_start_date'], '%Y-%m-%d')
+            
+            # Set new lesson numbers if needed
+            start_lesson = config['reproduce'].get('start_lesson', 1)
+            
+            # Sort lessons by their original number
+            lessons.sort(key=lambda l: int(l.get('number', 0)))
+            
+            # Apply new dates and lesson numbers
+            for i, lesson in enumerate(lessons):
+                # Set the new lesson number (1-based)
+                new_lesson_number = i + 1
+                lesson['number'] = str(new_lesson_number)
+                
+                # Calculate new date (one week apart)
+                lesson_date = quarter_start + timedelta(days=7 * i)
+                
+                # Format the date in the expected format (e.g., "April 1, 2025")
+                new_date = lesson_date.strftime('%B %d, %Y')
+                lesson['date'] = new_date
+            
+            return lessons
+            
+        except Exception as e:
+            print(f"Warning: Error adjusting lesson dates: {e}")
+            return lessons  # Return original lessons if date adjustment fails
+    
+    @staticmethod
     def parse_questions_from_markdown(questions_text):
         """
         Parse questions directly from markdown text
@@ -23,6 +68,7 @@ class MarkdownProcessor:
         Returns:
             list: List of question dictionaries with text, scripture, and answer
         """
+        # [Existing implementation remains the same]
         questions = []
         
         # Split by question numbers (1., 2., etc.)
@@ -81,6 +127,7 @@ class MarkdownProcessor:
         Returns:
             tuple: (lessons_content, frontmatter_content, backmatter_content)
         """
+        # [Existing implementation remains the same]
         # Find all file sections
         file_sections = re.findall(r'# File: ([^\n]+)[\r\n]+#-+[\r\n]+(.*?)(?=# File:|$)', content, re.DOTALL)
         
@@ -111,6 +158,7 @@ class MarkdownProcessor:
         Returns:
             list: List of lesson dictionaries
         """
+        # [Existing implementation remains the same]
         # Convert markdown to HTML for structure analysis
         html_content = markdown.markdown(markdown_content)
         soup = BeautifulSoup(html_content, 'html.parser')
@@ -187,12 +235,13 @@ class MarkdownProcessor:
         return lessons
     
     @staticmethod
-    def process_markdown_file(markdown_file):
+    def process_markdown_file(markdown_file, config=None):
         """
         Process the markdown file to extract content
         
         Args:
             markdown_file (str): Path to the markdown file
+            config (dict, optional): Configuration dictionary for reproduction
             
         Returns:
             dict: Dictionary with extracted content
@@ -206,6 +255,10 @@ class MarkdownProcessor:
         
         # Parse lessons from the lessons content
         lessons = MarkdownProcessor.parse_lessons(lessons_content)
+        
+        # Apply date adjustments if reproduction settings exist
+        if config and 'reproduce' in config:
+            lessons = MarkdownProcessor.adjust_dates(lessons, config)
         
         # Log debugging information
         print(f"Found {len(lessons)} lessons")

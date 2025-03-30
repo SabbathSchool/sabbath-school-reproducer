@@ -105,12 +105,29 @@ class HtmlGenerator:
         """
         svg_content = ""
                 
-        year = config.get("year", 2025)
-        quarter = config.get("quarter", "q1")
-
-
+        # Set default values
+        year = 2025
+        quarter = "q1"
         lesson_title = "Sabbath School Lessons"
-        lesson_title = config.get("title", HtmlGenerator.get_lesson_title(year, quarter))
+        
+        # Use values from config if available
+        if config:
+            # Use the target year and quarter for display (not the source/reproduction year)
+            year = config.get("year", 2025)
+            quarter = config.get("quarter", "q1")
+            
+            # Get title from config or generate a default
+            lesson_title = config.get("title", HtmlGenerator.get_lesson_title(year, quarter))
+            
+            # If we're in reproduction mode, add a note about the original source
+            if config.get("reproduce", {}).get("year"):
+                source_year = config["reproduce"]["year"]
+                source_quarter = config["reproduce"]["quarter"]
+                
+                # Update title to indicate it's a reproduction
+                if not config.get("title"):  # Only modify if no custom title is set
+                    lesson_title = f"Sabbath School Lessons (from {source_year} {source_quarter.upper()})"
+        
         # Format quarter display
         quarter_display = HtmlGenerator.get_quarter_display(quarter)
         
@@ -133,6 +150,20 @@ class HtmlGenerator:
                 <text x="400" y="800" font-family="Georgia, serif" font-size="20" text-anchor="middle" fill="#5a4130">{quarter_display}, {year}</text>
             </svg>
             """
+            
+            # Add source attribution if this is a reproduction
+            if config and config.get("reproduce", {}).get("year"):
+                source_year = config["reproduce"]["year"]
+                source_quarter = config["reproduce"]["quarter"].upper()
+                source_quarter_name = HtmlGenerator.get_quarter_display(source_quarter)
+                
+                # Add source attribution text to SVG
+                svg_content = svg_content.replace('</svg>', f"""
+                <text x="400" y="850" font-family="Georgia, serif" font-size="16" text-anchor="middle" font-style="italic" fill="#666666">
+                    Adapted from {source_quarter_name}, {source_year}
+                </text>
+                </svg>
+                """)
         
         return f"""
         <div class="cover-page">
@@ -570,7 +601,7 @@ class HtmlGenerator:
         # Add each lesson
         for lesson in lessons:
             main_content_html += f'<div id="lesson-{lesson["number"]}">{HtmlGenerator.create_lesson_html(lesson)}</div>'
-            main_content_html += '<div style="page-break-after: always;"></div>'
+            # main_content_html += '<div style="page-break-after: always;"></div>'
         
         # Add back matter if present
         if backmatter:

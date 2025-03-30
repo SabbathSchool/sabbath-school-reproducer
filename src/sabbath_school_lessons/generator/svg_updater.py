@@ -85,7 +85,7 @@ class SvgUpdater:
             with open(svg_path, 'r', encoding='utf-8') as f:
                 svg_content = f.read()
             
-            # Get quarter information
+            # Get quarter information - use the target year/quarter for display
             year = config['year']
             quarter = config['quarter']
             quarter_name = SvgUpdater.QUARTER_NAMES.get(quarter, 'QUARTER')
@@ -93,6 +93,19 @@ class SvgUpdater:
             
             # Get title
             title = SvgUpdater.get_quarter_title(config, lesson_data)
+            
+            # Check if this is a reproduction
+            is_reproduction = 'reproduce' in config and config['reproduce'].get('year')
+            
+            # If reproduction, append source info to title
+            if is_reproduction:
+                source_year = config['reproduce']['year']
+                source_quarter = config['reproduce']['quarter']
+                source_quarter_name = SvgUpdater.QUARTER_NAMES.get(source_quarter, 'QUARTER')
+                
+                # Only append if not already customized
+                if not config.get("title"):
+                    title += f" (from {source_year} {source_quarter_name})"
             
             # Replace relevant text in SVG
             # Update quarter info
@@ -138,6 +151,23 @@ class SvgUpdater:
                         f'<text x="400" y="230" font-family="Georgia, serif" font-size="48" font-weight="bold" text-anchor="middle" fill="#7d2b2b">{second_line.upper()}</text>',
                         svg_content
                     )
+            
+            # Add source attribution if this is a reproduction
+            if is_reproduction:
+                source_year = config['reproduce']['year']
+                source_quarter = config['reproduce']['quarter']
+                source_quarter_name = SvgUpdater.QUARTER_NAMES.get(source_quarter, 'QUARTER')
+                
+                # Check if there's already a source attribution
+                attribution_pattern = r'<text[^>]*>\s*Adapted from.*\s*</text>'
+                attribution_text = f'<text x="400" y="870" font-family="Georgia, serif" font-size="16" text-anchor="middle" font-style="italic" fill="#666666">Adapted from {source_quarter_name}, {source_year}</text>'
+                
+                if re.search(attribution_pattern, svg_content):
+                    # Replace existing attribution
+                    svg_content = re.sub(attribution_pattern, attribution_text, svg_content)
+                else:
+                    # Add new attribution before closing svg tag
+                    svg_content = svg_content.replace('</svg>', f'{attribution_text}\n</svg>')
             
             # Write to a new file if temporary, otherwise update in place
             if is_temporary:

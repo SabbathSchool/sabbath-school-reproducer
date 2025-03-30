@@ -7,19 +7,22 @@ This module handles downloading lesson content from the GitHub repository.
 import json
 import requests
 from urllib.parse import urljoin
+import re
 
 
 class GitHubDownloader:
     """Downloads Sabbath School lesson content from GitHub repository."""
     
-    def __init__(self, github_paths):
+    def __init__(self, github_paths, config=None):
         """
         Initialize with GitHub paths
         
         Args:
             github_paths (dict): Dictionary with GitHub URLs
+            config (Config, optional): Configuration object for reproduction settings
         """
         self.github_paths = github_paths
+        self.config = config
     
     def download_json(self, url):
         """
@@ -81,11 +84,36 @@ class GitHubDownloader:
         # Download back matter
         back_matter = self.download_markdown(self.github_paths['back_matter_url'])
         
+        # Get reproduction settings if available
+        start_lesson = 1
+        stop_lesson = float('inf')  # Default to all lessons
+        
+        if self.config and 'reproduce' in self.config.config:
+            reproduce = self.config.config['reproduce']
+            if 'start_lesson' in reproduce and reproduce['start_lesson']:
+                start_lesson = int(reproduce['start_lesson'])
+            
+            if 'stop_lesson' in reproduce and reproduce['stop_lesson'] is not None:
+                stop_lesson = int(reproduce['stop_lesson'])
+        
         # Download each lesson
         lessons = {}
         base_url = self.github_paths['base_url']
         
+        # Filter and sort week IDs
+        filtered_week_ids = []
         for week_id in contents:
+            # Extract lesson number from week_id (e.g., "week-01" -> 1)
+            lesson_num_match = re.search(r'week-(\d+)', week_id)
+            if lesson_num_match:
+                lesson_num = int(lesson_num_match.group(1))
+                if start_lesson <= lesson_num <= stop_lesson:
+                    filtered_week_ids.append(week_id)
+        
+        # Sort the filtered week IDs
+        filtered_week_ids.sort()
+        
+        for week_id in filtered_week_ids:
             week_url = urljoin(base_url + "/", f"{week_id}.md")
             week_content = self.download_markdown(week_url)
             

@@ -25,6 +25,10 @@ from .utils.debug_tools import DebugTools
 def main():
     """
     Main function that orchestrates the entire process
+    
+    This function handles command-line arguments, loads configuration,
+    downloads lesson content, and generates PDF output. It also supports
+    reproduction mode for adapting historical lessons to new dates.
     """
     parser = argparse.ArgumentParser(description='Download and process Sabbath School lessons')
     parser.add_argument('config_file', nargs='?', help='Path to YAML configuration file')
@@ -67,13 +71,30 @@ def main():
         print(f"Loading configuration from {args.config_file}...")
         config = Config(args.config_file)
         
+        # Print reproduction settings if configured
+        if 'reproduce' in config.config and config.config['reproduce'].get('year'):
+            reproduction_year = config.config['reproduce']['year']
+            reproduction_quarter = config.config['reproduce']['quarter']
+            target_year = config.config['year']
+            target_quarter = config.config['quarter']
+            
+            print(f"Reproduction mode: Converting {reproduction_year} {reproduction_quarter} to {target_year} {target_quarter}")
+            
+            if config.config['reproduce'].get('start_lesson'):
+                start_lesson = config.config['reproduce']['start_lesson']
+                stop_lesson = config.config['reproduce'].get('stop_lesson', 'end')
+                print(f"Lesson range: {start_lesson} to {stop_lesson}")
+            
+            if config.config['reproduce'].get('quarter_start_date'):
+                print(f"New quarter start date: {config.config['reproduce']['quarter_start_date']}")
+        
         # Generate GitHub paths
         github_paths = config.get_github_paths()
-        print(f"Processing year {config['year']}, quarter {config['quarter']}, language {config['language']}")
+        print(f"Processing source: year {github_paths['base_url'].split('/')[-3]}, quarter {github_paths['base_url'].split('/')[-2]}, language {config['language']}")
         
         # Download lesson data
         print("Downloading lesson content from GitHub...")
-        downloader = GitHubDownloader(github_paths)
+        downloader = GitHubDownloader(github_paths, config)
         lesson_data = downloader.download_lesson_data()
         
         # Combine into a single markdown file
@@ -89,20 +110,20 @@ def main():
         
         # Process the markdown file to extract structured content
         print("Processing markdown content...")
-        content_data = MarkdownProcessor.process_markdown_file(markdown_path)
+        content_data = MarkdownProcessor.process_markdown_file(markdown_path, config.config)
         
         # Update SVG files with dynamic content if available
         front_cover_path = config.get('front_cover_svg')
         back_cover_path = config.get('back_cover_svg')
         
         if front_cover_path:
-            updated_front_cover = SvgUpdater.update_svg_with_config(front_cover_path, config, lesson_data, is_temporary=True)
+            updated_front_cover = SvgUpdater.update_svg_with_config(front_cover_path, config.config, lesson_data, is_temporary=True)
             if updated_front_cover:
                 front_cover_path = updated_front_cover
                 print(f"Updated front cover SVG with dynamic content")
         
         if back_cover_path:
-            updated_back_cover = SvgUpdater.update_svg_with_config(back_cover_path, config, lesson_data, is_temporary=True)
+            updated_back_cover = SvgUpdater.update_svg_with_config(back_cover_path, config.config, lesson_data, is_temporary=True)
             if updated_back_cover:
                 back_cover_path = updated_back_cover
                 print(f"Updated back cover SVG with dynamic content")
@@ -113,7 +134,7 @@ def main():
             content_data,
             front_cover_svg_path=front_cover_path,
             back_cover_svg_path=back_cover_path,
-            config=config
+            config=config.config
         )
         print("Done Generating HTML...")
         
@@ -125,7 +146,7 @@ def main():
         
         # Generate PDF
         print("Generating PDF...")
-        PdfGenerator.generate_pdf(html_content, config['output_file'], config)
+        PdfGenerator.generate_pdf(html_content, config['output_file'], config.config)
         print(f"PDF generation complete: {config['output_file']}")
         
     except Exception as e:
