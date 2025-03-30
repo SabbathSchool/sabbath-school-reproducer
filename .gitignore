@@ -70,3 +70,10 @@ logs/
 cache/
 combined.md
 tests.md
+todo.md
+
+
+# Coverage reports
+.coverage
+htmlcov/
+coverage.xml
