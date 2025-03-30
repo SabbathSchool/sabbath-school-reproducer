@@ -225,7 +225,7 @@ body {
 
 .lesson-title {
     position: absolute;
-    top: 20px;
+    top: 40px;
     left: 120px;
     font-size: 24pt;
     font-weight: bold;
@@ -234,7 +234,7 @@ body {
 
 .lesson-date {
     position: absolute;
-    top: 60px;
+    top: 20px;
     left: 120px;
     font-size: 12pt;
     font-style: italic;
@@ -538,6 +538,12 @@ table caption {
 
 .sectionbreaknone {
     page-break-after: always;
+}
+
+@media print {
+    .lesson-title {
+        font-size: 20pt;
+    }
 }
 """
 
