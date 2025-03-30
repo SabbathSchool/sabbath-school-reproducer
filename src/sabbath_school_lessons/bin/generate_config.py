@@ -26,8 +26,8 @@ def generate_template_config(output_path="config.yaml"):
     """
     # Get current year and determine current quarter
     now = datetime.now()
-    year = now.year
-    quarter = f"q{(now.month - 1) // 3 + 1}"
+    year = 1905# now.year
+    quarter = "q2" #f"q{(now.month - 1) // 3 + 1}"
     
     # Create a template configuration
     config = {

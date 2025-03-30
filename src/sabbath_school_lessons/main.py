@@ -12,14 +12,14 @@ import sys
 import os
 import argparse
 import logging
-from sabbath_school_lessons.config import Config
-from sabbath_school_lessons.downloader import GitHubDownloader
-from sabbath_school_lessons.aggregator import ContentAggregator
-from sabbath_school_lessons.processor import MarkdownProcessor
-from sabbath_school_lessons.generator.html_generator import HtmlGenerator
-from sabbath_school_lessons.generator.pdf_generator import PdfGenerator
-from sabbath_school_lessons.generator.svg_updater import SvgUpdater
-from sabbath_school_lessons.utils.debug_tools import DebugTools
+from .config import Config
+from .downloader import GitHubDownloader
+from .aggregator import ContentAggregator
+from .processor import MarkdownProcessor
+from .generator.html_generator import HtmlGenerator
+from .generator.pdf_generator import PdfGenerator
+from .generator.svg_updater import SvgUpdater
+from .utils.debug_tools import DebugTools
 
 
 def main():
@@ -31,12 +31,13 @@ def main():
     parser.add_argument('--debug', action='store_true', help='Enable debug mode with verbose logging')
     parser.add_argument('--debug-html-only', action='store_true', help='Only generate debug HTML without PDF')
     parser.add_argument('--generate-config', action='store_true', help='Generate a sample config file and exit')
+    parser.add_argument('--quiet-deps', action='store_true', help='Silence debug messages from dependencies')
     
     args = parser.parse_args()
     
     # Handle generate-config option
     if args.generate_config:
-        from sabbath_school_lessons.bin.generate_config import generate_template_config
+        from .bin.generate_config import generate_template_config
         config_path = generate_template_config()
         print(f"Sample configuration file generated at: {config_path}")
         return 0
@@ -53,6 +54,12 @@ def main():
         level=log_level,
         format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
     )
+    if args.quiet_deps:
+        logging.getLogger('fontTools').setLevel(logging.WARNING)
+        logging.getLogger('weasyprint').setLevel(logging.WARNING)
+        logging.getLogger('fontTools.subset').setLevel(logging.WARNING)
+        logging.getLogger('fontTools.ttLib.ttFont').setLevel(logging.WARNING)
+        logging.getLogger('fontTools.subset.timer').setLevel(logging.WARNING)
     
     
     try:
@@ -108,6 +115,7 @@ def main():
             back_cover_svg_path=back_cover_path,
             config=config
         )
+        print("Done Generating HTML...")
         
         # Save debug HTML
         debug_html_path = config['output_file'].replace('.pdf', '_debug.html')
