@@ -334,25 +334,46 @@ class HtmlGenerator:
         # Sort sections to ensure they're in the correct order if numbers are in section names
         section_names = sorted(question_sections.keys())
         
+        
+        def add_period_to_sentence(scripture_with_period):
+            # List of markdown special characters (escaped for regex)
+            special_characters = r'\*\~\_\*'
+
+            # Remove trailing markdown special characters and extra periods
+            stripped_text = re.sub(rf'[{re.escape(special_characters)}]+$', '', scripture_with_period)
+            # Remove any existing periods at the end (if there are multiple)
+            
+            # Check if we need to add a period (only if it doesn't already end with a period)
+            if not stripped_text.endswith('.'):
+                stripped_text += '.'
+            # Now reattach the markdown special characters (if any were removed)
+            if re.search(rf'[{re.escape(special_characters)}]+$', scripture_with_period):
+                # Add the markdown special characters back to the end
+                stripped_text += re.search(rf'[{re.escape(special_characters)}]+$', scripture_with_period).group()
+
+            return stripped_text
+
         # Process each section
         for section_name in section_names:
             section_questions = question_sections[section_name]
             section_questions_html = ""
             
+
             for i, question in enumerate(section_questions, 1):
                 # Handle scripture reference with proper punctuation
                 scripture_html = ""
                 if question.get('scripture'):
                     # Ensure the scripture reference ends with a period if it doesn't already
-                    scripture_with_period = question['scripture']
-                    if not scripture_with_period.endswith('.'):
-                        scripture_with_period += '.'
-                    scripture_html = f'<span class="scripture-ref">{scripture_with_period}</span>'
+                    scripture_with_period = add_period_to_sentence(question['scripture'])
+                    
+                    html_text = HtmlGenerator.convert_markdown_to_html(scripture_with_period)
+
+                    scripture_html = f'<span class="scripture-ref">{html_text}</span>'
                 
                 # Handle answer
                 answer_html = ""
                 if question.get('answer'):
-                    answer_html = f'<div class="answer"><em>Ans. — {question["answer"]}</em></div>'
+                    answer_html = f'<div class="answer"><em>Ans. — {HtmlGenerator.convert_markdown_to_html(question["answer"])}</em></div>'
                 
                 # Add padding for two-digit numbers
                 num_class = "two-digit" if i >= 10 else "one-digit"

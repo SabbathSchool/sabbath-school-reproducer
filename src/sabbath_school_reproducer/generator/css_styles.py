@@ -371,6 +371,11 @@ body {
     page-break-before: avoid; /*keep with question*/
 }
 
+.scripture-ref p {
+    margin: 0;  
+    padding: 0; 
+}
+
 .answer {
     margin-top: 1px;
     color: #5a4130;
