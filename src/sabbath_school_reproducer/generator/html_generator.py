@@ -96,7 +96,15 @@ class HtmlGenerator:
         quarter_display = LanguageConfig.get_translation(
             language_code, 
             f'quarter_names.{quarter.lower()}', 
-            HtmlGenerator.get_quarter_display(quarter),
+            HtmlGenerator.get_quarter_display(quarter, language_code),
+            config
+        )
+        
+        # Get quarter months for the specific language
+        quarter_months = LanguageConfig.get_translation(
+            language_code, 
+            f'quarter_months.{quarter.lower()}', 
+            f"Quarter {quarter[1]}", 
             config
         )
         
@@ -112,14 +120,6 @@ class HtmlGenerator:
             sabbath_school_text = LanguageConfig.get_translation(language_code, 'sabbath_school', 'SABBATH SCHOOL', config)
             lessons_text = LanguageConfig.get_translation(language_code, 'lessons', 'LESSONS', config)
             
-            # Get month range for quarter
-            quarter_months = LanguageConfig.get_translation(
-                language_code, 
-                f'quarter_months.{quarter.lower()}', 
-                f"Quarter {quarter[1]}", 
-                config
-            )
-            
             # Use default fallback SVG with dynamic content
             svg_content = f"""
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 1000" width="800" height="1000">
@@ -128,21 +128,21 @@ class HtmlGenerator:
                 <text x="400" y="170" font-family="Georgia, serif" font-size="48" font-weight="bold" text-anchor="middle" fill="#7d2b2b">{sabbath_school_text}</text>
                 <text x="400" y="230" font-family="Georgia, serif" font-size="48" font-weight="bold" text-anchor="middle" fill="#7d2b2b">{lessons_text}</text>
                 <text x="400" y="730" font-family="Georgia, serif" font-size="36" font-weight="bold" text-anchor="middle" fill="#5a4130">{lesson_title}</text>
-                <text x="400" y="800" font-family="Georgia, serif" font-size="20" text-anchor="middle" fill="#5a4130">{quarter_display}, {year}</text>
-                <text x="400" y="840" font-family="Georgia, serif" font-size="18" text-anchor="middle" fill="#5a4130">{quarter_months} {year}</text>
+                <text x="400" y="790" font-family="Georgia, serif" font-size="24" text-anchor="middle" fill="#5a4130">{quarter_display}, {year}</text>
+                <text x="400" y="830" font-family="Georgia, serif" font-size="18" text-anchor="middle" fill="#5a4130">{quarter_months} {year}</text>
             </svg>
             """
                 
             # Add source attribution if this is a reproduction
             if config and config.get("reproduce", {}).get("year"):
                 source_year = config["reproduce"]["year"]
-                source_quarter = config["reproduce"]["quarter"].upper()
+                source_quarter = config["reproduce"]["quarter"].lower()
                 
                 # Get translated quarter name and adapted from text
                 source_quarter_name = LanguageConfig.get_translation(
                     language_code, 
-                    f'quarter_names.{source_quarter.lower()}', 
-                    HtmlGenerator.get_quarter_display(source_quarter),
+                    f'quarter_names.{source_quarter}', 
+                    HtmlGenerator.get_quarter_display(source_quarter, language_code),
                     config
                 )
                 
@@ -161,6 +161,7 @@ class HtmlGenerator:
             {svg_content}
         </div>
         """
+
     @staticmethod
     def create_back_cover(back_cover_svg_path=None):
         """

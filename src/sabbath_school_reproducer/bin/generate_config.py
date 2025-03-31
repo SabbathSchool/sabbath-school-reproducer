@@ -90,7 +90,7 @@ def generate_language_template(language_code='en', output_directory='languages')
     Generate a language configuration template file for the specified language
     
     Args:
-        language_code (str): Language code (e.g., 'en', 'sw', 'luo')
+        language_code (str): Language code (e.g., 'en', 'swa', 'luo')
         output_directory (str): Directory to save the language file
         
     Returns:
@@ -139,7 +139,7 @@ def generate_language_template(language_code='en', output_directory='languages')
             'date_column': 'Date',
             'page_column': 'Page'
         }
-    elif language_code == 'sw':
+    elif language_code == 'swa':
         translations = {
             'notes': 'MAELEZO',
             'note': 'ELEZO',
@@ -234,7 +234,7 @@ def generate_language_template(language_code='en', output_directory='languages')
             'January', 'February', 'March', 'April', 'May', 'June',
             'July', 'August', 'September', 'October', 'November', 'December'
         ]
-    elif language_code == 'sw':
+    elif language_code == 'swa':
         translations['month_names'] = [
             'Januari', 'Februari', 'Machi', 'Aprili', 'Mei', 'Juni',
             'Julai', 'Agosti', 'Septemba', 'Oktoba', 'Novemba', 'Desemba'
@@ -257,7 +257,7 @@ def generate_language_template(language_code='en', output_directory='languages')
             '(\d+ [A-Za-z]+, \d{4})',   # e.g., "20 May, 1905"
             '(\d{1,2}/\d{1,2}/\d{4})'   # e.g., "5/20/1905"
         ]
-    elif language_code == 'sw':
+    elif language_code == 'swa':
         translations['date_formats'] = [
             '([A-Za-z]+ \d+, \d{4})',  # e.g., "Mei 20, 1905"
             '(\d+ [A-Za-z]+, \d{4})',   # e.g., "20 Mei, 1905"
