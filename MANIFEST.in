@@ -1,5 +1,5 @@
 include README.md
 include LICENSE
 include requirements.txt
-include src/sabbath_school_lessons/config.yaml
-recursive-include src/sabbath_school_lessons/bin *
+include src/sabbath_school_reproducer/config.yaml
+recursive-include src/sabbath_school_reproducer/bin *
