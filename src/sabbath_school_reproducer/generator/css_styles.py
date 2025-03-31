@@ -301,12 +301,14 @@ body {
     margin-bottom: 10px;
     border-bottom: 1px solid #8b4513;
     padding-bottom: 5px;
+    page-break-after: avoid;
 }
 
 .question {
     margin-bottom: 5px;
     position: relative;
     clear: both;
+    page-break-inside: auto;
 }
 
 .question-number {
@@ -341,6 +343,7 @@ body {
     font-style: italic;
     margin-left: 10px;
     text-align: right;
+    page-break-before: avoid; /*keep with question*/
 }
 
 .answer {
@@ -381,6 +384,7 @@ body {
     page-break-inside: auto; /* Allow breaks within paragraphs */
     orphans: 1; /* At least 1 lines at top of page */
     widows: 1; /* At least 1 lines at bottom of page */
+    text-align: justify;
 }
 
 .clearfix {

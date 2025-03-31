@@ -1,10 +1,3 @@
-"""
-HTML Generator for Sabbath School Lessons
-
-This module generates HTML content for the PDF conversion with proper section pagination.
-Includes dynamic content based on configuration and incremental approach for pagination.
-"""
-
 import markdown
 import re
 import os
@@ -38,8 +31,6 @@ class HtmlGenerator:
             
             # Normalize the quarter format (q1 -> Q1)
             normalized_quarter = quarter.upper()
-
-            
             
             # Find the lesson matching the year and quarter
             for lesson in lessons_data.get("lessons", []):
@@ -219,7 +210,7 @@ class HtmlGenerator:
         """
         return markdown.markdown(
             markdown_content,
-            extensions=['tables']  # Enable table extension
+            extensions=['tables', 'extra']  # Enable table and extra extensions for better markdown support
         )
     
     @staticmethod
@@ -322,10 +313,16 @@ class HtmlGenerator:
         Returns:
             str: HTML for lesson
         """
+        # Determine title font size based on length
+        title_font_size = "24px"  # Default
+        if lesson.get('title') and len(lesson.get('title', '')) > 57:
+            title_font_size = "18px"
+        
         # Process preliminary note if present
         preliminary_html = ""
         if lesson.get('preliminary_note'):
-            cleaned_note = lesson['preliminary_note']
+            # Convert markdown to HTML with proper formatting
+            preliminary_content = HtmlGenerator.convert_markdown_to_html(lesson['preliminary_note'])
             
             # Remove any lines that match the lesson date
             if lesson.get('date'):
@@ -340,73 +337,114 @@ class HtmlGenerator:
                 
                 # Apply each pattern to remove the date
                 for pattern in date_patterns:
-                    cleaned_note = re.sub(pattern, '', cleaned_note, flags=re.MULTILINE)
-                
-                # Remove any empty lines that might be left
-                cleaned_note = re.sub(r'\n\s*\n+', '\n\n', cleaned_note)
-                cleaned_note = cleaned_note.strip()
+                    preliminary_content = re.sub(pattern, '', preliminary_content, flags=re.MULTILINE)
             
-            # If there's still content after removing dates, format it
-            if cleaned_note.strip():
-                # Replace newlines with paragraph tags
-                paragraphs = cleaned_note.split('\n\n')
-                formatted_paragraphs = ''.join(f'<p>{p}</p>' for p in paragraphs if p.strip())
-                
+            # If there's still content after removing dates, add it
+            if preliminary_content.strip():
                 preliminary_html = f"""
                 <div class="preliminary-note">
-                    {formatted_paragraphs}
+                    {preliminary_content}
                 </div>
                 """
         
-        # Process questions with improved formatting
-        questions_html = ""
-        for i, question in enumerate(lesson.get('questions', []), 1):
-            # Handle scripture reference with proper punctuation
-            scripture_html = ""
-            if question.get('scripture'):
-                # Ensure the scripture reference ends with a period if it doesn't already
-                scripture_with_period = question['scripture']
-                if not scripture_with_period.endswith('.'):
-                    scripture_with_period += '.'
-                scripture_html = f'<span class="scripture-ref">{scripture_with_period}</span>'
+        # Process question sections with headers
+        question_sections_html = ""
+        
+        # Group questions by section
+        question_sections = {}
+        
+        # Create a default "QUESTIONS" section if no headers are present
+        if not lesson.get('question_headers'):
+            question_sections["QUESTIONS"] = []
+        
+        # Group questions by their sections
+        for question in lesson.get('questions', []):
+            section = question.get('section', 'QUESTIONS')
+            if section not in question_sections:
+                question_sections[section] = []
+            question_sections[section].append(question)
+        
+        # Sort sections to ensure they're in the correct order if numbers are in section names
+        section_names = sorted(question_sections.keys())
+        
+        # Process each section
+        for section_name in section_names:
+            section_questions = question_sections[section_name]
+            section_questions_html = ""
             
-            # Handle answer
-            answer_html = ""
-            if question.get('answer'):
-                answer_html = f'<div class="answer"><em>Ans. — {question["answer"]}</em></div>'
-            
-            # Add padding for two-digit numbers
-            num_class = "two-digit" if i >= 10 else "one-digit"
-            
-            # Make sure question text ends with proper punctuation
-            question_text = question.get('text', '')
-            if question_text and not re.search(r'[.?!]$', question_text):
-                question_text += '.'
+            for i, question in enumerate(section_questions, 1):
+                # Handle scripture reference with proper punctuation
+                scripture_html = ""
+                if question.get('scripture'):
+                    # Ensure the scripture reference ends with a period if it doesn't already
+                    scripture_with_period = question['scripture']
+                    if not scripture_with_period.endswith('.'):
+                        scripture_with_period += '.'
+                    scripture_html = f'<span class="scripture-ref">{scripture_with_period}</span>'
                 
-            question_html = f"""
-            <div class="question">
-                <span class="question-number {num_class}">{i}.</span>
-                <div class="question-text">
-                    {question_text} {scripture_html}
-                    {answer_html}
+                # Handle answer
+                answer_html = ""
+                if question.get('answer'):
+                    answer_html = f'<div class="answer"><em>Ans. — {question["answer"]}</em></div>'
+                
+                # Add padding for two-digit numbers
+                num_class = "two-digit" if i >= 10 else "one-digit"
+                
+                # Make sure question text ends with proper punctuation
+                question_text = question.get('text', '')
+                if question_text and not re.search(r'[.?!]$', question_text):
+                    question_text += '.'
+                    
+                question_html = f"""
+                <div class="question">
+                    <span class="question-number {num_class}">{i}.</span>
+                    <div class="question-text">
+                        {question_text} {scripture_html}
+                        {answer_html}
+                    </div>
+                    <div class="clearfix"></div>
                 </div>
-                <div class="clearfix"></div>
+                """
+                section_questions_html += question_html
+            
+            # Create the section with the proper header
+            question_sections_html += f"""
+            <div class="questions-section">
+                <div class="questions-header">{section_name}</div>
+                {section_questions_html}
             </div>
             """
-            questions_html += question_html
+        
+        # Process additional sections if present
+        additional_sections_html = ""
+        if lesson.get('additional_sections'):
+            for section in lesson.get('additional_sections', []):
+                section_title = section.get('title', 'ADDITIONAL')
+                section_content = section.get('content', '')
+                
+                # Convert markdown to HTML with proper formatting
+                section_content_html = HtmlGenerator.convert_markdown_to_html(section_content)
+                
+                additional_sections_html += f"""
+                <div class="additional-section">
+                    <div class="additional-header">{section_title}</div>
+                    <div class="additional-content">
+                        {section_content_html}
+                    </div>
+                </div>
+                """
         
         # Process notes if present
         notes_html = ""
         if lesson.get('notes'):
-            # Split notes by paragraphs and format them
-            paragraphs = lesson['notes'].split('\n\n')
-            formatted_paragraphs = ''.join(f'<p>{p}</p>' for p in paragraphs if p.strip())
+            # Convert markdown to HTML with proper formatting
+            notes_content = HtmlGenerator.convert_markdown_to_html(lesson['notes'])
             
             notes_html = f"""
             <div class="notes-section">
                 <div class="notes-header">NOTES</div>
                 <div class="notes-content">
-                    {formatted_paragraphs}
+                    {notes_content}
                 </div>
             </div>
             """
@@ -421,15 +459,13 @@ class HtmlGenerator:
                 <div class="corner bottom-right"></div>
                 <div class="lesson-circle">{lesson.get('number', '')}</div>
                 <div class="lesson-title-container">
-                    <div class="lesson-title">{lesson.get('title', '')}</div>
+                    <div class="lesson-title" style="font-size: {title_font_size};">{lesson.get('title', '')}</div>
                     <div class="lesson-date">{lesson.get('date', '')}</div>
                 </div>
             </div>
             {preliminary_html}
-            <div class="questions-section">
-                <div class="questions-header">QUESTIONS</div>
-                {questions_html}
-            </div>
+            {question_sections_html}
+            {additional_sections_html}
             {notes_html}
         </div>
         """

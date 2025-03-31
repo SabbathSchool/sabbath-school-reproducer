@@ -436,7 +436,7 @@ class MarkdownProcessor:
         
         return {
             'text': question_part,
-            'answer': answer_part,
+            'scripture': answer_part,
             'section': section_name
         }
     
