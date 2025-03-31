@@ -3,6 +3,12 @@ CSS Styles for Sabbath School Lessons PDF
 
 This module defines the CSS styles used in the generated PDF.
 """
+from sabbath_school_reproducer.generator.css_editor import  CSSEditor
+import re
+import os
+import yaml
+from sabbath_school_reproducer.utils.language_utils import  LanguageConfig
+
 
 CSS_TEMPLATE = """
 /* Main styling for Sabbath School Lessons */
@@ -286,13 +292,33 @@ body {
     padding: 10px 20px;
     background-color: #f9f7f1;
     border-left: 3px solid #8b4513;
+    page-break-inside: avoid;
+    page-break-before: avoid;
 }
 
 .questions-section {
+    display:block;
     border: 1px solid #8b4513;
     padding: 20px;
     margin-bottom: 20px;
-    display: block;
+    border-radius: 12px;
+    page-break-before: auto;
+    page-break-inside: auto; /* Allow breaks within paragraphs */
+    orphans: 1; /* Allow at least one question to appear with header */
+    widows: 1; /* Allow at least one question at the bottom of a page */
+}
+
+.questions-section .question:first-of-type {
+    page-break-before: avoid; /* Keep first question with header */
+    page-break-inside: avoid; /* Keep first question intact */
+    page-break-after: auto; /* Allow a page break after first question */
+}
+
+/* The clearfix shouldn't force breaks */
+.clearfix {
+    clear: both;
+    page-break-before: auto;
+    page-break-after: auto;
 }
 
 .questions-header {
@@ -304,9 +330,10 @@ body {
 }
 
 .question {
-    margin-bottom: 5px;
+    margin-bottom: 3px;
     position: relative;
     clear: both;
+    page-break-inside: avoid;
 }
 
 .question-number {
@@ -328,6 +355,8 @@ body {
     margin-left: 30px; /* Minimum margin for one-digit numbers */
     text-align: left;
     position: relative;
+    break-inside: auto;
+    page-break-inside: auto;
 }
 
 /* For two-digit question numbers */
@@ -341,6 +370,12 @@ body {
     font-style: italic;
     margin-left: 10px;
     text-align: right;
+    page-break-before: avoid; /*keep with question*/
+}
+
+.scripture-ref p {
+    margin: 0;  
+    padding: 0; 
 }
 
 .answer {
@@ -381,6 +416,7 @@ body {
     page-break-inside: auto; /* Allow breaks within paragraphs */
     orphans: 1; /* At least 1 lines at top of page */
     widows: 1; /* At least 1 lines at bottom of page */
+    text-align: justify;
 }
 
 .clearfix {
@@ -540,6 +576,70 @@ table caption {
     page-break-after: always;
 }
 
+.additional-section {
+    border: 1px solid #6a4e23; /* Darker border color for additional section */
+    margin-bottom: 20px;
+    padding: 20px;
+    background-color: #f0e5d8; /* Lighter background color for differentiation */
+    page-break-before: auto;
+    border-radius: 8px;
+}
+
+/* Header styling for additional sections */
+.additional-header {
+    font-size: 18pt;
+    font-weight: bold;
+    color: #4b3b2f; /* Darker brown for the header text */
+    margin-bottom: 10px;
+    border-bottom: 3px solid #6a4e23; /* A stronger border below the header */
+    padding-bottom: 5px;
+    text-align: left;
+    font-family: 'Georgia', serif; /* Different font family for header */
+}
+
+/* Content styling for the additional sections */
+.additional-content {
+    font-size: 12pt;
+    line-height: 1.5;
+    color: #4b3b2f; /* Darker brown text */
+    text-align: justify; /* Justified text for a clean look */
+    margin-top: 10px;
+    font-family: 'Georgia', serif; /* Different font family for content */
+}
+
+/* Optional: First paragraph inside the additional content */
+.additional-content p:first-child {
+    margin-top: 0;
+}
+
+/* Style for hyperlinks in additional sections */
+.additional-content a {
+    color: #4b3b2f; /* Dark brown for links */
+    text-decoration: underline;
+}
+
+.additional-content a:hover {
+    color: #6a4e23; /* Change to a lighter brown when hovering */
+    text-decoration: none;
+}
+
+/* Optional: Add specific spacing between paragraphs for clarity */
+.additional-content p {
+    margin-bottom: 1em;
+}
+
+/* Optional: Style for lists inside the additional section */
+.additional-content ul,
+.additional-content ol {
+    margin-left: 1.5em;
+    margin-bottom: 1em;
+}
+
+.additional-content li {
+    margin-bottom: 0.5em;
+}
+
+
 @media print {
     .lesson-title {
         font-size: 20pt;
@@ -563,19 +663,104 @@ class CssUpdater:
         """
         try:
             year = config['year']
-            quarter = config['quarter'].upper()
+            quarter = config['quarter']
+            language_code = config.get('language', 'en')
             
-            # Format as "Quarter X YYYY"
-            quarter_num = quarter[1] if quarter.startswith('Q') and len(quarter) >= 2 else ''
-            return f"Quarter {quarter_num} {year}"
+            # Get the localized quarter name
+            quarter_name = LanguageConfig.get_translation(
+                language_code,
+                f'quarter_names.{quarter.lower()}',
+                f"Quarter {quarter[1] if quarter.startswith('q') or quarter.startswith('Q') else ''}"
+            )
+            
+            # Format as "Quarter X YYYY" based on language
+            return f"{quarter_name}, {year}"
         except (KeyError, ValueError):
             # Default if config is missing
             return "Quarter & Year"
     
     @staticmethod
+    def load_color_theme(theme_path):
+        """
+        Load color theme from a YAML file
+        
+        Args:
+            theme_path (str): Path to the color theme YAML file
+            
+        Returns:
+            dict: Color theme dictionary or None if file not found
+        """
+        if not theme_path or not os.path.exists(theme_path):
+            return None
+            
+        try:
+            with open(theme_path, 'r') as file:
+                return yaml.safe_load(file)
+        except (yaml.YAMLError, IOError) as e:
+            print(f"Error loading color theme: {e}")
+            return None
+    
+    @staticmethod
+    def apply_color_theme(css_template, color_theme):
+        """
+        Apply color theme to CSS template
+        
+        Args:
+            css_template (str): Original CSS template string
+            color_theme (dict): Color theme dictionary
+            
+        Returns:
+            str: Updated CSS template with applied color theme
+        """
+        if not css_template or not color_theme:
+            return css_template
+            
+        updated_css = css_template
+        
+        # Define color mappings from theme to CSS
+        color_mappings = {
+            # Text colors
+            "#3c1815": color_theme["text"]["primary"],
+            "#5a4130": color_theme["text"]["secondary"],
+            "#7d2b2b": color_theme["text"]["accent"],
+            "#007bff": color_theme["text"]["link"],
+            
+            # Background colors
+            "#f9f7f1": color_theme["background"]["light"],
+            "#f5f1e6": color_theme["background"]["medium"],
+            "#e0d5c0": color_theme["background"]["dark"],
+            "#f0e5d8": color_theme["background"]["additional"],
+            "#f4f4f4": color_theme["background"]["tableHeader"],
+            "#f0f0f0": color_theme["background"]["hover"],
+            
+            # Border colors
+            "#8b4513": color_theme["border"]["primary"],
+            "#d4c7a5": color_theme["border"]["secondary"],
+            "#6a4e23": color_theme["border"]["additional"],
+            "#ddd": color_theme["border"]["table"],
+            
+            # Accent colors
+            "#4b3b2f": color_theme["accent"]["secondary"],
+            "#696969": color_theme["accent"]["tertiary"],
+            "#808080": color_theme["accent"]["quaternary"]
+        }
+        
+        # Apply each color mapping
+        for original_color, new_color in color_mappings.items():
+            # Escape the hash character for regex
+            original_color_escaped = original_color.replace('#', r'\#')
+            updated_css = re.sub(
+                original_color_escaped,
+                new_color,
+                updated_css
+            )
+        
+        return updated_css
+    
+    @staticmethod
     def update_css_template(css_template, config, lesson_data=None):
         """
-        Update CSS template with configuration data
+        Update CSS template with configuration data and color theme
         
         Args:
             css_template (str): Original CSS template string
@@ -589,20 +774,20 @@ class CssUpdater:
             return css_template
         
         try:
-            import re
+            # Get language code
+            language_code = config.get('language', 'en')
             
             # Get quarter display for footer
             quarter_display = CssUpdater.get_quarter_display(config)
             
             # Get lesson title for footer
-            lesson_title = "Sabbath School Lessons"
-            if 'title' in config:
-                lesson_title = config['title']
-            elif lesson_data and 'front_matter' in lesson_data:
-                title_match = re.search(r'(?:^|\n)#\s+(.*?)(?:\n|$)', lesson_data['front_matter'])
-                if title_match:
-                    lesson_title = title_match.group(1).strip()
+            reproduce = config.get("reproduce", {})
+            year_orig = reproduce.get("year", 2025)  # Default to 2025 if 'year' is not found
+            quarter_orig = reproduce.get("quarter", "q1") 
             
+            # Get title from config or generate a default
+            lesson_title = config.get("lesson_title", CSSEditor.get_lesson_title(year_orig, quarter_orig))
+
             # Update CSS footer content
             updated_css = css_template
             
@@ -619,6 +804,39 @@ class CssUpdater:
                 f'content: "{lesson_title}";',
                 updated_css
             )
+            
+            # Apply color theme if specified
+            color_theme_path = config.get("color_theme_path")
+            if color_theme_path:
+                color_theme = CssUpdater.load_color_theme(color_theme_path)
+                if color_theme:
+                    updated_css = CssUpdater.apply_color_theme(updated_css, color_theme)
+            
+            # Update language-specific labels
+            if language_code != 'en':
+                # Replace "NOTES" with translated version
+                notes_label = LanguageConfig.get_translation(language_code, 'notes', 'NOTES')
+                updated_css = re.sub(
+                    r'\.notes-header.*?{[^}]*content:\s*["\']NOTES["\']',
+                    f'.notes-header{{content: "{notes_label}"',
+                    updated_css
+                )
+                
+                # Replace "NOTE" with translated version
+                note_label = LanguageConfig.get_translation(language_code, 'note', 'NOTE')
+                updated_css = re.sub(
+                    r'\.note-header.*?{[^}]*content:\s*["\']NOTE["\']',
+                    f'.note-header{{content: "{note_label}"',
+                    updated_css
+                )
+                
+                # Replace "TABLE OF CONTENTS" with translated version
+                toc_label = LanguageConfig.get_translation(language_code, 'table_of_contents', 'TABLE OF CONTENTS')
+                updated_css = re.sub(
+                    r'\.toc-title.*?{[^}]*content:\s*["\']TABLE OF CONTENTS["\']',
+                    f'.toc-title{{content: "{toc_label}"',
+                    updated_css
+                )
             
             return updated_css
             

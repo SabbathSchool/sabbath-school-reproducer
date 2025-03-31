@@ -30,27 +30,67 @@ def main():
     downloads lesson content, and generates PDF output. It also supports
     reproduction mode for adapting historical lessons to new dates.
     """
+
+    # Create the main parser
     parser = argparse.ArgumentParser(description='Download and process Sabbath School lessons')
-    parser.add_argument('config_file', nargs='?', help='Path to YAML configuration file')
+    
+    # Create subparsers
+    subparsers = parser.add_subparsers(dest='command', help='Commands')
+
+    # Add 'init' subcommand
+    init_parser = subparsers.add_parser('init', help='Initialize the environment with default settings')
+    
+    # Add 'run' subcommand for the main functionality
+    run_parser = subparsers.add_parser('run', help='Run a lesson configuration')
+    run_parser.add_argument('config_file', help='Path to YAML configuration file')
+    run_parser.add_argument('--debug', action='store_true', help='Enable debug mode with verbose logging')
+    run_parser.add_argument('--debug-html-only', action='store_true', help='Only generate debug HTML without PDF')
+    run_parser.add_argument('--generate-config', action='store_true', help='Generate a sample config file and exit')
+    run_parser.add_argument('--quiet-deps', action='store_true', help='Silence debug messages from dependencies')
+    run_parser.add_argument('-y', '--yes', action='store_true', help='Answer yes to all prompts (force overwrite)')
+    
+    # Add shared arguments to the main parser for backward compatibility
     parser.add_argument('--debug', action='store_true', help='Enable debug mode with verbose logging')
     parser.add_argument('--debug-html-only', action='store_true', help='Only generate debug HTML without PDF')
     parser.add_argument('--generate-config', action='store_true', help='Generate a sample config file and exit')
     parser.add_argument('--quiet-deps', action='store_true', help='Silence debug messages from dependencies')
+    parser.add_argument('-y', '--yes', action='store_true', help='Answer yes to all prompts (force overwrite)')
     
+    # Parse the arguments
     args = parser.parse_args()
     
-    # Handle generate-config option
+    # Handle generate-config option 
     if args.generate_config:
-        from .bin.generate_config import generate_template_config
+        from .bin.generate_config import generate_template_config, generate_default_theme, generate_language_template
         config_path = generate_template_config()
+        generate_default_theme()
+        os.makedirs("languages", exist_ok=True)
+        for lang in ["en", "swa", "luo"]:
+            generate_language_template(lang, "languages")
         print(f"Sample configuration file generated at: {config_path}")
         return 0
-
-    # Check if config file is provided when not generating a config
-    if not args.config_file:
+    
+    # Handle init command
+    if args.command == 'init':
+        from .bin.generate_config import generate_template_config, generate_default_theme, generate_language_template
+        config_path = generate_template_config()
+        generate_default_theme()
+        os.makedirs("languages", exist_ok=True)
+        for lang in ["en", "swa", "luo"]:
+            generate_language_template(lang, "languages")
+        print(f"Sample configuration file generated at: {config_path}")
+        return 0
+    
+    # Check if a valid command or config file is provided
+    if args.command != 'run' and not hasattr(args, 'config_file'):
         parser.print_help()
-        print("\nError: Config file is required unless using --generate-config")
+        print("\nError: Either a command or config file is required")
         return 1
+        
+    # For backward compatibility, if no command is specified but a config file is given as positional arg
+    if not args.command and len(sys.argv) > 1 and not sys.argv[1].startswith('-'):
+        args.config_file = sys.argv[1]
+        args.command = 'run'
     
     # Configure logging based on debug flag
     log_level = logging.DEBUG if args.debug else logging.INFO
@@ -65,11 +105,34 @@ def main():
         logging.getLogger('fontTools.ttLib.ttFont').setLevel(logging.WARNING)
         logging.getLogger('fontTools.subset.timer').setLevel(logging.WARNING)
     
-    
     try:
-        # Load configuration
-        print(f"Loading configuration from {args.config_file}...")
-        config = Config(args.config_file)
+        # Get config filename from args
+        config_file = args.config_file if hasattr(args, 'config_file') else None
+        
+        if not config_file and args.command != 'run':
+            parser.print_help()
+            print("\nError: Config file is required when using the 'run' command")
+            return 1
+            
+        print(f"Loading configuration from {config_file}...")
+        config = Config(config_file)
+        
+        # Generate input filename with lesson range information
+        range_filename = GitHubDownloader.get_lesson_range_filename(config)
+        
+        # Check if file path is absolute or relative
+        if not os.path.isabs(range_filename):
+            # Make sure the filename is in the same directory as the config file
+            config_dir = os.path.dirname(args.config_file)
+            range_filename = os.path.join(config_dir, range_filename)
+
+        year = config.get("year")
+        quarter = config.get("quarter")
+        language = config.get("language")
+        config.config['output_file'] = f"./output/sabbath_school_lesson_{year}_{quarter}_{language}.pdf"
+        
+        # Update config with the new filename
+        config.config['input_file'] = range_filename
         
         # Print reproduction settings if configured
         if 'reproduce' in config.config and config.config['reproduce'].get('year'):
@@ -92,14 +155,25 @@ def main():
         github_paths = config.get_github_paths()
         print(f"Processing source: year {github_paths['base_url'].split('/')[-3]}, quarter {github_paths['base_url'].split('/')[-2]}, language {config['language']}")
         
-        # Download lesson data
-        print("Downloading lesson content from GitHub...")
-        downloader = GitHubDownloader(github_paths, config)
-        lesson_data = downloader.download_lesson_data()
+        # Check if we should download the file
+        should_download = GitHubDownloader.check_existing_file(range_filename, args.yes)
         
-        # Combine into a single markdown file
-        print("Combining lesson content...")
-        markdown_path = ContentAggregator.combine_lesson_content(lesson_data, config['input_file'])
+        if should_download:
+            # Download lesson data
+            print("Downloading lesson content from GitHub...")
+            downloader = GitHubDownloader(github_paths, config)
+            lesson_data = downloader.download_lesson_data()
+            
+            # Combine into a single markdown file
+            print("Combining lesson content...")
+            markdown_path = ContentAggregator.combine_lesson_content(lesson_data, range_filename)
+        else:
+            # Use existing file
+            print(f"Using existing file: {range_filename}")
+            markdown_path = range_filename
+            with open(range_filename, 'r') as file:
+                lesson_data = file.read()
+
         
         # Generate debug HTML if requested
         if args.debug_html_only:
@@ -136,7 +210,6 @@ def main():
             back_cover_svg_path=back_cover_path,
             config=config.config
         )
-        print("Done Generating HTML...")
         
         # Save debug HTML
         debug_html_path = config['output_file'].replace('.pdf', '_debug.html')

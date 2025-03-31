@@ -1,20 +1,34 @@
-Sabbath School Lessons Reproducer
-================================
+Sabbath School Reproducer
+========================
 
-A tool to download, format, and reproduce Sabbath School lessons from historical archives for modern use.
-
-.. .. image:: _static/logo.svg
-..    :width: 500px
-..    :alt: Sabbath School Lessons Reproducer
-
-Features
+Overview
 --------
 
-* YAML-based configuration for easy customization
-* Automatic downloading of lesson content from GitHub
-* Reproduction mode for adapting historical lessons to current dates
-* Professionally formatted PDF generation with customizable styling
-* Support for custom cover designs
+The Sabbath School Reproducer is a tool that downloads, formats, and reproduces Sabbath School lessons from historical archives for modern use. It enables users to adapt historical lessons with updated dates and formatting for current study.
+
+Key Features
+-----------
+
+* **YAML-based configuration** for easy customization
+* **Automatic downloading** of lesson content from GitHub
+* **Reproduction mode** for adapting historical lessons to current dates
+* **Professionally formatted PDF generation** with customizable styling
+* **Support for custom cover designs** with SVG templates
+* **Smart file handling** to avoid unnecessary re-downloads
+* **Multi-language support** with customizable translations
+* **Double-asterisk answer formatting** for proper question/answer markup
+
+
+Workflow
+--------
+
+A typical workflow involves:
+
+1. Creating a configuration file with target year/quarter and source year/quarter
+2. Running the tool to download and process the content
+3. Reviewing the generated PDF for any adjustments needed
+4. Distributing the final PDF for use in Sabbath School classes
+
 
 Documentation
 ------------

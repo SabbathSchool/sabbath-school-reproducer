@@ -22,7 +22,7 @@ setup(
     ],
     entry_points={
         "console_scripts": [
-            "sabbath-school-downloader=main:main",
+            "sabbath-school-reproducer=main:main",
         ],
     },
     classifiers=[
