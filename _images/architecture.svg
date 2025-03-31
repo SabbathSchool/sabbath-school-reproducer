@@ -1,0 +1,110 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 570" width="800" height="570">
+  <!-- Background -->
+  <rect width="800" height="570" fill="#ffffff"/>
+  
+  <!-- Title (outside the flowchart group) -->
+  <text x="400" y="40" font-family="Arial, sans-serif" font-size="24" font-weight="bold" text-anchor="middle" fill="#3c1815">Sabbath School Reproducer Architecture</text>
+  
+  <!-- Flowchart Group (Everything except title) -->
+  <g id="flowchart-group" transform="translate(0,30)">
+    <!-- Components boxes -->
+    <!-- Configuration -->
+    <rect x="50" y="100" width="160" height="70" rx="5" fill="#f5f1e6" stroke="#8b4513" stroke-width="2"/>
+    <text x="130" y="130" font-family="Arial, sans-serif" font-size="16" font-weight="bold" text-anchor="middle" fill="#7d2b2b">Configuration</text>
+    <text x="130" y="150" font-family="Arial, sans-serif" font-size="12" text-anchor="middle" fill="#5a4130">Load and validate YAML</text>
+    
+    <!-- Downloader -->
+    <rect x="320" y="100" width="160" height="70" rx="5" fill="#f5f1e6" stroke="#8b4513" stroke-width="2"/>
+    <text x="400" y="130" font-family="Arial, sans-serif" font-size="16" font-weight="bold" text-anchor="middle" fill="#7d2b2b">Downloader</text>
+    <text x="400" y="150" font-family="Arial, sans-serif" font-size="12" text-anchor="middle" fill="#5a4130">Fetch from GitHub</text>
+    
+    <!-- Aggregator -->
+    <rect x="590" y="100" width="160" height="70" rx="5" fill="#f5f1e6" stroke="#8b4513" stroke-width="2"/>
+    <text x="670" y="130" font-family="Arial, sans-serif" font-size="16" font-weight="bold" text-anchor="middle" fill="#7d2b2b">Aggregator</text>
+    <text x="670" y="150" font-family="Arial, sans-serif" font-size="12" text-anchor="middle" fill="#5a4130">Combine content</text>
+    
+    <!-- Processor -->
+    <rect x="590" y="250" width="160" height="70" rx="5" fill="#f5f1e6" stroke="#8b4513" stroke-width="2"/>
+    <text x="670" y="280" font-family="Arial, sans-serif" font-size="16" font-weight="bold" text-anchor="middle" fill="#7d2b2b">Processor</text>
+    <text x="670" y="300" font-family="Arial, sans-serif" font-size="12" text-anchor="middle" fill="#5a4130">Parse markdown</text>
+    
+    <!-- HTML Generator -->
+    <rect x="320" y="250" width="160" height="70" rx="5" fill="#f5f1e6" stroke="#8b4513" stroke-width="2"/>
+    <text x="400" y="280" font-family="Arial, sans-serif" font-size="16" font-weight="bold" text-anchor="middle" fill="#7d2b2b">HTML Generator</text>
+    <text x="400" y="300" font-family="Arial, sans-serif" font-size="12" text-anchor="middle" fill="#5a4130">Create HTML</text>
+    
+    <!-- PDF Generator -->
+    <rect x="50" y="250" width="160" height="70" rx="5" fill="#f5f1e6" stroke="#8b4513" stroke-width="2"/>
+    <text x="130" y="280" font-family="Arial, sans-serif" font-size="16" font-weight="bold" text-anchor="middle" fill="#7d2b2b">PDF Generator</text>
+    <text x="130" y="300" font-family="Arial, sans-serif" font-size="12" text-anchor="middle" fill="#5a4130">Generate final PDF</text>
+    
+    <!-- SVG Updater (Utility) -->
+    <rect x="190" y="380" width="160" height="60" rx="5" fill="#e0d5c0" stroke="#8b4513" stroke-width="1" stroke-dasharray="5,2"/>
+    <text x="270" y="410" font-family="Arial, sans-serif" font-size="14" font-weight="bold" text-anchor="middle" fill="#7d2b2b">SVG Updater</text>
+    <text x="270" y="428" font-family="Arial, sans-serif" font-size="10" text-anchor="middle" fill="#5a4130">Update cover designs</text>
+    
+    <!-- Debug Tools (Utility) -->
+    <rect x="450" y="380" width="160" height="60" rx="5" fill="#e0d5c0" stroke="#8b4513" stroke-width="1" stroke-dasharray="5,2"/>
+    <text x="530" y="410" font-family="Arial, sans-serif" font-size="14" font-weight="bold" text-anchor="middle" fill="#7d2b2b">Debug Tools</text>
+    <text x="530" y="428" font-family="Arial, sans-serif" font-size="10" text-anchor="middle" fill="#5a4130">Debug output</text>
+    
+    <!-- Main data flow arrows -->
+    <path d="M210,135 L320,135" stroke="#8b4513" stroke-width="2" fill="none" marker-end="url(#arrow)"/>
+    <path d="M480,135 L590,135" stroke="#8b4513" stroke-width="2" fill="none" marker-end="url(#arrow)"/>
+    <path d="M670,170 L670,250" stroke="#8b4513" stroke-width="2" fill="none" marker-end="url(#arrow)"/>
+    <path d="M590,285 L480,285" stroke="#8b4513" stroke-width="2" fill="none" marker-end="url(#arrow)"/>
+    <path d="M320,285 L210,285" stroke="#8b4513" stroke-width="2" fill="none" marker-end="url(#arrow)"/>
+    
+    <!-- Utility connections -->
+    <path d="M270,380 C270,350 300,320 320,285" stroke="#8b4513" stroke-width="1" stroke-dasharray="5,2" fill="none"/>
+    <path d="M530,380 C530,350 560,320 590,285" stroke="#8b4513" stroke-width="1" stroke-dasharray="5,2" fill="none"/>
+    
+    <!-- Input/Output elements -->
+    <!-- GitHub -->
+    <rect x="320" y="30" width="160" height="40" rx="20" fill="#f9f7f1" stroke="#7d2b2b" stroke-width="1"/>
+    <text x="400" y="55" font-family="Arial, sans-serif" font-size="14" text-anchor="middle" fill="#7d2b2b">GitHub Repository</text>
+    <path d="M400,70 L400,100" stroke="#7d2b2b" stroke-width="1" stroke-dasharray="3,2" fill="none" marker-end="url(#arrow)"/>
+    
+    <!-- Config File -->
+    <rect x="50" y="30" width="160" height="40" rx="20" fill="#f9f7f1" stroke="#7d2b2b" stroke-width="1"/>
+    <text x="130" y="55" font-family="Arial, sans-serif" font-size="14" text-anchor="middle" fill="#7d2b2b">config.yaml</text>
+    <path d="M130,70 L130,100" stroke="#7d2b2b" stroke-width="1" stroke-dasharray="3,2" fill="none" marker-end="url(#arrow)"/>
+    
+    <!-- Markdown -->
+    <rect x="670" y="180" width="120" height="30" rx="5" fill="#f9f7f1" stroke="#5a4130" stroke-width="1"/>
+    <text x="730" y="200" font-family="Arial, sans-serif" font-size="12" text-anchor="middle" fill="#5a4130">Markdown File</text>
+    
+    <!-- Final PDF -->
+    <rect x="50" y="350" width="160" height="40" rx="20" fill="#f9f7f1" stroke="#7d2b2b" stroke-width="1"/>
+    <text x="130" y="375" font-family="Arial, sans-serif" font-size="14" text-anchor="middle" fill="#7d2b2b">Final PDF</text>
+    <path d="M130,320 L130,350" stroke="#7d2b2b" stroke-width="1" fill="none" marker-end="url(#arrow)"/>
+    
+    <!-- Data objects -->
+    <rect x="450" y="200" width="60" height="30" rx="15" fill="#e8e8e8" stroke="#5a4130" stroke-width="1"/>
+    <text x="480" y="220" font-family="Arial, sans-serif" font-size="10" text-anchor="middle" fill="#5a4130">lessons</text>
+    
+    <rect x="250" y="200" width="60" height="30" rx="15" fill="#e8e8e8" stroke="#5a4130" stroke-width="1"/>
+    <text x="280" y="220" font-family="Arial, sans-serif" font-size="10" text-anchor="middle" fill="#5a4130">HTML</text>
+    
+    <!-- Legend -->
+    <rect x="50" y="480" width="20" height="20" fill="#f5f1e6" stroke="#8b4513" stroke-width="2"/>
+    <text x="80" y="495" font-family="Arial, sans-serif" font-size="12" fill="#3c1815">Core Component</text>
+    
+    <rect x="50" y="510" width="20" height="20" fill="#e0d5c0" stroke="#8b4513" stroke-width="1" stroke-dasharray="5,2"/>
+    <text x="80" y="525" font-family="Arial, sans-serif" font-size="12" fill="#3c1815">Utility Component</text>
+    
+    <rect x="230" y="480" width="20" height="20" rx="10" fill="#f9f7f1" stroke="#7d2b2b" stroke-width="1"/>
+    <text x="255" y="495" font-family="Arial, sans-serif" font-size="12" fill="#3c1815">Input/Output</text>
+    
+    <rect x="230" y="510" width="20" height="20" rx="15" fill="#e8e8e8" stroke="#5a4130" stroke-width="1"/>
+    <text x="255" y="525" font-family="Arial, sans-serif" font-size="12" fill="#3c1815">Data Object</text>
+  </g>
+  
+  <!-- Arrow marker definition -->
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5"
+      markerWidth="6" markerHeight="6" orient="auto">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#8b4513"/>
+    </marker>
+  </defs>
+</svg>

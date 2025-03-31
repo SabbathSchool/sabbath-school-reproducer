@@ -1,0 +1,345 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>sabbath_school_reproducer.main &mdash; Sabbath School Lessons Reproducer 0.1.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
+
+  
+      <script src="../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../_static/documentation_options.js?v=01f34227"></script>
+      <script src="../../_static/doctools.js?v=9a2dae69"></script>
+      <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            Sabbath School Lessons Reproducer
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../overview.html">Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../usage.html">Usage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../configuration.html">Configuration</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../modules.html">Modules</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../contributing.html">Contributing</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">Sabbath School Lessons Reproducer</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">sabbath_school_reproducer.main</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for sabbath_school_reproducer.main</h1><div class="highlight"><pre>
+<span></span><span class="ch">#!/usr/bin/env python3</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Sabbath School Lesson Downloader and Generator</span>
+
+<span class="sd">This script downloads lesson content from GitHub and generates a PDF.</span>
+
+<span class="sd">Usage:</span>
+<span class="sd">python3 main.py config.yaml [--debug] [--debug-html-only]</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">sys</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">argparse</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">logging</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.config</span><span class="w"> </span><span class="kn">import</span> <span class="n">Config</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.downloader</span><span class="w"> </span><span class="kn">import</span> <span class="n">GitHubDownloader</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.aggregator</span><span class="w"> </span><span class="kn">import</span> <span class="n">ContentAggregator</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.processor</span><span class="w"> </span><span class="kn">import</span> <span class="n">MarkdownProcessor</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.generator.html_generator</span><span class="w"> </span><span class="kn">import</span> <span class="n">HtmlGenerator</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.generator.pdf_generator</span><span class="w"> </span><span class="kn">import</span> <span class="n">PdfGenerator</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.generator.svg_updater</span><span class="w"> </span><span class="kn">import</span> <span class="n">SvgUpdater</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.utils.debug_tools</span><span class="w"> </span><span class="kn">import</span> <span class="n">DebugTools</span>
+
+
+<div class="viewcode-block" id="main">
+<a class="viewcode-back" href="../../modules.html#sabbath_school_reproducer.main.main">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">main</span><span class="p">():</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Main function that orchestrates the entire process</span>
+<span class="sd">    </span>
+<span class="sd">    This function handles command-line arguments, loads configuration,</span>
+<span class="sd">    downloads lesson content, and generates PDF output. It also supports</span>
+<span class="sd">    reproduction mode for adapting historical lessons to new dates.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="c1"># Create the main parser</span>
+    <span class="n">parser</span> <span class="o">=</span> <span class="n">argparse</span><span class="o">.</span><span class="n">ArgumentParser</span><span class="p">(</span><span class="n">description</span><span class="o">=</span><span class="s1">&#39;Download and process Sabbath School lessons&#39;</span><span class="p">)</span>
+    
+    <span class="c1"># Create subparsers</span>
+    <span class="n">subparsers</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">add_subparsers</span><span class="p">(</span><span class="n">dest</span><span class="o">=</span><span class="s1">&#39;command&#39;</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s1">&#39;Commands&#39;</span><span class="p">)</span>
+
+    <span class="c1"># Add &#39;init&#39; subcommand</span>
+    <span class="n">init_parser</span> <span class="o">=</span> <span class="n">subparsers</span><span class="o">.</span><span class="n">add_parser</span><span class="p">(</span><span class="s1">&#39;init&#39;</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s1">&#39;Initialize the environment with default settings&#39;</span><span class="p">)</span>
+    
+    <span class="c1"># Add &#39;run&#39; subcommand for the main functionality</span>
+    <span class="n">run_parser</span> <span class="o">=</span> <span class="n">subparsers</span><span class="o">.</span><span class="n">add_parser</span><span class="p">(</span><span class="s1">&#39;run&#39;</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s1">&#39;Run a lesson configuration&#39;</span><span class="p">)</span>
+    <span class="n">run_parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s1">&#39;config_file&#39;</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s1">&#39;Path to YAML configuration file&#39;</span><span class="p">)</span>
+    <span class="n">run_parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s1">&#39;--debug&#39;</span><span class="p">,</span> <span class="n">action</span><span class="o">=</span><span class="s1">&#39;store_true&#39;</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s1">&#39;Enable debug mode with verbose logging&#39;</span><span class="p">)</span>
+    <span class="n">run_parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s1">&#39;--debug-html-only&#39;</span><span class="p">,</span> <span class="n">action</span><span class="o">=</span><span class="s1">&#39;store_true&#39;</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s1">&#39;Only generate debug HTML without PDF&#39;</span><span class="p">)</span>
+    <span class="n">run_parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s1">&#39;--generate-config&#39;</span><span class="p">,</span> <span class="n">action</span><span class="o">=</span><span class="s1">&#39;store_true&#39;</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s1">&#39;Generate a sample config file and exit&#39;</span><span class="p">)</span>
+    <span class="n">run_parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s1">&#39;--quiet-deps&#39;</span><span class="p">,</span> <span class="n">action</span><span class="o">=</span><span class="s1">&#39;store_true&#39;</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s1">&#39;Silence debug messages from dependencies&#39;</span><span class="p">)</span>
+    <span class="n">run_parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s1">&#39;-y&#39;</span><span class="p">,</span> <span class="s1">&#39;--yes&#39;</span><span class="p">,</span> <span class="n">action</span><span class="o">=</span><span class="s1">&#39;store_true&#39;</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s1">&#39;Answer yes to all prompts (force overwrite)&#39;</span><span class="p">)</span>
+    
+    <span class="c1"># Add shared arguments to the main parser for backward compatibility</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s1">&#39;--debug&#39;</span><span class="p">,</span> <span class="n">action</span><span class="o">=</span><span class="s1">&#39;store_true&#39;</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s1">&#39;Enable debug mode with verbose logging&#39;</span><span class="p">)</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s1">&#39;--debug-html-only&#39;</span><span class="p">,</span> <span class="n">action</span><span class="o">=</span><span class="s1">&#39;store_true&#39;</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s1">&#39;Only generate debug HTML without PDF&#39;</span><span class="p">)</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s1">&#39;--generate-config&#39;</span><span class="p">,</span> <span class="n">action</span><span class="o">=</span><span class="s1">&#39;store_true&#39;</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s1">&#39;Generate a sample config file and exit&#39;</span><span class="p">)</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s1">&#39;--quiet-deps&#39;</span><span class="p">,</span> <span class="n">action</span><span class="o">=</span><span class="s1">&#39;store_true&#39;</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s1">&#39;Silence debug messages from dependencies&#39;</span><span class="p">)</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s1">&#39;-y&#39;</span><span class="p">,</span> <span class="s1">&#39;--yes&#39;</span><span class="p">,</span> <span class="n">action</span><span class="o">=</span><span class="s1">&#39;store_true&#39;</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s1">&#39;Answer yes to all prompts (force overwrite)&#39;</span><span class="p">)</span>
+    
+    <span class="c1"># Parse the arguments</span>
+    <span class="n">args</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">parse_args</span><span class="p">()</span>
+    
+    <span class="c1"># Handle generate-config option </span>
+    <span class="k">if</span> <span class="n">args</span><span class="o">.</span><span class="n">generate_config</span><span class="p">:</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">.bin.generate_config</span><span class="w"> </span><span class="kn">import</span> <span class="n">generate_template_config</span><span class="p">,</span> <span class="n">generate_default_theme</span><span class="p">,</span> <span class="n">generate_language_template</span>
+        <span class="n">config_path</span> <span class="o">=</span> <span class="n">generate_template_config</span><span class="p">()</span>
+        <span class="n">generate_default_theme</span><span class="p">()</span>
+        <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="s2">&quot;languages&quot;</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">lang</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;en&quot;</span><span class="p">,</span> <span class="s2">&quot;swa&quot;</span><span class="p">,</span> <span class="s2">&quot;luo&quot;</span><span class="p">]:</span>
+            <span class="n">generate_language_template</span><span class="p">(</span><span class="n">lang</span><span class="p">,</span> <span class="s2">&quot;languages&quot;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Sample configuration file generated at: </span><span class="si">{</span><span class="n">config_path</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="mi">0</span>
+    
+    <span class="c1"># Handle init command</span>
+    <span class="k">if</span> <span class="n">args</span><span class="o">.</span><span class="n">command</span> <span class="o">==</span> <span class="s1">&#39;init&#39;</span><span class="p">:</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">.bin.generate_config</span><span class="w"> </span><span class="kn">import</span> <span class="n">generate_template_config</span><span class="p">,</span> <span class="n">generate_default_theme</span><span class="p">,</span> <span class="n">generate_language_template</span>
+        <span class="n">config_path</span> <span class="o">=</span> <span class="n">generate_template_config</span><span class="p">()</span>
+        <span class="n">generate_default_theme</span><span class="p">()</span>
+        <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="s2">&quot;languages&quot;</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">lang</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;en&quot;</span><span class="p">,</span> <span class="s2">&quot;swa&quot;</span><span class="p">,</span> <span class="s2">&quot;luo&quot;</span><span class="p">]:</span>
+            <span class="n">generate_language_template</span><span class="p">(</span><span class="n">lang</span><span class="p">,</span> <span class="s2">&quot;languages&quot;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Sample configuration file generated at: </span><span class="si">{</span><span class="n">config_path</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="mi">0</span>
+    
+    <span class="c1"># Check if a valid command or config file is provided</span>
+    <span class="k">if</span> <span class="n">args</span><span class="o">.</span><span class="n">command</span> <span class="o">!=</span> <span class="s1">&#39;run&#39;</span> <span class="ow">and</span> <span class="ow">not</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">args</span><span class="p">,</span> <span class="s1">&#39;config_file&#39;</span><span class="p">):</span>
+        <span class="n">parser</span><span class="o">.</span><span class="n">print_help</span><span class="p">()</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">Error: Either a command or config file is required&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="mi">1</span>
+        
+    <span class="c1"># For backward compatibility, if no command is specified but a config file is given as positional arg</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">args</span><span class="o">.</span><span class="n">command</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">&#39;-&#39;</span><span class="p">):</span>
+        <span class="n">args</span><span class="o">.</span><span class="n">config_file</span> <span class="o">=</span> <span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+        <span class="n">args</span><span class="o">.</span><span class="n">command</span> <span class="o">=</span> <span class="s1">&#39;run&#39;</span>
+    
+    <span class="c1"># Configure logging based on debug flag</span>
+    <span class="n">log_level</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">DEBUG</span> <span class="k">if</span> <span class="n">args</span><span class="o">.</span><span class="n">debug</span> <span class="k">else</span> <span class="n">logging</span><span class="o">.</span><span class="n">INFO</span>
+    <span class="n">logging</span><span class="o">.</span><span class="n">basicConfig</span><span class="p">(</span>
+        <span class="n">level</span><span class="o">=</span><span class="n">log_level</span><span class="p">,</span>
+        <span class="nb">format</span><span class="o">=</span><span class="s1">&#39;</span><span class="si">%(asctime)s</span><span class="s1"> - </span><span class="si">%(name)s</span><span class="s1"> - </span><span class="si">%(levelname)s</span><span class="s1"> - </span><span class="si">%(message)s</span><span class="s1">&#39;</span>
+    <span class="p">)</span>
+    <span class="k">if</span> <span class="n">args</span><span class="o">.</span><span class="n">quiet_deps</span><span class="p">:</span>
+        <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="s1">&#39;fontTools&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">setLevel</span><span class="p">(</span><span class="n">logging</span><span class="o">.</span><span class="n">WARNING</span><span class="p">)</span>
+        <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="s1">&#39;weasyprint&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">setLevel</span><span class="p">(</span><span class="n">logging</span><span class="o">.</span><span class="n">WARNING</span><span class="p">)</span>
+        <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="s1">&#39;fontTools.subset&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">setLevel</span><span class="p">(</span><span class="n">logging</span><span class="o">.</span><span class="n">WARNING</span><span class="p">)</span>
+        <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="s1">&#39;fontTools.ttLib.ttFont&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">setLevel</span><span class="p">(</span><span class="n">logging</span><span class="o">.</span><span class="n">WARNING</span><span class="p">)</span>
+        <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="s1">&#39;fontTools.subset.timer&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">setLevel</span><span class="p">(</span><span class="n">logging</span><span class="o">.</span><span class="n">WARNING</span><span class="p">)</span>
+    
+    <span class="k">try</span><span class="p">:</span>
+        <span class="c1"># Get config filename from args</span>
+        <span class="n">config_file</span> <span class="o">=</span> <span class="n">args</span><span class="o">.</span><span class="n">config_file</span> <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">args</span><span class="p">,</span> <span class="s1">&#39;config_file&#39;</span><span class="p">)</span> <span class="k">else</span> <span class="kc">None</span>
+        
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">config_file</span> <span class="ow">and</span> <span class="n">args</span><span class="o">.</span><span class="n">command</span> <span class="o">!=</span> <span class="s1">&#39;run&#39;</span><span class="p">:</span>
+            <span class="n">parser</span><span class="o">.</span><span class="n">print_help</span><span class="p">()</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">Error: Config file is required when using the &#39;run&#39; command&quot;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="mi">1</span>
+            
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Loading configuration from </span><span class="si">{</span><span class="n">config_file</span><span class="si">}</span><span class="s2">...&quot;</span><span class="p">)</span>
+        <span class="n">config</span> <span class="o">=</span> <span class="n">Config</span><span class="p">(</span><span class="n">config_file</span><span class="p">)</span>
+        
+        <span class="c1"># Generate input filename with lesson range information</span>
+        <span class="n">range_filename</span> <span class="o">=</span> <span class="n">GitHubDownloader</span><span class="o">.</span><span class="n">get_lesson_range_filename</span><span class="p">(</span><span class="n">config</span><span class="p">)</span>
+        
+        <span class="c1"># Check if file path is absolute or relative</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isabs</span><span class="p">(</span><span class="n">range_filename</span><span class="p">):</span>
+            <span class="c1"># Make sure the filename is in the same directory as the config file</span>
+            <span class="n">config_dir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">args</span><span class="o">.</span><span class="n">config_file</span><span class="p">)</span>
+            <span class="n">range_filename</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">config_dir</span><span class="p">,</span> <span class="n">range_filename</span><span class="p">)</span>
+
+        <span class="n">year</span> <span class="o">=</span> <span class="n">config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;year&quot;</span><span class="p">)</span>
+        <span class="n">quarter</span> <span class="o">=</span> <span class="n">config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;quarter&quot;</span><span class="p">)</span>
+        <span class="n">language</span> <span class="o">=</span> <span class="n">config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;language&quot;</span><span class="p">)</span>
+        <span class="n">config</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="s1">&#39;output_file&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;./output/sabbath_school_lesson_</span><span class="si">{</span><span class="n">year</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="n">quarter</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="n">language</span><span class="si">}</span><span class="s2">.pdf&quot;</span>
+        
+        <span class="c1"># Update config with the new filename</span>
+        <span class="n">config</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="s1">&#39;input_file&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">range_filename</span>
+        
+        <span class="c1"># Print reproduction settings if configured</span>
+        <span class="k">if</span> <span class="s1">&#39;reproduce&#39;</span> <span class="ow">in</span> <span class="n">config</span><span class="o">.</span><span class="n">config</span> <span class="ow">and</span> <span class="n">config</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="s1">&#39;reproduce&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;year&#39;</span><span class="p">):</span>
+            <span class="n">reproduction_year</span> <span class="o">=</span> <span class="n">config</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="s1">&#39;reproduce&#39;</span><span class="p">][</span><span class="s1">&#39;year&#39;</span><span class="p">]</span>
+            <span class="n">reproduction_quarter</span> <span class="o">=</span> <span class="n">config</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="s1">&#39;reproduce&#39;</span><span class="p">][</span><span class="s1">&#39;quarter&#39;</span><span class="p">]</span>
+            <span class="n">target_year</span> <span class="o">=</span> <span class="n">config</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="s1">&#39;year&#39;</span><span class="p">]</span>
+            <span class="n">target_quarter</span> <span class="o">=</span> <span class="n">config</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="s1">&#39;quarter&#39;</span><span class="p">]</span>
+            
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Reproduction mode: Converting </span><span class="si">{</span><span class="n">reproduction_year</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">reproduction_quarter</span><span class="si">}</span><span class="s2"> to </span><span class="si">{</span><span class="n">target_year</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">target_quarter</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            
+            <span class="k">if</span> <span class="n">config</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="s1">&#39;reproduce&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;start_lesson&#39;</span><span class="p">):</span>
+                <span class="n">start_lesson</span> <span class="o">=</span> <span class="n">config</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="s1">&#39;reproduce&#39;</span><span class="p">][</span><span class="s1">&#39;start_lesson&#39;</span><span class="p">]</span>
+                <span class="n">stop_lesson</span> <span class="o">=</span> <span class="n">config</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="s1">&#39;reproduce&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;stop_lesson&#39;</span><span class="p">,</span> <span class="s1">&#39;end&#39;</span><span class="p">)</span>
+                <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Lesson range: </span><span class="si">{</span><span class="n">start_lesson</span><span class="si">}</span><span class="s2"> to </span><span class="si">{</span><span class="n">stop_lesson</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            
+            <span class="k">if</span> <span class="n">config</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="s1">&#39;reproduce&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;quarter_start_date&#39;</span><span class="p">):</span>
+                <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;New quarter start date: </span><span class="si">{</span><span class="n">config</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="s1">&#39;reproduce&#39;</span><span class="p">][</span><span class="s1">&#39;quarter_start_date&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        
+        <span class="c1"># Generate GitHub paths</span>
+        <span class="n">github_paths</span> <span class="o">=</span> <span class="n">config</span><span class="o">.</span><span class="n">get_github_paths</span><span class="p">()</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Processing source: year </span><span class="si">{</span><span class="n">github_paths</span><span class="p">[</span><span class="s1">&#39;base_url&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;/&#39;</span><span class="p">)[</span><span class="o">-</span><span class="mi">3</span><span class="p">]</span><span class="si">}</span><span class="s2">, quarter </span><span class="si">{</span><span class="n">github_paths</span><span class="p">[</span><span class="s1">&#39;base_url&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;/&#39;</span><span class="p">)[</span><span class="o">-</span><span class="mi">2</span><span class="p">]</span><span class="si">}</span><span class="s2">, language </span><span class="si">{</span><span class="n">config</span><span class="p">[</span><span class="s1">&#39;language&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        
+        <span class="c1"># Check if we should download the file</span>
+        <span class="n">should_download</span> <span class="o">=</span> <span class="n">GitHubDownloader</span><span class="o">.</span><span class="n">check_existing_file</span><span class="p">(</span><span class="n">range_filename</span><span class="p">,</span> <span class="n">args</span><span class="o">.</span><span class="n">yes</span><span class="p">)</span>
+        
+        <span class="k">if</span> <span class="n">should_download</span><span class="p">:</span>
+            <span class="c1"># Download lesson data</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Downloading lesson content from GitHub...&quot;</span><span class="p">)</span>
+            <span class="n">downloader</span> <span class="o">=</span> <span class="n">GitHubDownloader</span><span class="p">(</span><span class="n">github_paths</span><span class="p">,</span> <span class="n">config</span><span class="p">)</span>
+            <span class="n">lesson_data</span> <span class="o">=</span> <span class="n">downloader</span><span class="o">.</span><span class="n">download_lesson_data</span><span class="p">()</span>
+            
+            <span class="c1"># Combine into a single markdown file</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Combining lesson content...&quot;</span><span class="p">)</span>
+            <span class="n">markdown_path</span> <span class="o">=</span> <span class="n">ContentAggregator</span><span class="o">.</span><span class="n">combine_lesson_content</span><span class="p">(</span><span class="n">lesson_data</span><span class="p">,</span> <span class="n">range_filename</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># Use existing file</span>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Using existing file: </span><span class="si">{</span><span class="n">range_filename</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="n">markdown_path</span> <span class="o">=</span> <span class="n">range_filename</span>
+            <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">range_filename</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">file</span><span class="p">:</span>
+                <span class="n">lesson_data</span> <span class="o">=</span> <span class="n">file</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
+
+        
+        <span class="c1"># Generate debug HTML if requested</span>
+        <span class="k">if</span> <span class="n">args</span><span class="o">.</span><span class="n">debug_html_only</span><span class="p">:</span>
+            <span class="n">debug_html_path</span> <span class="o">=</span> <span class="n">config</span><span class="p">[</span><span class="s1">&#39;output_file&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;.pdf&#39;</span><span class="p">,</span> <span class="s1">&#39;_debug.html&#39;</span><span class="p">)</span>
+            <span class="n">debug_html_path</span> <span class="o">=</span> <span class="n">DebugTools</span><span class="o">.</span><span class="n">generate_debug_html</span><span class="p">(</span><span class="n">markdown_path</span><span class="p">,</span> <span class="n">debug_html_path</span><span class="p">)</span>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Debug HTML created at: </span><span class="si">{</span><span class="n">debug_html_path</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="mi">0</span>
+        
+        <span class="c1"># Process the markdown file to extract structured content</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Processing markdown content...&quot;</span><span class="p">)</span>
+        <span class="n">content_data</span> <span class="o">=</span> <span class="n">MarkdownProcessor</span><span class="o">.</span><span class="n">process_markdown_file</span><span class="p">(</span><span class="n">markdown_path</span><span class="p">,</span> <span class="n">config</span><span class="o">.</span><span class="n">config</span><span class="p">)</span>
+        
+        <span class="c1"># Update SVG files with dynamic content if available</span>
+        <span class="n">front_cover_path</span> <span class="o">=</span> <span class="n">config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;front_cover_svg&#39;</span><span class="p">)</span>
+        <span class="n">back_cover_path</span> <span class="o">=</span> <span class="n">config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;back_cover_svg&#39;</span><span class="p">)</span>
+        
+        <span class="k">if</span> <span class="n">front_cover_path</span><span class="p">:</span>
+            <span class="n">updated_front_cover</span> <span class="o">=</span> <span class="n">SvgUpdater</span><span class="o">.</span><span class="n">update_svg_with_config</span><span class="p">(</span><span class="n">front_cover_path</span><span class="p">,</span> <span class="n">config</span><span class="o">.</span><span class="n">config</span><span class="p">,</span> <span class="n">lesson_data</span><span class="p">,</span> <span class="n">is_temporary</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">updated_front_cover</span><span class="p">:</span>
+                <span class="n">front_cover_path</span> <span class="o">=</span> <span class="n">updated_front_cover</span>
+                <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Updated front cover SVG with dynamic content&quot;</span><span class="p">)</span>
+        
+        <span class="k">if</span> <span class="n">back_cover_path</span><span class="p">:</span>
+            <span class="n">updated_back_cover</span> <span class="o">=</span> <span class="n">SvgUpdater</span><span class="o">.</span><span class="n">update_svg_with_config</span><span class="p">(</span><span class="n">back_cover_path</span><span class="p">,</span> <span class="n">config</span><span class="o">.</span><span class="n">config</span><span class="p">,</span> <span class="n">lesson_data</span><span class="p">,</span> <span class="n">is_temporary</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">updated_back_cover</span><span class="p">:</span>
+                <span class="n">back_cover_path</span> <span class="o">=</span> <span class="n">updated_back_cover</span>
+                <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Updated back cover SVG with dynamic content&quot;</span><span class="p">)</span>
+        
+        <span class="c1"># Generate HTML</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Generating HTML...&quot;</span><span class="p">)</span>
+        <span class="n">html_content</span> <span class="o">=</span> <span class="n">HtmlGenerator</span><span class="o">.</span><span class="n">generate_html</span><span class="p">(</span>
+            <span class="n">content_data</span><span class="p">,</span>
+            <span class="n">front_cover_svg_path</span><span class="o">=</span><span class="n">front_cover_path</span><span class="p">,</span>
+            <span class="n">back_cover_svg_path</span><span class="o">=</span><span class="n">back_cover_path</span><span class="p">,</span>
+            <span class="n">config</span><span class="o">=</span><span class="n">config</span><span class="o">.</span><span class="n">config</span>
+        <span class="p">)</span>
+        
+        <span class="c1"># Save debug HTML</span>
+        <span class="n">debug_html_path</span> <span class="o">=</span> <span class="n">config</span><span class="p">[</span><span class="s1">&#39;output_file&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;.pdf&#39;</span><span class="p">,</span> <span class="s1">&#39;_debug.html&#39;</span><span class="p">)</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">debug_html_path</span><span class="p">,</span> <span class="s1">&#39;w&#39;</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s1">&#39;utf-8&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+            <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">html_content</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Debug HTML saved to: </span><span class="si">{</span><span class="n">debug_html_path</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        
+        <span class="c1"># Generate PDF</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Generating PDF...&quot;</span><span class="p">)</span>
+        <span class="n">PdfGenerator</span><span class="o">.</span><span class="n">generate_pdf</span><span class="p">(</span><span class="n">html_content</span><span class="p">,</span> <span class="n">config</span><span class="p">[</span><span class="s1">&#39;output_file&#39;</span><span class="p">],</span> <span class="n">config</span><span class="o">.</span><span class="n">config</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;PDF generation complete: </span><span class="si">{</span><span class="n">config</span><span class="p">[</span><span class="s1">&#39;output_file&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        
+    <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Error: </span><span class="si">{</span><span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">args</span><span class="o">.</span><span class="n">debug</span><span class="p">:</span>
+            <span class="kn">import</span><span class="w"> </span><span class="nn">traceback</span>
+            <span class="n">traceback</span><span class="o">.</span><span class="n">print_exc</span><span class="p">()</span>
+        <span class="k">return</span> <span class="mi">1</span>
+    
+    <span class="k">return</span> <span class="mi">0</span></div>
+
+
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+    <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">(</span><span class="n">main</span><span class="p">())</span>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, Brian Onang&#39;o.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

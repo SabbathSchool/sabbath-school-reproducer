@@ -1,0 +1,630 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>sabbath_school_reproducer.generator package &mdash; Sabbath School Lessons Reproducer 0.1.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=e59714d7" />
+
+  
+      <script src="../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../_static/documentation_options.js?v=01f34227"></script>
+      <script src="../_static/doctools.js?v=9a2dae69"></script>
+      <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            Sabbath School Lessons Reproducer
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../overview.html">Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../usage.html">Usage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../configuration.html">Configuration</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../modules.html">Modules</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../contributing.html">Contributing</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">Sabbath School Lessons Reproducer</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">sabbath_school_reproducer.generator package</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/api/sabbath_school_reproducer.generator.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="sabbath-school-reproducer-generator-package">
+<h1>sabbath_school_reproducer.generator package<a class="headerlink" href="#sabbath-school-reproducer-generator-package" title="Link to this heading"></a></h1>
+<section id="submodules">
+<h2>Submodules<a class="headerlink" href="#submodules" title="Link to this heading"></a></h2>
+</section>
+<section id="module-sabbath_school_reproducer.generator.css_styles">
+<span id="sabbath-school-reproducer-generator-css-styles-module"></span><h2>sabbath_school_reproducer.generator.css_styles module<a class="headerlink" href="#module-sabbath_school_reproducer.generator.css_styles" title="Link to this heading"></a></h2>
+<p>CSS Styles for Sabbath School Lessons PDF</p>
+<p>This module defines the CSS styles used in the generated PDF.</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="sabbath_school_reproducer.generator.css_styles.CssUpdater">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">sabbath_school_reproducer.generator.css_styles.</span></span><span class="sig-name descname"><span class="pre">CssUpdater</span></span><a class="reference internal" href="../_modules/sabbath_school_reproducer/generator/css_styles.html#CssUpdater"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#sabbath_school_reproducer.generator.css_styles.CssUpdater" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Handles CSS style updates with dynamic content based on configuration.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="sabbath_school_reproducer.generator.css_styles.CssUpdater.apply_color_theme">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">apply_color_theme</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">css_template</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">color_theme</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/sabbath_school_reproducer/generator/css_styles.html#CssUpdater.apply_color_theme"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#sabbath_school_reproducer.generator.css_styles.CssUpdater.apply_color_theme" title="Link to this definition"></a></dt>
+<dd><p>Apply color theme to CSS template</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>css_template</strong> (<em>str</em>) – Original CSS template string</p></li>
+<li><p><strong>color_theme</strong> (<em>dict</em>) – Color theme dictionary</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Updated CSS template with applied color theme</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="sabbath_school_reproducer.generator.css_styles.CssUpdater.get_quarter_display">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_quarter_display</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">config</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/sabbath_school_reproducer/generator/css_styles.html#CssUpdater.get_quarter_display"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#sabbath_school_reproducer.generator.css_styles.CssUpdater.get_quarter_display" title="Link to this definition"></a></dt>
+<dd><p>Get the formatted quarter and year display</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>config</strong> (<em>dict</em>) – Configuration dictionary</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Formatted quarter display</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="sabbath_school_reproducer.generator.css_styles.CssUpdater.load_color_theme">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">load_color_theme</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">theme_path</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/sabbath_school_reproducer/generator/css_styles.html#CssUpdater.load_color_theme"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#sabbath_school_reproducer.generator.css_styles.CssUpdater.load_color_theme" title="Link to this definition"></a></dt>
+<dd><p>Load color theme from a YAML file</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>theme_path</strong> (<em>str</em>) – Path to the color theme YAML file</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Color theme dictionary or None if file not found</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>dict</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="sabbath_school_reproducer.generator.css_styles.CssUpdater.update_css_template">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">update_css_template</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">css_template</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">config</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lesson_data</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/sabbath_school_reproducer/generator/css_styles.html#CssUpdater.update_css_template"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#sabbath_school_reproducer.generator.css_styles.CssUpdater.update_css_template" title="Link to this definition"></a></dt>
+<dd><p>Update CSS template with configuration data and color theme</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>css_template</strong> (<em>str</em>) – Original CSS template string</p></li>
+<li><p><strong>config</strong> (<em>dict</em>) – Configuration dictionary</p></li>
+<li><p><strong>lesson_data</strong> (<em>dict</em><em>, </em><em>optional</em>) – Optional lesson data dictionary</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Updated CSS template string</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="module-sabbath_school_reproducer.generator.html_generator">
+<span id="sabbath-school-reproducer-generator-html-generator-module"></span><h2>sabbath_school_reproducer.generator.html_generator module<a class="headerlink" href="#module-sabbath_school_reproducer.generator.html_generator" title="Link to this heading"></a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="sabbath_school_reproducer.generator.html_generator.HtmlGenerator">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">sabbath_school_reproducer.generator.html_generator.</span></span><span class="sig-name descname"><span class="pre">HtmlGenerator</span></span><a class="reference internal" href="../_modules/sabbath_school_reproducer/generator/html_generator.html#HtmlGenerator"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#sabbath_school_reproducer.generator.html_generator.HtmlGenerator" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Generates HTML content for PDF generation with incremental approach.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="sabbath_school_reproducer.generator.html_generator.HtmlGenerator.add_section">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">add_section</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">content_parts</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dynamic_css</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">state</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">section_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">section_html</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">start_on_odd</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">reset_counter</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/sabbath_school_reproducer/generator/html_generator.html#HtmlGenerator.add_section"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#sabbath_school_reproducer.generator.html_generator.HtmlGenerator.add_section" title="Link to this definition"></a></dt>
+<dd><p>Adds a section to the document, ensuring it starts on the correct page</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>content_parts</strong> (<em>list</em>) – List of HTML content parts</p></li>
+<li><p><strong>dynamic_css</strong> (<em>str</em>) – CSS content with modifications</p></li>
+<li><p><strong>state</strong> (<em>dict</em>) – Current state tracking page numbers, etc.</p></li>
+<li><p><strong>section_name</strong> (<em>str</em>) – Name of the section for comments</p></li>
+<li><p><strong>section_html</strong> (<em>str</em>) – HTML content for the section</p></li>
+<li><p><strong>start_on_odd</strong> (<em>bool</em>) – Whether section should start on odd-numbered page</p></li>
+<li><p><strong>reset_counter</strong> (<em>bool</em>) – Whether to reset page counter for this section</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>(updated content_parts, updated dynamic_css, updated state)</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>tuple</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="sabbath_school_reproducer.generator.html_generator.HtmlGenerator.convert_markdown_to_html">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">convert_markdown_to_html</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">markdown_content</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/sabbath_school_reproducer/generator/html_generator.html#HtmlGenerator.convert_markdown_to_html"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#sabbath_school_reproducer.generator.html_generator.HtmlGenerator.convert_markdown_to_html" title="Link to this definition"></a></dt>
+<dd><p>Convert markdown to HTML with table support</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>markdown_content</strong> (<em>str</em>) – Markdown content</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>HTML content</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="sabbath_school_reproducer.generator.html_generator.HtmlGenerator.create_back_cover">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">create_back_cover</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">back_cover_svg_path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/sabbath_school_reproducer/generator/html_generator.html#HtmlGenerator.create_back_cover"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#sabbath_school_reproducer.generator.html_generator.HtmlGenerator.create_back_cover" title="Link to this definition"></a></dt>
+<dd><p>Creates the back cover page HTML using the SVG from file if provided</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>back_cover_svg_path</strong> (<em>str</em><em>, </em><em>optional</em>) – Path to back cover SVG</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>HTML for back cover</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="sabbath_school_reproducer.generator.html_generator.HtmlGenerator.create_backmatter_html">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">create_backmatter_html</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">backmatter_content</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/sabbath_school_reproducer/generator/html_generator.html#HtmlGenerator.create_backmatter_html"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#sabbath_school_reproducer.generator.html_generator.HtmlGenerator.create_backmatter_html" title="Link to this definition"></a></dt>
+<dd><p>Creates HTML for the back matter section with table support</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>backmatter_content</strong> (<em>str</em>) – Back matter markdown content</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>HTML for back matter</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="sabbath_school_reproducer.generator.html_generator.HtmlGenerator.create_cover_page">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">create_cover_page</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">front_cover_svg_path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">config</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/sabbath_school_reproducer/generator/html_generator.html#HtmlGenerator.create_cover_page"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#sabbath_school_reproducer.generator.html_generator.HtmlGenerator.create_cover_page" title="Link to this definition"></a></dt>
+<dd><p>Creates the cover page HTML using the SVG from file if provided</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>front_cover_svg_path</strong> (<em>str</em><em>, </em><em>optional</em>) – Path to front cover SVG</p></li>
+<li><p><strong>config</strong> (<em>dict</em><em>, </em><em>optional</em>) – Configuration dictionary</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>HTML for cover page</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="sabbath_school_reproducer.generator.html_generator.HtmlGenerator.create_debug_html_with_css">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">create_debug_html_with_css</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">content_parts</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dynamic_css</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/sabbath_school_reproducer/generator/html_generator.html#HtmlGenerator.create_debug_html_with_css"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#sabbath_school_reproducer.generator.html_generator.HtmlGenerator.create_debug_html_with_css" title="Link to this definition"></a></dt>
+<dd><p>Creates HTML with current content parts and CSS</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>content_parts</strong> (<em>list</em>) – List of HTML content parts</p></li>
+<li><p><strong>dynamic_css</strong> (<em>str</em>) – CSS content with modifications</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Complete HTML string</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="sabbath_school_reproducer.generator.html_generator.HtmlGenerator.create_frontmatter_html">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">create_frontmatter_html</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">frontmatter_content</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/sabbath_school_reproducer/generator/html_generator.html#HtmlGenerator.create_frontmatter_html"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#sabbath_school_reproducer.generator.html_generator.HtmlGenerator.create_frontmatter_html" title="Link to this definition"></a></dt>
+<dd><p>Creates HTML for the front matter section with table support</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>frontmatter_content</strong> (<em>str</em>) – Front matter markdown content</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>HTML for front matter</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="sabbath_school_reproducer.generator.html_generator.HtmlGenerator.create_lesson_html">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">create_lesson_html</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">lesson</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">language_code</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'en'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/sabbath_school_reproducer/generator/html_generator.html#HtmlGenerator.create_lesson_html"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#sabbath_school_reproducer.generator.html_generator.HtmlGenerator.create_lesson_html" title="Link to this definition"></a></dt>
+<dd><p>Creates HTML for a single lesson with improved formatting for title and date</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>lesson</strong> (<em>dict</em>) – Lesson dictionary</p></li>
+<li><p><strong>language_code</strong> (<em>str</em>) – Language code for translations</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>HTML for lesson</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="sabbath_school_reproducer.generator.html_generator.HtmlGenerator.create_table_of_contents">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">create_table_of_contents</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">lessons</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">language_code</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'en'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">config</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/sabbath_school_reproducer/generator/html_generator.html#HtmlGenerator.create_table_of_contents"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#sabbath_school_reproducer.generator.html_generator.HtmlGenerator.create_table_of_contents" title="Link to this definition"></a></dt>
+<dd><p>Creates the table of contents HTML with links to lessons</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>lessons</strong> (<em>list</em>) – List of lesson dictionaries</p></li>
+<li><p><strong>language_code</strong> (<em>str</em>) – Language code for translations</p></li>
+<li><p><strong>config</strong> (<em>dict</em><em>, </em><em>optional</em>) – Configuration dictionary containing language_config_path</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>HTML for table of contents</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="sabbath_school_reproducer.generator.html_generator.HtmlGenerator.fix_markdown_lists">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">fix_markdown_lists</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">markdown_content</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/sabbath_school_reproducer/generator/html_generator.html#HtmlGenerator.fix_markdown_lists"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#sabbath_school_reproducer.generator.html_generator.HtmlGenerator.fix_markdown_lists" title="Link to this definition"></a></dt>
+<dd><p>Fix markdown list rendering by indenting all non-numbered list item lines,
+but only if at least one numbered list item exists in the content.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>markdown_content</strong> (<em>str</em>) – Markdown content with or without numbered lists</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Fixed markdown content with proper indentation for list continuity</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="sabbath_school_reproducer.generator.html_generator.HtmlGenerator.generate_html">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">generate_html</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">content_data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">front_cover_svg_path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">back_cover_svg_path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">config</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/sabbath_school_reproducer/generator/html_generator.html#HtmlGenerator.generate_html"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#sabbath_school_reproducer.generator.html_generator.HtmlGenerator.generate_html" title="Link to this definition"></a></dt>
+<dd><p>Generate complete HTML document from content data with incremental approach</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>content_data</strong> (<em>dict</em>) – Dictionary with content data</p></li>
+<li><p><strong>front_cover_svg_path</strong> (<em>str</em><em>, </em><em>optional</em>) – Path to front cover SVG</p></li>
+<li><p><strong>back_cover_svg_path</strong> (<em>str</em><em>, </em><em>optional</em>) – Path to back cover SVG</p></li>
+<li><p><strong>config</strong> (<em>dict</em><em>, </em><em>optional</em>) – Configuration dictionary</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Complete HTML document</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="sabbath_school_reproducer.generator.html_generator.HtmlGenerator.get_quarter_display">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_quarter_display</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">quarter</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">language_code</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'en'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/sabbath_school_reproducer/generator/html_generator.html#HtmlGenerator.get_quarter_display"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#sabbath_school_reproducer.generator.html_generator.HtmlGenerator.get_quarter_display" title="Link to this definition"></a></dt>
+<dd><p>Get a formatted display for the quarter</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>quarter</strong> (<em>str</em>) – Quarter code (e.g., q1, q2, q3, q4)</p></li>
+<li><p><strong>language_code</strong> (<em>str</em>) – Language code for translations</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Formatted quarter display</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="sabbath_school_reproducer.generator.html_generator.HtmlGenerator.read_svg_file">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">read_svg_file</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filepath</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/sabbath_school_reproducer/generator/html_generator.html#HtmlGenerator.read_svg_file"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#sabbath_school_reproducer.generator.html_generator.HtmlGenerator.read_svg_file" title="Link to this definition"></a></dt>
+<dd><p>Read SVG file content from the specified path</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>filepath</strong> (<em>str</em>) – Path to SVG file</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>SVG content or None if error</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str or None</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="module-sabbath_school_reproducer.generator.pdf_generator">
+<span id="sabbath-school-reproducer-generator-pdf-generator-module"></span><h2>sabbath_school_reproducer.generator.pdf_generator module<a class="headerlink" href="#module-sabbath_school_reproducer.generator.pdf_generator" title="Link to this heading"></a></h2>
+<p>PDF Generator for Sabbath School Lessons</p>
+<p>This module handles the final conversion from HTML to PDF with specific pagination fixes.</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="sabbath_school_reproducer.generator.pdf_generator.PdfGenerator">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">sabbath_school_reproducer.generator.pdf_generator.</span></span><span class="sig-name descname"><span class="pre">PdfGenerator</span></span><a class="reference internal" href="../_modules/sabbath_school_reproducer/generator/pdf_generator.html#PdfGenerator"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#sabbath_school_reproducer.generator.pdf_generator.PdfGenerator" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Handles conversion of HTML to PDF with pagination control.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="sabbath_school_reproducer.generator.pdf_generator.PdfGenerator.add_css_for_pagination">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">add_css_for_pagination</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">output_path</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/sabbath_school_reproducer/generator/pdf_generator.html#PdfGenerator.add_css_for_pagination"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#sabbath_school_reproducer.generator.pdf_generator.PdfGenerator.add_css_for_pagination" title="Link to this definition"></a></dt>
+<dd><p>Create a CSS file with pagination rules</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>output_path</strong> (<em>str</em>) – Directory to save the CSS file</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Path to the generated CSS file</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="sabbath_school_reproducer.generator.pdf_generator.PdfGenerator.count_pages_in_document">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">count_pages_in_document</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">document</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/sabbath_school_reproducer/generator/pdf_generator.html#PdfGenerator.count_pages_in_document"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#sabbath_school_reproducer.generator.pdf_generator.PdfGenerator.count_pages_in_document" title="Link to this definition"></a></dt>
+<dd><p>Count the number of pages in a WeasyPrint document</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>document</strong> (<em>Document</em>) – WeasyPrint document</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Number of pages</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>int</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="sabbath_school_reproducer.generator.pdf_generator.PdfGenerator.create_blank_page_pdf">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">create_blank_page_pdf</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">output_path</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/sabbath_school_reproducer/generator/pdf_generator.html#PdfGenerator.create_blank_page_pdf"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#sabbath_school_reproducer.generator.pdf_generator.PdfGenerator.create_blank_page_pdf" title="Link to this definition"></a></dt>
+<dd><p>Generate a blank page PDF</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>output_path</strong> (<em>str</em>) – Path to save the blank page PDF</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Path to the generated PDF</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="sabbath_school_reproducer.generator.pdf_generator.PdfGenerator.create_section_document">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">create_section_document</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">html_content</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/sabbath_school_reproducer/generator/pdf_generator.html#PdfGenerator.create_section_document"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#sabbath_school_reproducer.generator.pdf_generator.PdfGenerator.create_section_document" title="Link to this definition"></a></dt>
+<dd><p>Create a WeasyPrint document for a section</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>html_content</strong> (<em>str</em>) – HTML content</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>WeasyPrint document</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Document</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="sabbath_school_reproducer.generator.pdf_generator.PdfGenerator.generate_pdf">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">generate_pdf</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">html_content</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_pdf</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">config</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/sabbath_school_reproducer/generator/pdf_generator.html#PdfGenerator.generate_pdf"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#sabbath_school_reproducer.generator.pdf_generator.PdfGenerator.generate_pdf" title="Link to this definition"></a></dt>
+<dd><p>Converts HTML content to PDF with targeted pagination fixes</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>html_content</strong> (<em>str</em>) – The complete HTML document</p></li>
+<li><p><strong>output_pdf</strong> (<em>str</em>) – Path to save the PDF file</p></li>
+<li><p><strong>config</strong> (<em>dict</em><em>, </em><em>optional</em>) – Configuration dictionary</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Path to the generated PDF</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="module-sabbath_school_reproducer.generator.svg_updater">
+<span id="sabbath-school-reproducer-generator-svg-updater-module"></span><h2>sabbath_school_reproducer.generator.svg_updater module<a class="headerlink" href="#module-sabbath_school_reproducer.generator.svg_updater" title="Link to this heading"></a></h2>
+<p>Dynamic SVG Updater for Sabbath School Lessons</p>
+<p>This module updates SVG files with dynamic content based on configuration.</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="sabbath_school_reproducer.generator.svg_updater.SvgUpdater">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">sabbath_school_reproducer.generator.svg_updater.</span></span><span class="sig-name descname"><span class="pre">SvgUpdater</span></span><a class="reference internal" href="../_modules/sabbath_school_reproducer/generator/svg_updater.html#SvgUpdater"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#sabbath_school_reproducer.generator.svg_updater.SvgUpdater" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Updates SVG files with dynamic content based on configuration.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="sabbath_school_reproducer.generator.svg_updater.SvgUpdater.QUARTER_MONTHS">
+<span class="sig-name descname"><span class="pre">QUARTER_MONTHS</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{'q1':</span> <span class="pre">'January</span> <span class="pre">-</span> <span class="pre">March',</span> <span class="pre">'q2':</span> <span class="pre">'April</span> <span class="pre">-</span> <span class="pre">June',</span> <span class="pre">'q3':</span> <span class="pre">'July</span> <span class="pre">-</span> <span class="pre">September',</span> <span class="pre">'q4':</span> <span class="pre">'October</span> <span class="pre">-</span> <span class="pre">December'}</span></em><a class="headerlink" href="#sabbath_school_reproducer.generator.svg_updater.SvgUpdater.QUARTER_MONTHS" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="sabbath_school_reproducer.generator.svg_updater.SvgUpdater.QUARTER_NAMES">
+<span class="sig-name descname"><span class="pre">QUARTER_NAMES</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{'q1':</span> <span class="pre">'FIRST</span> <span class="pre">QUARTER',</span> <span class="pre">'q2':</span> <span class="pre">'SECOND</span> <span class="pre">QUARTER',</span> <span class="pre">'q3':</span> <span class="pre">'THIRD</span> <span class="pre">QUARTER',</span> <span class="pre">'q4':</span> <span class="pre">'FOURTH</span> <span class="pre">QUARTER'}</span></em><a class="headerlink" href="#sabbath_school_reproducer.generator.svg_updater.SvgUpdater.QUARTER_NAMES" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="sabbath_school_reproducer.generator.svg_updater.SvgUpdater.get_quarter_title">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_quarter_title</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">config</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lesson_data</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/sabbath_school_reproducer/generator/svg_updater.html#SvgUpdater.get_quarter_title"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#sabbath_school_reproducer.generator.svg_updater.SvgUpdater.get_quarter_title" title="Link to this definition"></a></dt>
+<dd><p>Get the quarter title from either config or lesson data</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>config</strong> (<em>dict</em>) – Configuration dictionary</p></li>
+<li><p><strong>lesson_data</strong> (<em>dict</em>) – Lesson data dictionary</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Quarter title</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="sabbath_school_reproducer.generator.svg_updater.SvgUpdater.update_svg_with_config">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">update_svg_with_config</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">svg_path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">config</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lesson_data</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">is_temporary</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/sabbath_school_reproducer/generator/svg_updater.html#SvgUpdater.update_svg_with_config"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#sabbath_school_reproducer.generator.svg_updater.SvgUpdater.update_svg_with_config" title="Link to this definition"></a></dt>
+<dd><p>Update SVG file with configuration data</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>svg_path</strong> (<em>str</em>) – Path to SVG file</p></li>
+<li><p><strong>config</strong> (<em>dict</em>) – Configuration dictionary</p></li>
+<li><p><strong>lesson_data</strong> (<em>dict</em><em>, </em><em>optional</em>) – Optional lesson data dictionary</p></li>
+<li><p><strong>is_temporary</strong> (<em>bool</em>) – Whether this is a temporary file</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Path to updated SVG file</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="module-sabbath_school_reproducer.generator">
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-sabbath_school_reproducer.generator" title="Link to this heading"></a></h2>
+<p>PDF Generator package for Sabbath School Lessons.</p>
+<p>This package contains modules for generating HTML, CSS, and PDF files.</p>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, Brian Onang&#39;o.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

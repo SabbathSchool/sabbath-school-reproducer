@@ -1,0 +1,966 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>sabbath_school_reproducer.generator.css_styles &mdash; Sabbath School Lessons Reproducer 0.1.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=e59714d7" />
+
+  
+      <script src="../../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../../_static/documentation_options.js?v=01f34227"></script>
+      <script src="../../../_static/doctools.js?v=9a2dae69"></script>
+      <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../index.html" class="icon icon-home">
+            Sabbath School Lessons Reproducer
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../overview.html">Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../usage.html">Usage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../configuration.html">Configuration</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../modules.html">Modules</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../contributing.html">Contributing</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">Sabbath School Lessons Reproducer</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">sabbath_school_reproducer.generator.css_styles</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for sabbath_school_reproducer.generator.css_styles</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">CSS Styles for Sabbath School Lessons PDF</span>
+
+<span class="sd">This module defines the CSS styles used in the generated PDF.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">sabbath_school_reproducer.generator.css_editor</span><span class="w"> </span><span class="kn">import</span>  <span class="n">CSSEditor</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">re</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">yaml</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">sabbath_school_reproducer.utils.language_utils</span><span class="w"> </span><span class="kn">import</span>  <span class="n">LanguageConfig</span>
+
+
+<span class="n">CSS_TEMPLATE</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">/* Main styling for Sabbath School Lessons */</span>
+<span class="s2">body {</span>
+<span class="s2">    font-family: Georgia, serif;</span>
+<span class="s2">    font-size: 12pt;</span>
+<span class="s2">    line-height: 1.5;</span>
+<span class="s2">    color: #3c1815;</span>
+<span class="s2">    margin: 0;</span>
+<span class="s2">    padding: 0;</span>
+<span class="s2">    counter-reset: counter;</span>
+<span class="s2">}</span>
+
+<span class="s2">@page sectionbreak {</span>
+<span class="s2">    counter-reset: counter;</span>
+<span class="s2">}</span>
+<span class="s2">.sectionbreak {</span>
+<span class="s2">    page: sectionbreak;</span>
+<span class="s2">    page-break-after: always;</span>
+<span class="s2">    page-break-before: always;</span>
+<span class="s2">    counter-reset: page 0;</span>
+<span class="s2">}</span>
+<span class="s2">.sectionbreaknone {</span>
+<span class="s2">    counter-reset: page 0;</span>
+<span class="s2">    counter-reset: page;</span>
+<span class="s2">    counter-reset: counter;</span>
+<span class="s2">    display:block;</span>
+<span class="s2">}</span>
+
+<span class="s2">@page {</span>
+<span class="s2">    size: letter;</span>
+<span class="s2">    margin: 0; /*0 for coverpages. Then set for the other sections separately*/</span>
+<span class="s2">    /*margin: 0.75in;*/</span>
+<span class="s2">}</span>
+
+<span class="s2">@page :first {</span>
+<span class="s2">    margin: 0;</span>
+<span class="s2">    @bottom-center { content: &quot;&quot;; }</span>
+<span class="s2">    @bottom-left { content: &quot;&quot;; }</span>
+<span class="s2">    @bottom-right { content: &quot;&quot;; }</span>
+<span class="s2">}</span>
+
+<span class="s2">/* Frontmatter pages with counter explicitly reset to 1 */</span>
+<span class="s2">@page frontmatter {</span>
+<span class="s2">    margin: 0.75in;</span>
+<span class="s2">    @bottom-center {</span>
+<span class="s2">        content: counter(page, lower-roman);</span>
+<span class="s2">        font-family: Georgia, serif;</span>
+<span class="s2">        font-size: 12pt;</span>
+<span class="s2">        color: #5a4130;</span>
+<span class="s2">    }</span>
+<span class="s2">    @bottom-left {</span>
+<span class="s2">        content: &quot;Quarter 2 2025&quot;; /*Needs to be dynamically changed*/</span>
+<span class="s2">        font-family: Georgia, serif;</span>
+<span class="s2">        font-size: 10pt;</span>
+<span class="s2">        color: #5a4130;</span>
+<span class="s2">    }</span>
+<span class="s2">    @bottom-right {</span>
+<span class="s2">        content: &quot;Topical Studies on the Message&quot;; /*Needs to be dynamically changed*/</span>
+<span class="s2">        font-family: Georgia, serif;</span>
+<span class="s2">        font-size: 10pt;</span>
+<span class="s2">        color: #5a4130;</span>
+<span class="s2">    }</span>
+<span class="s2">}</span>
+
+<span class="s2">@page frontmatter:first {</span>
+<span class="s2">    margin: 0;</span>
+<span class="s2">    @bottom-center { content: &quot;&quot;; }</span>
+<span class="s2">    @bottom-left { content: &quot;&quot;; }</span>
+<span class="s2">    @bottom-right { content: &quot;&quot;; }</span>
+<span class="s2">}</span>
+
+<span class="s2">/* Mainmatter pages with counter explicitly reset to 1 */</span>
+<span class="s2">@page mainmatter {</span>
+<span class="s2">    margin: 0.75in;</span>
+<span class="s2">    @bottom-center {</span>
+<span class="s2">        content: counter(page);</span>
+<span class="s2">        font-family: Georgia, serif;</span>
+<span class="s2">        font-size: 12pt;</span>
+<span class="s2">        color: #5a4130;</span>
+<span class="s2">    }</span>
+<span class="s2">    @bottom-left {</span>
+<span class="s2">        content: &quot;Quarter 2 2025&quot;;</span>
+<span class="s2">        font-family: Georgia, serif;</span>
+<span class="s2">        font-size: 10pt;</span>
+<span class="s2">        color: #5a4130;</span>
+<span class="s2">    }</span>
+<span class="s2">    @bottom-right {</span>
+<span class="s2">        content: &quot;Topical Studies on the Message&quot;;</span>
+<span class="s2">        font-family: Georgia, serif;</span>
+<span class="s2">        font-size: 10pt;</span>
+<span class="s2">        color: #5a4130;</span>
+<span class="s2">    }</span>
+<span class="s2">}</span>
+
+<span class="s2">@page :last {</span>
+<span class="s2">    margin: 0;</span>
+<span class="s2">    @bottom-center { content: &quot;&quot;; }</span>
+<span class="s2">    @bottom-left { content: &quot;&quot;; }</span>
+<span class="s2">    @bottom-right { content: &quot;&quot;; }</span>
+<span class="s2">}</span>
+
+<span class="s2">/* Explicitly define counter reset points in the document flow */</span>
+<span class="s2">.frontmatter-container {</span>
+<span class="s2">    page: frontmatter;</span>
+<span class="s2">    counter-reset: page 1;</span>
+<span class="s2">}</span>
+
+<span class="s2">.mainmatter-container {</span>
+<span class="s2">    page: mainmatter;</span>
+<span class="s2">    counter-reset: page 1;</span>
+<span class="s2">}</span>
+
+<span class="s2">/* Cover page styling - Full page with no margins */</span>
+<span class="s2">.cover-page {</span>
+<span class="s2">    position: relative;</span>
+<span class="s2">    width: 100%;</span>
+<span class="s2">    height: 100vh;</span>
+<span class="s2">    page-break-after: always;</span>
+<span class="s2">    margin: 0;</span>
+<span class="s2">    padding: 0;</span>
+<span class="s2">}</span>
+
+<span class="s2">.cover-page svg {</span>
+<span class="s2">    width: 100%;</span>
+<span class="s2">    height: 100%;</span>
+<span class="s2">    display: block;</span>
+<span class="s2">}</span>
+
+<span class="s2">/* Fix for blank page after cover */</span>
+<span class="s2">.blank-page {</span>
+<span class="s2">    height: 100vh;</span>
+<span class="s2">    width: 100%;</span>
+<span class="s2">    page-break-after: always;</span>
+<span class="s2">}</span>
+
+<span class="s2">/* Front matter styling */</span>
+<span class="s2">.front-matter {</span>
+<span class="s2">    page: frontmatter;</span>
+<span class="s2">    counter-reset: page 1;</span>
+<span class="s2">    margin-top: 2em;</span>
+<span class="s2">}</span>
+
+<span class="s2">.front-matter h1 {</span>
+<span class="s2">    font-size: 24pt;</span>
+<span class="s2">    text-align: center;</span>
+<span class="s2">    margin-bottom: 1em;</span>
+<span class="s2">    color: #7d2b2b;</span>
+<span class="s2">}</span>
+
+<span class="s2">.front-matter h2 {</span>
+<span class="s2">    font-size: 18pt;</span>
+<span class="s2">    margin-top: 1.5em;</span>
+<span class="s2">    color: #5a4130;</span>
+<span class="s2">}</span>
+
+<span class="s2">.front-matter p {</span>
+<span class="s2">    margin-bottom: 1em;</span>
+<span class="s2">}</span>
+
+<span class="s2">/* Table of Contents styling */</span>
+<span class="s2">.toc-title {</span>
+<span class="s2">    font-size: 16pt;</span>
+<span class="s2">    font-weight: bold;</span>
+<span class="s2">    text-align: center;</span>
+<span class="s2">    margin: 20px 0;</span>
+<span class="s2">    color: #3c1815;</span>
+<span class="s2">}</span>
+
+<span class="s2">.toc-table {</span>
+<span class="s2">    width: 100%;</span>
+<span class="s2">    border-collapse: collapse;</span>
+<span class="s2">    margin-bottom: 2em;</span>
+<span class="s2">}</span>
+
+<span class="s2">.toc-table tr.header {</span>
+<span class="s2">    font-weight: bold;</span>
+<span class="s2">    border-bottom: 2px solid #8b4513;</span>
+<span class="s2">}</span>
+
+<span class="s2">.toc-table td {</span>
+<span class="s2">    padding: 8px 5px;</span>
+<span class="s2">    vertical-align: top;</span>
+<span class="s2">}</span>
+
+<span class="s2">.toc-table tr:not(.header) {</span>
+<span class="s2">    border-bottom: 1px dotted #d4c7a5;</span>
+<span class="s2">}</span>
+
+<span class="s2">.toc-table a {</span>
+<span class="s2">    color: #3c1815;</span>
+<span class="s2">    text-decoration: none;</span>
+<span class="s2">}</span>
+
+<span class="s2">/* Lesson Header styling */</span>
+<span class="s2">.lesson-header {</span>
+<span class="s2">    background-color: #f5f1e6;</span>
+<span class="s2">    padding: 20px;</span>
+<span class="s2">    margin-bottom: 20px;</span>
+<span class="s2">    border: 1px solid #8b4513;</span>
+<span class="s2">    position: relative;</span>
+<span class="s2">    height: 100px;</span>
+<span class="s2">}</span>
+
+<span class="s2">.lesson-circle {</span>
+<span class="s2">    position: absolute;</span>
+<span class="s2">    top: 20px;</span>
+<span class="s2">    left: 20px;</span>
+<span class="s2">    width: 80px;</span>
+<span class="s2">    height: 80px;</span>
+<span class="s2">    background-color: #e0d5c0;</span>
+<span class="s2">    border: 2px solid #8b4513;</span>
+<span class="s2">    border-radius: 50%;</span>
+<span class="s2">    text-align: center;</span>
+<span class="s2">    line-height: 80px;</span>
+<span class="s2">    font-size: 40px;</span>
+<span class="s2">    font-weight: bold;</span>
+<span class="s2">    color: #3c1815;</span>
+<span class="s2">}</span>
+
+<span class="s2">.lesson-title {</span>
+<span class="s2">    position: absolute;</span>
+<span class="s2">    top: 40px;</span>
+<span class="s2">    left: 120px;</span>
+<span class="s2">    font-size: 24pt;</span>
+<span class="s2">    font-weight: bold;</span>
+<span class="s2">    color: #3c1815;</span>
+<span class="s2">}</span>
+
+<span class="s2">.lesson-date {</span>
+<span class="s2">    position: absolute;</span>
+<span class="s2">    top: 20px;</span>
+<span class="s2">    left: 120px;</span>
+<span class="s2">    font-size: 12pt;</span>
+<span class="s2">    font-style: italic;</span>
+<span class="s2">    color: #5a4130;</span>
+<span class="s2">}</span>
+
+<span class="s2">.corner {</span>
+<span class="s2">    position: absolute;</span>
+<span class="s2">    width: 15px;</span>
+<span class="s2">    height: 15px;</span>
+<span class="s2">    background-color: #8b4513;</span>
+<span class="s2">}</span>
+
+<span class="s2">.top-left {</span>
+<span class="s2">    top: 0;</span>
+<span class="s2">    left: 0;</span>
+<span class="s2">    border-top-right-radius: 10px;</span>
+<span class="s2">    border-bottom-right-radius: 10px;</span>
+<span class="s2">    border-bottom-left-radius: 10px;</span>
+<span class="s2">}</span>
+
+<span class="s2">.top-right {</span>
+<span class="s2">    top: 0;</span>
+<span class="s2">    right: 0;</span>
+<span class="s2">    border-top-left-radius: 10px;</span>
+<span class="s2">    border-bottom-right-radius: 10px;</span>
+<span class="s2">    border-bottom-left-radius: 10px;</span>
+<span class="s2">}</span>
+
+<span class="s2">.bottom-left {</span>
+<span class="s2">    bottom: 0;</span>
+<span class="s2">    left: 0;</span>
+<span class="s2">    border-top-right-radius: 10px;</span>
+<span class="s2">    border-top-left-radius: 10px;</span>
+<span class="s2">    border-bottom-right-radius: 10px;</span>
+<span class="s2">}</span>
+
+<span class="s2">.bottom-right {</span>
+<span class="s2">    bottom: 0;</span>
+<span class="s2">    right: 0;</span>
+<span class="s2">    border-top-left-radius: 10px;</span>
+<span class="s2">    border-top-right-radius: 10px;</span>
+<span class="s2">    border-bottom-left-radius: 10px;</span>
+<span class="s2">}</span>
+
+<span class="s2">.preliminary-note {</span>
+<span class="s2">    font-style: italic;</span>
+<span class="s2">    margin-bottom: 5px;</span>
+<span class="s2">    padding: 10px 20px;</span>
+<span class="s2">    background-color: #f9f7f1;</span>
+<span class="s2">    border-left: 3px solid #8b4513;</span>
+<span class="s2">    page-break-inside: avoid;</span>
+<span class="s2">    page-break-before: avoid;</span>
+<span class="s2">}</span>
+
+<span class="s2">.questions-section {</span>
+<span class="s2">    display:block;</span>
+<span class="s2">    border: 1px solid #8b4513;</span>
+<span class="s2">    padding: 20px;</span>
+<span class="s2">    margin-bottom: 20px;</span>
+<span class="s2">    border-radius: 12px;</span>
+<span class="s2">    page-break-before: auto;</span>
+<span class="s2">    page-break-inside: auto; /* Allow breaks within paragraphs */</span>
+<span class="s2">    orphans: 1; /* Allow at least one question to appear with header */</span>
+<span class="s2">    widows: 1; /* Allow at least one question at the bottom of a page */</span>
+<span class="s2">}</span>
+
+<span class="s2">.questions-section .question:first-of-type {</span>
+<span class="s2">    page-break-before: avoid; /* Keep first question with header */</span>
+<span class="s2">    page-break-inside: avoid; /* Keep first question intact */</span>
+<span class="s2">    page-break-after: auto; /* Allow a page break after first question */</span>
+<span class="s2">}</span>
+
+<span class="s2">/* The clearfix shouldn&#39;t force breaks */</span>
+<span class="s2">.clearfix {</span>
+<span class="s2">    clear: both;</span>
+<span class="s2">    page-break-before: auto;</span>
+<span class="s2">    page-break-after: auto;</span>
+<span class="s2">}</span>
+
+<span class="s2">.questions-header {</span>
+<span class="s2">    font-size: 14pt;</span>
+<span class="s2">    font-weight: bold;</span>
+<span class="s2">    margin-bottom: 10px;</span>
+<span class="s2">    border-bottom: 1px solid #8b4513;</span>
+<span class="s2">    padding-bottom: 5px;</span>
+<span class="s2">}</span>
+
+<span class="s2">.question {</span>
+<span class="s2">    margin-bottom: 3px;</span>
+<span class="s2">    position: relative;</span>
+<span class="s2">    clear: both;</span>
+<span class="s2">    page-break-inside: avoid;</span>
+<span class="s2">}</span>
+
+<span class="s2">.question-number {</span>
+<span class="s2">    font-weight: bold;</span>
+<span class="s2">    float: left;</span>
+<span class="s2">    text-align: right;</span>
+<span class="s2">    padding-right: 8px;</span>
+<span class="s2">}</span>
+
+<span class="s2">.question-number.one-digit {</span>
+<span class="s2">    width: 20px;</span>
+<span class="s2">}</span>
+
+<span class="s2">.question-number.two-digit {</span>
+<span class="s2">    width: 30px;</span>
+<span class="s2">}</span>
+
+<span class="s2">.question-text {</span>
+<span class="s2">    margin-left: 30px; /* Minimum margin for one-digit numbers */</span>
+<span class="s2">    text-align: left;</span>
+<span class="s2">    position: relative;</span>
+<span class="s2">    break-inside: auto;</span>
+<span class="s2">    page-break-inside: auto;</span>
+<span class="s2">}</span>
+
+<span class="s2">/* For two-digit question numbers */</span>
+<span class="s2">.two-digit + .question-text {</span>
+<span class="s2">    margin-left: 40px; /* Increased margin for two-digit numbers */</span>
+<span class="s2">}</span>
+
+<span class="s2">.scripture-ref {</span>
+<span class="s2">    float: right;</span>
+<span class="s2">    color: #5a4130;</span>
+<span class="s2">    font-style: italic;</span>
+<span class="s2">    margin-left: 10px;</span>
+<span class="s2">    text-align: right;</span>
+<span class="s2">    page-break-before: avoid; /*keep with question*/</span>
+<span class="s2">}</span>
+
+<span class="s2">.scripture-ref p {</span>
+<span class="s2">    margin: 0;  </span>
+<span class="s2">    padding: 0; </span>
+<span class="s2">}</span>
+
+<span class="s2">.answer {</span>
+<span class="s2">    margin-top: 1px;</span>
+<span class="s2">    color: #5a4130;</span>
+<span class="s2">    clear: right; /* Ensure answer appears below the scripture reference */</span>
+<span class="s2">}</span>
+
+<span class="s2">.notes-section {</span>
+<span class="s2">    background-color: #f9f7f1;</span>
+<span class="s2">    border: 1px solid #8b4513;</span>
+<span class="s2">    padding: 20px;</span>
+<span class="s2">}</span>
+
+<span class="s2">.notes-header {</span>
+<span class="s2">    font-size: 16pt;</span>
+<span class="s2">    font-weight: bold;</span>
+<span class="s2">    margin-bottom: 15px;</span>
+<span class="s2">    page-break-after: avoid;</span>
+<span class="s2">}</span>
+
+<span class="s2">.notes-content p:first-letter {</span>
+<span class="s2">    font-variant: small-caps;</span>
+<span class="s2">}</span>
+
+<span class="s2">.notes-content p {</span>
+<span class="s2">    text-indent: 1.5em;</span>
+<span class="s2">    margin-bottom: 1em;</span>
+<span class="s2">}</span>
+
+<span class="s2">/* Keep first paragraph with header */</span>
+<span class="s2">.notes-content p:first-child {</span>
+<span class="s2">    page-break-before: avoid; /* Keep with header */</span>
+<span class="s2">}</span>
+
+<span class="s2">/* Allow breaks within other paragraphs */</span>
+<span class="s2">.notes-content p {</span>
+<span class="s2">    page-break-inside: auto; /* Allow breaks within paragraphs */</span>
+<span class="s2">    orphans: 1; /* At least 1 lines at top of page */</span>
+<span class="s2">    widows: 1; /* At least 1 lines at bottom of page */</span>
+<span class="s2">    text-align: justify;</span>
+<span class="s2">}</span>
+
+<span class="s2">.clearfix {</span>
+<span class="s2">    clear: both;</span>
+<span class="s2">}</span>
+
+<span class="s2">/* Back matter styling */</span>
+<span class="s2">@page :last {</span>
+<span class="s2">    margin: 0;</span>
+<span class="s2">    @bottom-center { content: &quot;&quot;; }</span>
+<span class="s2">    @bottom-left { content: &quot;&quot;; }</span>
+<span class="s2">    @bottom-right { content: &quot;&quot;; }</span>
+<span class="s2">}</span>
+
+<span class="s2">/* Back cover styling */</span>
+<span class="s2">.back-cover-page {</span>
+<span class="s2">    position: relative;</span>
+<span class="s2">    top: 0;</span>
+<span class="s2">    left: 0;</span>
+<span class="s2">    right: 0;</span>
+<span class="s2">    bottom: 0;</span>
+<span class="s2">    width: 100%;</span>
+<span class="s2">    height: 100vh;</span>
+<span class="s2">    margin: 0;</span>
+<span class="s2">    padding: 0;</span>
+<span class="s2">    page: :last;</span>
+<span class="s2">}</span>
+
+<span class="s2">@page :last {</span>
+<span class="s2">    margin: 0;</span>
+<span class="s2">    @bottom-center { content: &quot;&quot;; }</span>
+<span class="s2">    @bottom-left { content: &quot;&quot;; }</span>
+<span class="s2">    @bottom-right { content: &quot;&quot;; }</span>
+<span class="s2">}</span>
+<span class="s2">.back-cover-page svg {</span>
+<span class="s2">    position: relative;</span>
+<span class="s2">    top: 0;</span>
+<span class="s2">    left: 0;</span>
+<span class="s2">    width: 100%;</span>
+<span class="s2">    height: 100%;</span>
+<span class="s2">    display: block;</span>
+<span class="s2">}</span>
+
+<span class="s2">/* Table styling */</span>
+<span class="s2">table {</span>
+<span class="s2">    width: 100%;</span>
+<span class="s2">    border-collapse: collapse;</span>
+<span class="s2">    margin: 20px 0;</span>
+<span class="s2">    font-family: Georgia, serif;</span>
+<span class="s2">    font-size: 12pt;</span>
+<span class="s2">}</span>
+
+<span class="s2">table, th, td {</span>
+<span class="s2">    border: 1px solid #8b4513;</span>
+<span class="s2">}</span>
+
+<span class="s2">thead {</span>
+<span class="s2">    background-color: #f5f1e6;</span>
+<span class="s2">}</span>
+
+<span class="s2">th {</span>
+<span class="s2">    color: #3c1815;</span>
+<span class="s2">    font-weight: bold;</span>
+<span class="s2">    text-align: left;</span>
+<span class="s2">    padding: 8px 12px;</span>
+<span class="s2">}</span>
+
+<span class="s2">td {</span>
+<span class="s2">    padding: 8px 12px;</span>
+<span class="s2">    vertical-align: top;</span>
+<span class="s2">}</span>
+
+<span class="s2">tr:nth-child(even) {</span>
+<span class="s2">    background-color: #f9f7f1;</span>
+<span class="s2">}</span>
+
+<span class="s2">/* Special styling for price tables */</span>
+<span class="s2">table.price-table td:nth-child(2) {</span>
+<span class="s2">    text-align: center;</span>
+<span class="s2">    width: 80px;</span>
+<span class="s2">}</span>
+
+<span class="s2">/* Table caption styling */</span>
+<span class="s2">table caption {</span>
+<span class="s2">    font-style: italic;</span>
+<span class="s2">    margin-bottom: 8px;</span>
+<span class="s2">    color: #5a4130;</span>
+<span class="s2">    text-align: left;</span>
+<span class="s2">    caption-side: top;</span>
+<span class="s2">}</span>
+
+<span class="s2">.toc-title {</span>
+<span class="s2">    font-size: 18px;</span>
+<span class="s2">    font-weight: bold;</span>
+<span class="s2">    margin-bottom: 10px;</span>
+<span class="s2">}</span>
+
+<span class="s2">.toc-header, .toc-row {</span>
+<span class="s2">    display: flex;</span>
+<span class="s2">    margin-bottom: 5px;</span>
+<span class="s2">}</span>
+
+<span class="s2">.toc-header-cell, .toc-cell {</span>
+<span class="s2">    padding: 5px;</span>
+<span class="s2">    border: 1px solid #ddd;</span>
+<span class="s2">    text-align: left;</span>
+<span class="s2">    display: inline-block;</span>
+<span class="s2">}</span>
+
+<span class="s2">.toc-header-cell {</span>
+<span class="s2">    font-weight: bold;</span>
+<span class="s2">    background-color: #f4f4f4;</span>
+<span class="s2">}</span>
+
+<span class="s2">.toc-cell-number {</span>
+<span class="s2">    width: 40px;</span>
+<span class="s2">    text-align: center;</span>
+<span class="s2">}</span>
+
+<span class="s2">.toc-cell-title {</span>
+<span class="s2">    flex: 1;</span>
+<span class="s2">}</span>
+
+<span class="s2">.toc-cell-date {</span>
+<span class="s2">    width: 100px;</span>
+<span class="s2">    text-align: center;</span>
+<span class="s2">}</span>
+
+<span class="s2">.toc-cell-page {</span>
+<span class="s2">    width: 40px;</span>
+<span class="s2">    text-align: right;</span>
+<span class="s2">}</span>
+
+<span class="s2">/* Style for the link */</span>
+<span class="s2">.toc-link {</span>
+<span class="s2">    display: block; /* Make the &lt;a&gt; tag a block element to cover the entire row */</span>
+<span class="s2">    text-decoration: none; /* Remove underline */</span>
+<span class="s2">    color: inherit; /* Inherit color from the row */</span>
+<span class="s2">}</span>
+
+<span class="s2">/* Highlight the row when hovered */</span>
+<span class="s2">.toc-link:hover .toc-row {</span>
+<span class="s2">    background-color: #f0f0f0;</span>
+<span class="s2">}</span>
+
+<span class="s2">/* Style the link inside the cells (optional) */</span>
+<span class="s2">.toc-cell a {</span>
+<span class="s2">    text-decoration: none;</span>
+<span class="s2">    color: #007bff;</span>
+<span class="s2">}</span>
+
+<span class="s2">.toc-cell a:hover {</span>
+<span class="s2">    text-decoration: underline;</span>
+<span class="s2">}</span>
+
+<span class="s2">.sectionbreaknone {</span>
+<span class="s2">    page-break-after: always;</span>
+<span class="s2">}</span>
+
+<span class="s2">.additional-section {</span>
+<span class="s2">    border: 1px solid #6a4e23; /* Darker border color for additional section */</span>
+<span class="s2">    margin-bottom: 20px;</span>
+<span class="s2">    padding: 20px;</span>
+<span class="s2">    background-color: #f0e5d8; /* Lighter background color for differentiation */</span>
+<span class="s2">    page-break-before: auto;</span>
+<span class="s2">    border-radius: 8px;</span>
+<span class="s2">}</span>
+
+<span class="s2">/* Header styling for additional sections */</span>
+<span class="s2">.additional-header {</span>
+<span class="s2">    font-size: 18pt;</span>
+<span class="s2">    font-weight: bold;</span>
+<span class="s2">    color: #4b3b2f; /* Darker brown for the header text */</span>
+<span class="s2">    margin-bottom: 10px;</span>
+<span class="s2">    border-bottom: 3px solid #6a4e23; /* A stronger border below the header */</span>
+<span class="s2">    padding-bottom: 5px;</span>
+<span class="s2">    text-align: left;</span>
+<span class="s2">    font-family: &#39;Georgia&#39;, serif; /* Different font family for header */</span>
+<span class="s2">}</span>
+
+<span class="s2">/* Content styling for the additional sections */</span>
+<span class="s2">.additional-content {</span>
+<span class="s2">    font-size: 12pt;</span>
+<span class="s2">    line-height: 1.5;</span>
+<span class="s2">    color: #4b3b2f; /* Darker brown text */</span>
+<span class="s2">    text-align: justify; /* Justified text for a clean look */</span>
+<span class="s2">    margin-top: 10px;</span>
+<span class="s2">    font-family: &#39;Georgia&#39;, serif; /* Different font family for content */</span>
+<span class="s2">}</span>
+
+<span class="s2">/* Optional: First paragraph inside the additional content */</span>
+<span class="s2">.additional-content p:first-child {</span>
+<span class="s2">    margin-top: 0;</span>
+<span class="s2">}</span>
+
+<span class="s2">/* Style for hyperlinks in additional sections */</span>
+<span class="s2">.additional-content a {</span>
+<span class="s2">    color: #4b3b2f; /* Dark brown for links */</span>
+<span class="s2">    text-decoration: underline;</span>
+<span class="s2">}</span>
+
+<span class="s2">.additional-content a:hover {</span>
+<span class="s2">    color: #6a4e23; /* Change to a lighter brown when hovering */</span>
+<span class="s2">    text-decoration: none;</span>
+<span class="s2">}</span>
+
+<span class="s2">/* Optional: Add specific spacing between paragraphs for clarity */</span>
+<span class="s2">.additional-content p {</span>
+<span class="s2">    margin-bottom: 1em;</span>
+<span class="s2">}</span>
+
+<span class="s2">/* Optional: Style for lists inside the additional section */</span>
+<span class="s2">.additional-content ul,</span>
+<span class="s2">.additional-content ol {</span>
+<span class="s2">    margin-left: 1.5em;</span>
+<span class="s2">    margin-bottom: 1em;</span>
+<span class="s2">}</span>
+
+<span class="s2">.additional-content li {</span>
+<span class="s2">    margin-bottom: 0.5em;</span>
+<span class="s2">}</span>
+
+
+<span class="s2">@media print {</span>
+<span class="s2">    .lesson-title {</span>
+<span class="s2">        font-size: 20pt;</span>
+<span class="s2">    }</span>
+<span class="s2">}</span>
+<span class="s2">&quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="CssUpdater">
+<a class="viewcode-back" href="../../../modules.html#sabbath_school_reproducer.generator.css_styles.CssUpdater">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">CssUpdater</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Handles CSS style updates with dynamic content based on configuration.&quot;&quot;&quot;</span>
+    
+<div class="viewcode-block" id="CssUpdater.get_quarter_display">
+<a class="viewcode-back" href="../../../modules.html#sabbath_school_reproducer.generator.css_styles.CssUpdater.get_quarter_display">[docs]</a>
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_quarter_display</span><span class="p">(</span><span class="n">config</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get the formatted quarter and year display</span>
+<span class="sd">        </span>
+<span class="sd">        Args:</span>
+<span class="sd">            config (dict): Configuration dictionary</span>
+<span class="sd">            </span>
+<span class="sd">        Returns:</span>
+<span class="sd">            str: Formatted quarter display</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">year</span> <span class="o">=</span> <span class="n">config</span><span class="p">[</span><span class="s1">&#39;year&#39;</span><span class="p">]</span>
+            <span class="n">quarter</span> <span class="o">=</span> <span class="n">config</span><span class="p">[</span><span class="s1">&#39;quarter&#39;</span><span class="p">]</span>
+            <span class="n">language_code</span> <span class="o">=</span> <span class="n">config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;language&#39;</span><span class="p">,</span> <span class="s1">&#39;en&#39;</span><span class="p">)</span>
+            
+            <span class="c1"># Get the localized quarter name</span>
+            <span class="n">quarter_name</span> <span class="o">=</span> <span class="n">LanguageConfig</span><span class="o">.</span><span class="n">get_translation</span><span class="p">(</span>
+                <span class="n">language_code</span><span class="p">,</span>
+                <span class="sa">f</span><span class="s1">&#39;quarter_names.</span><span class="si">{</span><span class="n">quarter</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">,</span>
+                <span class="sa">f</span><span class="s2">&quot;Quarter </span><span class="si">{</span><span class="n">quarter</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="n">quarter</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">&#39;q&#39;</span><span class="p">)</span><span class="w"> </span><span class="ow">or</span><span class="w"> </span><span class="n">quarter</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">&#39;Q&#39;</span><span class="p">)</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="s1">&#39;&#39;</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="p">)</span>
+            
+            <span class="c1"># Format as &quot;Quarter X YYYY&quot; based on language</span>
+            <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">quarter_name</span><span class="si">}</span><span class="s2">, </span><span class="si">{</span><span class="n">year</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="k">except</span> <span class="p">(</span><span class="ne">KeyError</span><span class="p">,</span> <span class="ne">ValueError</span><span class="p">):</span>
+            <span class="c1"># Default if config is missing</span>
+            <span class="k">return</span> <span class="s2">&quot;Quarter &amp; Year&quot;</span></div>
+
+    
+<div class="viewcode-block" id="CssUpdater.load_color_theme">
+<a class="viewcode-back" href="../../../modules.html#sabbath_school_reproducer.generator.css_styles.CssUpdater.load_color_theme">[docs]</a>
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">load_color_theme</span><span class="p">(</span><span class="n">theme_path</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Load color theme from a YAML file</span>
+<span class="sd">        </span>
+<span class="sd">        Args:</span>
+<span class="sd">            theme_path (str): Path to the color theme YAML file</span>
+<span class="sd">            </span>
+<span class="sd">        Returns:</span>
+<span class="sd">            dict: Color theme dictionary or None if file not found</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">theme_path</span> <span class="ow">or</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">theme_path</span><span class="p">):</span>
+            <span class="k">return</span> <span class="kc">None</span>
+            
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">theme_path</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">file</span><span class="p">:</span>
+                <span class="k">return</span> <span class="n">yaml</span><span class="o">.</span><span class="n">safe_load</span><span class="p">(</span><span class="n">file</span><span class="p">)</span>
+        <span class="k">except</span> <span class="p">(</span><span class="n">yaml</span><span class="o">.</span><span class="n">YAMLError</span><span class="p">,</span> <span class="ne">IOError</span><span class="p">)</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Error loading color theme: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="kc">None</span></div>
+
+    
+<div class="viewcode-block" id="CssUpdater.apply_color_theme">
+<a class="viewcode-back" href="../../../modules.html#sabbath_school_reproducer.generator.css_styles.CssUpdater.apply_color_theme">[docs]</a>
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">apply_color_theme</span><span class="p">(</span><span class="n">css_template</span><span class="p">,</span> <span class="n">color_theme</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Apply color theme to CSS template</span>
+<span class="sd">        </span>
+<span class="sd">        Args:</span>
+<span class="sd">            css_template (str): Original CSS template string</span>
+<span class="sd">            color_theme (dict): Color theme dictionary</span>
+<span class="sd">            </span>
+<span class="sd">        Returns:</span>
+<span class="sd">            str: Updated CSS template with applied color theme</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">css_template</span> <span class="ow">or</span> <span class="ow">not</span> <span class="n">color_theme</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">css_template</span>
+            
+        <span class="n">updated_css</span> <span class="o">=</span> <span class="n">css_template</span>
+        
+        <span class="c1"># Define color mappings from theme to CSS</span>
+        <span class="n">color_mappings</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="c1"># Text colors</span>
+            <span class="s2">&quot;#3c1815&quot;</span><span class="p">:</span> <span class="n">color_theme</span><span class="p">[</span><span class="s2">&quot;text&quot;</span><span class="p">][</span><span class="s2">&quot;primary&quot;</span><span class="p">],</span>
+            <span class="s2">&quot;#5a4130&quot;</span><span class="p">:</span> <span class="n">color_theme</span><span class="p">[</span><span class="s2">&quot;text&quot;</span><span class="p">][</span><span class="s2">&quot;secondary&quot;</span><span class="p">],</span>
+            <span class="s2">&quot;#7d2b2b&quot;</span><span class="p">:</span> <span class="n">color_theme</span><span class="p">[</span><span class="s2">&quot;text&quot;</span><span class="p">][</span><span class="s2">&quot;accent&quot;</span><span class="p">],</span>
+            <span class="s2">&quot;#007bff&quot;</span><span class="p">:</span> <span class="n">color_theme</span><span class="p">[</span><span class="s2">&quot;text&quot;</span><span class="p">][</span><span class="s2">&quot;link&quot;</span><span class="p">],</span>
+            
+            <span class="c1"># Background colors</span>
+            <span class="s2">&quot;#f9f7f1&quot;</span><span class="p">:</span> <span class="n">color_theme</span><span class="p">[</span><span class="s2">&quot;background&quot;</span><span class="p">][</span><span class="s2">&quot;light&quot;</span><span class="p">],</span>
+            <span class="s2">&quot;#f5f1e6&quot;</span><span class="p">:</span> <span class="n">color_theme</span><span class="p">[</span><span class="s2">&quot;background&quot;</span><span class="p">][</span><span class="s2">&quot;medium&quot;</span><span class="p">],</span>
+            <span class="s2">&quot;#e0d5c0&quot;</span><span class="p">:</span> <span class="n">color_theme</span><span class="p">[</span><span class="s2">&quot;background&quot;</span><span class="p">][</span><span class="s2">&quot;dark&quot;</span><span class="p">],</span>
+            <span class="s2">&quot;#f0e5d8&quot;</span><span class="p">:</span> <span class="n">color_theme</span><span class="p">[</span><span class="s2">&quot;background&quot;</span><span class="p">][</span><span class="s2">&quot;additional&quot;</span><span class="p">],</span>
+            <span class="s2">&quot;#f4f4f4&quot;</span><span class="p">:</span> <span class="n">color_theme</span><span class="p">[</span><span class="s2">&quot;background&quot;</span><span class="p">][</span><span class="s2">&quot;tableHeader&quot;</span><span class="p">],</span>
+            <span class="s2">&quot;#f0f0f0&quot;</span><span class="p">:</span> <span class="n">color_theme</span><span class="p">[</span><span class="s2">&quot;background&quot;</span><span class="p">][</span><span class="s2">&quot;hover&quot;</span><span class="p">],</span>
+            
+            <span class="c1"># Border colors</span>
+            <span class="s2">&quot;#8b4513&quot;</span><span class="p">:</span> <span class="n">color_theme</span><span class="p">[</span><span class="s2">&quot;border&quot;</span><span class="p">][</span><span class="s2">&quot;primary&quot;</span><span class="p">],</span>
+            <span class="s2">&quot;#d4c7a5&quot;</span><span class="p">:</span> <span class="n">color_theme</span><span class="p">[</span><span class="s2">&quot;border&quot;</span><span class="p">][</span><span class="s2">&quot;secondary&quot;</span><span class="p">],</span>
+            <span class="s2">&quot;#6a4e23&quot;</span><span class="p">:</span> <span class="n">color_theme</span><span class="p">[</span><span class="s2">&quot;border&quot;</span><span class="p">][</span><span class="s2">&quot;additional&quot;</span><span class="p">],</span>
+            <span class="s2">&quot;#ddd&quot;</span><span class="p">:</span> <span class="n">color_theme</span><span class="p">[</span><span class="s2">&quot;border&quot;</span><span class="p">][</span><span class="s2">&quot;table&quot;</span><span class="p">],</span>
+            
+            <span class="c1"># Accent colors</span>
+            <span class="s2">&quot;#4b3b2f&quot;</span><span class="p">:</span> <span class="n">color_theme</span><span class="p">[</span><span class="s2">&quot;accent&quot;</span><span class="p">][</span><span class="s2">&quot;secondary&quot;</span><span class="p">],</span>
+            <span class="s2">&quot;#696969&quot;</span><span class="p">:</span> <span class="n">color_theme</span><span class="p">[</span><span class="s2">&quot;accent&quot;</span><span class="p">][</span><span class="s2">&quot;tertiary&quot;</span><span class="p">],</span>
+            <span class="s2">&quot;#808080&quot;</span><span class="p">:</span> <span class="n">color_theme</span><span class="p">[</span><span class="s2">&quot;accent&quot;</span><span class="p">][</span><span class="s2">&quot;quaternary&quot;</span><span class="p">]</span>
+        <span class="p">}</span>
+        
+        <span class="c1"># Apply each color mapping</span>
+        <span class="k">for</span> <span class="n">original_color</span><span class="p">,</span> <span class="n">new_color</span> <span class="ow">in</span> <span class="n">color_mappings</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="c1"># Escape the hash character for regex</span>
+            <span class="n">original_color_escaped</span> <span class="o">=</span> <span class="n">original_color</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;#&#39;</span><span class="p">,</span> <span class="sa">r</span><span class="s1">&#39;\#&#39;</span><span class="p">)</span>
+            <span class="n">updated_css</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span>
+                <span class="n">original_color_escaped</span><span class="p">,</span>
+                <span class="n">new_color</span><span class="p">,</span>
+                <span class="n">updated_css</span>
+            <span class="p">)</span>
+        
+        <span class="k">return</span> <span class="n">updated_css</span></div>
+
+    
+<div class="viewcode-block" id="CssUpdater.update_css_template">
+<a class="viewcode-back" href="../../../modules.html#sabbath_school_reproducer.generator.css_styles.CssUpdater.update_css_template">[docs]</a>
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">update_css_template</span><span class="p">(</span><span class="n">css_template</span><span class="p">,</span> <span class="n">config</span><span class="p">,</span> <span class="n">lesson_data</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Update CSS template with configuration data and color theme</span>
+<span class="sd">        </span>
+<span class="sd">        Args:</span>
+<span class="sd">            css_template (str): Original CSS template string</span>
+<span class="sd">            config (dict): Configuration dictionary</span>
+<span class="sd">            lesson_data (dict, optional): Optional lesson data dictionary</span>
+<span class="sd">            </span>
+<span class="sd">        Returns:</span>
+<span class="sd">            str: Updated CSS template string</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">css_template</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">css_template</span>
+        
+        <span class="k">try</span><span class="p">:</span>
+            <span class="c1"># Get language code</span>
+            <span class="n">language_code</span> <span class="o">=</span> <span class="n">config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;language&#39;</span><span class="p">,</span> <span class="s1">&#39;en&#39;</span><span class="p">)</span>
+            
+            <span class="c1"># Get quarter display for footer</span>
+            <span class="n">quarter_display</span> <span class="o">=</span> <span class="n">CssUpdater</span><span class="o">.</span><span class="n">get_quarter_display</span><span class="p">(</span><span class="n">config</span><span class="p">)</span>
+            
+            <span class="c1"># Get lesson title for footer</span>
+            <span class="n">reproduce</span> <span class="o">=</span> <span class="n">config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;reproduce&quot;</span><span class="p">,</span> <span class="p">{})</span>
+            <span class="n">year_orig</span> <span class="o">=</span> <span class="n">reproduce</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;year&quot;</span><span class="p">,</span> <span class="mi">2025</span><span class="p">)</span>  <span class="c1"># Default to 2025 if &#39;year&#39; is not found</span>
+            <span class="n">quarter_orig</span> <span class="o">=</span> <span class="n">reproduce</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;quarter&quot;</span><span class="p">,</span> <span class="s2">&quot;q1&quot;</span><span class="p">)</span> 
+            
+            <span class="c1"># Get title from config or generate a default</span>
+            <span class="n">lesson_title</span> <span class="o">=</span> <span class="n">config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;lesson_title&quot;</span><span class="p">,</span> <span class="n">CSSEditor</span><span class="o">.</span><span class="n">get_lesson_title</span><span class="p">(</span><span class="n">year_orig</span><span class="p">,</span> <span class="n">quarter_orig</span><span class="p">))</span>
+
+            <span class="c1"># Update CSS footer content</span>
+            <span class="n">updated_css</span> <span class="o">=</span> <span class="n">css_template</span>
+            
+            <span class="c1"># Update quarter display in footers</span>
+            <span class="n">updated_css</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span>
+                <span class="sa">r</span><span class="s1">&#39;content: &quot;Quarter \d+ \d+&quot;;&#39;</span><span class="p">,</span>
+                <span class="sa">f</span><span class="s1">&#39;content: &quot;</span><span class="si">{</span><span class="n">quarter_display</span><span class="si">}</span><span class="s1">&quot;;&#39;</span><span class="p">,</span>
+                <span class="n">updated_css</span>
+            <span class="p">)</span>
+            
+            <span class="c1"># Update lesson title in footers</span>
+            <span class="n">updated_css</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span>
+                <span class="sa">r</span><span class="s1">&#39;content: &quot;Topical Studies on the Message&quot;;&#39;</span><span class="p">,</span>
+                <span class="sa">f</span><span class="s1">&#39;content: &quot;</span><span class="si">{</span><span class="n">lesson_title</span><span class="si">}</span><span class="s1">&quot;;&#39;</span><span class="p">,</span>
+                <span class="n">updated_css</span>
+            <span class="p">)</span>
+            
+            <span class="c1"># Apply color theme if specified</span>
+            <span class="n">color_theme_path</span> <span class="o">=</span> <span class="n">config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;color_theme_path&quot;</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">color_theme_path</span><span class="p">:</span>
+                <span class="n">color_theme</span> <span class="o">=</span> <span class="n">CssUpdater</span><span class="o">.</span><span class="n">load_color_theme</span><span class="p">(</span><span class="n">color_theme_path</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">color_theme</span><span class="p">:</span>
+                    <span class="n">updated_css</span> <span class="o">=</span> <span class="n">CssUpdater</span><span class="o">.</span><span class="n">apply_color_theme</span><span class="p">(</span><span class="n">updated_css</span><span class="p">,</span> <span class="n">color_theme</span><span class="p">)</span>
+            
+            <span class="c1"># Update language-specific labels</span>
+            <span class="k">if</span> <span class="n">language_code</span> <span class="o">!=</span> <span class="s1">&#39;en&#39;</span><span class="p">:</span>
+                <span class="c1"># Replace &quot;NOTES&quot; with translated version</span>
+                <span class="n">notes_label</span> <span class="o">=</span> <span class="n">LanguageConfig</span><span class="o">.</span><span class="n">get_translation</span><span class="p">(</span><span class="n">language_code</span><span class="p">,</span> <span class="s1">&#39;notes&#39;</span><span class="p">,</span> <span class="s1">&#39;NOTES&#39;</span><span class="p">)</span>
+                <span class="n">updated_css</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span>
+                    <span class="sa">r</span><span class="s1">&#39;\.notes-header.*?{[^}]*content:\s*[&quot;</span><span class="se">\&#39;</span><span class="s1">]NOTES[&quot;</span><span class="se">\&#39;</span><span class="s1">]&#39;</span><span class="p">,</span>
+                    <span class="sa">f</span><span class="s1">&#39;.notes-header</span><span class="se">{{</span><span class="s1">content: &quot;</span><span class="si">{</span><span class="n">notes_label</span><span class="si">}</span><span class="s1">&quot;&#39;</span><span class="p">,</span>
+                    <span class="n">updated_css</span>
+                <span class="p">)</span>
+                
+                <span class="c1"># Replace &quot;NOTE&quot; with translated version</span>
+                <span class="n">note_label</span> <span class="o">=</span> <span class="n">LanguageConfig</span><span class="o">.</span><span class="n">get_translation</span><span class="p">(</span><span class="n">language_code</span><span class="p">,</span> <span class="s1">&#39;note&#39;</span><span class="p">,</span> <span class="s1">&#39;NOTE&#39;</span><span class="p">)</span>
+                <span class="n">updated_css</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span>
+                    <span class="sa">r</span><span class="s1">&#39;\.note-header.*?{[^}]*content:\s*[&quot;</span><span class="se">\&#39;</span><span class="s1">]NOTE[&quot;</span><span class="se">\&#39;</span><span class="s1">]&#39;</span><span class="p">,</span>
+                    <span class="sa">f</span><span class="s1">&#39;.note-header</span><span class="se">{{</span><span class="s1">content: &quot;</span><span class="si">{</span><span class="n">note_label</span><span class="si">}</span><span class="s1">&quot;&#39;</span><span class="p">,</span>
+                    <span class="n">updated_css</span>
+                <span class="p">)</span>
+                
+                <span class="c1"># Replace &quot;TABLE OF CONTENTS&quot; with translated version</span>
+                <span class="n">toc_label</span> <span class="o">=</span> <span class="n">LanguageConfig</span><span class="o">.</span><span class="n">get_translation</span><span class="p">(</span><span class="n">language_code</span><span class="p">,</span> <span class="s1">&#39;table_of_contents&#39;</span><span class="p">,</span> <span class="s1">&#39;TABLE OF CONTENTS&#39;</span><span class="p">)</span>
+                <span class="n">updated_css</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span>
+                    <span class="sa">r</span><span class="s1">&#39;\.toc-title.*?{[^}]*content:\s*[&quot;</span><span class="se">\&#39;</span><span class="s1">]TABLE OF CONTENTS[&quot;</span><span class="se">\&#39;</span><span class="s1">]&#39;</span><span class="p">,</span>
+                    <span class="sa">f</span><span class="s1">&#39;.toc-title</span><span class="se">{{</span><span class="s1">content: &quot;</span><span class="si">{</span><span class="n">toc_label</span><span class="si">}</span><span class="s1">&quot;&#39;</span><span class="p">,</span>
+                    <span class="n">updated_css</span>
+                <span class="p">)</span>
+            
+            <span class="k">return</span> <span class="n">updated_css</span>
+            
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Error updating CSS template: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">css_template</span></div>
+</div>
+
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, Brian Onang&#39;o.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

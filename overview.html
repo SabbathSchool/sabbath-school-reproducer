@@ -1,0 +1,374 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="./">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Overview &mdash; Sabbath School Lessons Reproducer 0.1.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=e59714d7" />
+
+  
+      <script src="_static/jquery.js?v=5d32c60e"></script>
+      <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="_static/documentation_options.js?v=01f34227"></script>
+      <script src="_static/doctools.js?v=9a2dae69"></script>
+      <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Installation" href="installation.html" />
+    <link rel="prev" title="Sabbath School Reproducer" href="index.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            Sabbath School Lessons Reproducer
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Overview</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#key-features">Key Features</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#architecture">Architecture</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#workflow">Workflow</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#getting-started">Getting Started</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#installation">Installation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#quick-start">Quick Start</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#basic-usage">Basic Usage</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#multi-language-support">Multi-language Support</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#language-configuration">Language Configuration</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#customizing-translations">Customizing Translations</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#example-language-configuration">Example Language Configuration</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#adding-new-languages">Adding New Languages</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#smart-file-handling">Smart File Handling</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#answer-formatting">Answer Formatting</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#configuration-options">Configuration Options</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="usage.html">Usage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="configuration.html">Configuration</a></li>
+<li class="toctree-l1"><a class="reference internal" href="modules.html">Modules</a></li>
+<li class="toctree-l1"><a class="reference internal" href="contributing.html">Contributing</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">Sabbath School Lessons Reproducer</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Overview</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/overview.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="overview">
+<h1>Overview<a class="headerlink" href="#overview" title="Link to this heading"></a></h1>
+<p>The Sabbath School Reproducer is a tool that downloads, formats, and reproduces Sabbath School lessons from historical archives for modern use. It enables users to adapt historical lessons with updated dates and formatting for current study.</p>
+<section id="key-features">
+<h2>Key Features<a class="headerlink" href="#key-features" title="Link to this heading"></a></h2>
+<ul class="simple">
+<li><p><strong>YAML-based configuration</strong> for easy customization</p></li>
+<li><p><strong>Automatic downloading</strong> of lesson content from GitHub</p></li>
+<li><p><strong>Reproduction mode</strong> for adapting historical lessons to current dates</p></li>
+<li><p><strong>Professionally formatted PDF generation</strong> with customizable styling</p></li>
+<li><p><strong>Support for custom cover designs</strong> with SVG templates</p></li>
+<li><p><strong>Smart file handling</strong> to avoid unnecessary re-downloads</p></li>
+<li><p><strong>Multi-language support</strong> with customizable translations</p></li>
+<li><p><strong>Double-asterisk answer formatting</strong> for proper question/answer markup</p></li>
+</ul>
+</section>
+<section id="architecture">
+<h2>Architecture<a class="headerlink" href="#architecture" title="Link to this heading"></a></h2>
+<p>The system consists of several components that work together:</p>
+<ol class="arabic simple">
+<li><p><strong>Configuration</strong> - Loads and validates settings from a YAML file</p></li>
+<li><p><strong>Downloader</strong> - Fetches lesson content from the GitHub repository</p></li>
+<li><p><strong>Aggregator</strong> - Combines downloaded content into a single markdown file</p></li>
+<li><p><strong>Processor</strong> - Converts markdown to structured content data</p></li>
+<li><p><strong>HTML Generator</strong> - Creates HTML from structured content</p></li>
+<li><p><strong>PDF Generator</strong> - Converts HTML to a formatted PDF with proper pagination</p></li>
+<li><p><strong>Language Utils</strong> - Provides language-specific text and formatting</p></li>
+</ol>
+<a class="reference internal image-reference" href="_images/architecture.svg"><img alt="System Architecture Diagram" src="_images/architecture.svg" style="width: 600px;" />
+</a>
+</section>
+<section id="workflow">
+<h2>Workflow<a class="headerlink" href="#workflow" title="Link to this heading"></a></h2>
+<p>A typical workflow involves:</p>
+<ol class="arabic simple">
+<li><p>Creating a configuration file with target year/quarter and source year/quarter</p></li>
+<li><p>Running the tool to download and process the content</p></li>
+<li><p>Reviewing the generated PDF for any adjustments needed</p></li>
+<li><p>Distributing the final PDF for use in Sabbath School classes</p></li>
+</ol>
+</section>
+<section id="getting-started">
+<h2>Getting Started<a class="headerlink" href="#getting-started" title="Link to this heading"></a></h2>
+<section id="installation">
+<h3>Installation<a class="headerlink" href="#installation" title="Link to this heading"></a></h3>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># Clone the repository</span>
+git<span class="w"> </span>clone<span class="w"> </span>https://github.com/SabbathSchool/sabbath-school-reproducer.git
+<span class="nb">cd</span><span class="w"> </span>sabbath-school-reproducer
+
+<span class="c1"># Install dependencies</span>
+pip<span class="w"> </span>install<span class="w"> </span>-r<span class="w"> </span>requirements.txt
+
+<span class="c1"># Install the package for development</span>
+pip<span class="w"> </span>install<span class="w"> </span>-e<span class="w"> </span>.
+</pre></div>
+</div>
+</section>
+<section id="quick-start">
+<h3>Quick Start<a class="headerlink" href="#quick-start" title="Link to this heading"></a></h3>
+<p>The easiest way to get started is to use the initialization command:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># Initialize the environment with default settings</span>
+sabbath-school-reproducer<span class="w"> </span>init
+
+<span class="c1"># Or simply run without arguments for automatic initialization</span>
+sabbath-school-reproducer
+</pre></div>
+</div>
+<p>This will create:</p>
+<ul class="simple">
+<li><p>A default configuration file (<code class="docutils literal notranslate"><span class="pre">config.yaml</span></code>)</p></li>
+<li><p>A color theme directory with a default theme</p></li>
+<li><p>Language configuration files for all supported languages</p></li>
+</ul>
+<p>You can then edit these files to customize your settings.</p>
+</section>
+<section id="basic-usage">
+<h3>Basic Usage<a class="headerlink" href="#basic-usage" title="Link to this heading"></a></h3>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># Run with a specific config file</span>
+sabbath-school-reproducer<span class="w"> </span>run<span class="w"> </span>config.yaml
+
+<span class="c1"># Force overwrite of existing files</span>
+sabbath-school-reproducer<span class="w"> </span>run<span class="w"> </span>config.yaml<span class="w"> </span>-y
+
+<span class="c1"># Generate only HTML for debugging</span>
+sabbath-school-reproducer<span class="w"> </span>run<span class="w"> </span>config.yaml<span class="w"> </span>--debug-html-only
+</pre></div>
+</div>
+</section>
+</section>
+<section id="multi-language-support">
+<h2>Multi-language Support<a class="headerlink" href="#multi-language-support" title="Link to this heading"></a></h2>
+<p>The Sabbath School Reproducer supports multiple languages, with built-in support for:</p>
+<ul class="simple">
+<li><p>English (en)</p></li>
+<li><p>Swahili (sw)</p></li>
+<li><p>Luo (luo)</p></li>
+</ul>
+<section id="language-configuration">
+<h3>Language Configuration<a class="headerlink" href="#language-configuration" title="Link to this heading"></a></h3>
+<p>Each language has its own configuration file located in the <code class="docutils literal notranslate"><span class="pre">languages</span></code> directory. These files contain translations for all text elements that appear in the generated PDF, including:</p>
+<ul class="simple">
+<li><p>Section headers (NOTES, QUESTIONS)</p></li>
+<li><p>Table of contents labels</p></li>
+<li><p>Cover page text</p></li>
+<li><p>Quarter names and month ranges</p></li>
+<li><p>Date formatting patterns</p></li>
+</ul>
+</section>
+<section id="customizing-translations">
+<h3>Customizing Translations<a class="headerlink" href="#customizing-translations" title="Link to this heading"></a></h3>
+<p>You can customize any translation by editing the language configuration file. For example, to modify the Swahili translations:</p>
+<ol class="arabic simple">
+<li><p>Open <code class="docutils literal notranslate"><span class="pre">languages/sw.yaml</span></code></p></li>
+<li><p>Edit the translations as needed</p></li>
+<li><p>Save the file</p></li>
+</ol>
+<p>The system will use your customized translations the next time you run the tool.</p>
+</section>
+<section id="example-language-configuration">
+<h3>Example Language Configuration<a class="headerlink" href="#example-language-configuration" title="Link to this heading"></a></h3>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="c1"># Language configuration for sw (Swahili)</span>
+
+<span class="c1"># Basic terms</span>
+<span class="nt">notes</span><span class="p">:</span><span class="w"> </span><span class="s">&#39;MAELEZO&#39;</span>
+<span class="nt">note</span><span class="p">:</span><span class="w"> </span><span class="s">&#39;ELEZO&#39;</span>
+<span class="nt">questions</span><span class="p">:</span><span class="w"> </span><span class="s">&#39;MASWALI&#39;</span>
+<span class="nt">answer_prefix</span><span class="p">:</span><span class="w"> </span><span class="s">&#39;Jibu&#39;</span>
+<span class="nt">lesson</span><span class="p">:</span><span class="w"> </span><span class="s">&#39;SOMO&#39;</span>
+
+<span class="c1"># Cover page terms</span>
+<span class="nt">sabbath_school</span><span class="p">:</span><span class="w"> </span><span class="s">&#39;SHULE</span><span class="nv"> </span><span class="s">YA</span><span class="nv"> </span><span class="s">SABATO&#39;</span>
+<span class="nt">lessons</span><span class="p">:</span><span class="w"> </span><span class="s">&#39;MASOMO&#39;</span>
+<span class="nt">adapted_from</span><span class="p">:</span><span class="w"> </span><span class="s">&#39;Imetoholewa</span><span class="nv"> </span><span class="s">kutoka&#39;</span>
+<span class="nt">from_text</span><span class="p">:</span><span class="w"> </span><span class="s">&#39;kutoka&#39;</span>
+
+<span class="c1"># Quarter names</span>
+<span class="nt">quarter_names</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">q1</span><span class="p">:</span><span class="w"> </span><span class="s">&#39;ROBO</span><span class="nv"> </span><span class="s">YA</span><span class="nv"> </span><span class="s">KWANZA&#39;</span>
+<span class="w">  </span><span class="nt">q2</span><span class="p">:</span><span class="w"> </span><span class="s">&#39;ROBO</span><span class="nv"> </span><span class="s">YA</span><span class="nv"> </span><span class="s">PILI&#39;</span>
+<span class="w">  </span><span class="nt">q3</span><span class="p">:</span><span class="w"> </span><span class="s">&#39;ROBO</span><span class="nv"> </span><span class="s">YA</span><span class="nv"> </span><span class="s">TATU&#39;</span>
+<span class="w">  </span><span class="nt">q4</span><span class="p">:</span><span class="w"> </span><span class="s">&#39;ROBO</span><span class="nv"> </span><span class="s">YA</span><span class="nv"> </span><span class="s">NNE&#39;</span>
+
+<span class="c1"># Quarter month ranges</span>
+<span class="nt">quarter_months</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">q1</span><span class="p">:</span><span class="w"> </span><span class="s">&#39;Januari</span><span class="nv"> </span><span class="s">-</span><span class="nv"> </span><span class="s">Machi&#39;</span>
+<span class="w">  </span><span class="nt">q2</span><span class="p">:</span><span class="w"> </span><span class="s">&#39;Aprili</span><span class="nv"> </span><span class="s">-</span><span class="nv"> </span><span class="s">Juni&#39;</span>
+<span class="w">  </span><span class="nt">q3</span><span class="p">:</span><span class="w"> </span><span class="s">&#39;Julai</span><span class="nv"> </span><span class="s">-</span><span class="nv"> </span><span class="s">Septemba&#39;</span>
+<span class="w">  </span><span class="nt">q4</span><span class="p">:</span><span class="w"> </span><span class="s">&#39;Oktoba</span><span class="nv"> </span><span class="s">-</span><span class="nv"> </span><span class="s">Desemba&#39;</span>
+
+<span class="c1"># Table of contents</span>
+<span class="nt">table_of_contents</span><span class="p">:</span><span class="w"> </span><span class="s">&#39;YALIYOMO&#39;</span>
+<span class="nt">lesson_column</span><span class="p">:</span><span class="w"> </span><span class="s">&#39;Somo&#39;</span>
+<span class="nt">title_column</span><span class="p">:</span><span class="w"> </span><span class="s">&#39;Kichwa&#39;</span>
+<span class="nt">date_column</span><span class="p">:</span><span class="w"> </span><span class="s">&#39;Tarehe&#39;</span>
+<span class="nt">page_column</span><span class="p">:</span><span class="w"> </span><span class="s">&#39;Ukurasa&#39;</span>
+
+<span class="c1"># Month names</span>
+<span class="nt">month_names</span><span class="p">:</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">&#39;Januari&#39;</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">&#39;Februari&#39;</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">&#39;Machi&#39;</span>
+<span class="w">  </span><span class="c1"># ...other months</span>
+
+<span class="c1"># Date format template</span>
+<span class="nt">date_format_template</span><span class="p">:</span><span class="w"> </span><span class="s">&#39;{day}</span><span class="nv"> </span><span class="s">{month},</span><span class="nv"> </span><span class="s">{year}&#39;</span>
+</pre></div>
+</div>
+</section>
+<section id="adding-new-languages">
+<h3>Adding New Languages<a class="headerlink" href="#adding-new-languages" title="Link to this heading"></a></h3>
+<p>To add support for a new language:</p>
+<ol class="arabic">
+<li><p>Create a new language file in the <code class="docutils literal notranslate"><span class="pre">languages</span></code> directory (e.g., <code class="docutils literal notranslate"><span class="pre">languages/fr.yaml</span></code> for French)</p></li>
+<li><p>Copy the structure from an existing language file</p></li>
+<li><p>Translate all text elements</p></li>
+<li><p>Update your configuration to use the new language:</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">language</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">fr</span>
+<span class="nt">language_config_path</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">./languages/fr.yaml</span>
+</pre></div>
+</div>
+</li>
+</ol>
+</section>
+</section>
+<section id="smart-file-handling">
+<h2>Smart File Handling<a class="headerlink" href="#smart-file-handling" title="Link to this heading"></a></h2>
+<p>The tool now includes smart file handling to avoid unnecessary downloads:</p>
+<ol class="arabic simple">
+<li><p><strong>Lesson Range in Filenames</strong>: The combined markdown filename includes the lesson range information (<code class="docutils literal notranslate"><span class="pre">combined_lessons_{year}_{quarter}_{lang}_{start_lesson}_{stop_lesson}.md</span></code>)</p></li>
+<li><p><strong>Existence Check</strong>: Before downloading, the system checks if a file matching the requested lesson range already exists</p></li>
+<li><p><strong>Confirmation Prompt</strong>: If a file exists, the system asks for confirmation before overwriting (unless <code class="docutils literal notranslate"><span class="pre">-y</span></code> flag is used)</p></li>
+</ol>
+<p>This approach saves bandwidth and time when running the tool multiple times with the same settings.</p>
+</section>
+<section id="answer-formatting">
+<h2>Answer Formatting<a class="headerlink" href="#answer-formatting" title="Link to this heading"></a></h2>
+<p>The processor now properly handles answers formatted with double asterisks:</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>1. What is the Sabbath? **A day of rest and worship.** Genesis 2:2-3.
+</pre></div>
+</div>
+<p>In this format:</p>
+<ul class="simple">
+<li><p>The question text is “What is the Sabbath?”</p></li>
+<li><p>The answer text is “A day of rest and worship.”</p></li>
+<li><p>The scripture reference is “Genesis 2:2-3.”</p></li>
+</ul>
+<p>This provides a clean and consistent way to mark answers in the source markdown.</p>
+</section>
+<section id="configuration-options">
+<h2>Configuration Options<a class="headerlink" href="#configuration-options" title="Link to this heading"></a></h2>
+<p>Here’s a complete example configuration file with all available options:</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="c1"># Sabbath School Lesson Configuration</span>
+
+<span class="c1"># Year and quarter to download</span>
+<span class="nt">year</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">2025</span>
+<span class="nt">quarter</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">q2</span>
+<span class="nt">language</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">sw</span>
+
+<span class="c1"># File paths</span>
+<span class="nt">input_file</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">./combined_lessons_2025_q2_sw_1_null.md</span>
+<span class="nt">output_file</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">./output/sabbath_school_lesson_2025_q2_sw.pdf</span>
+<span class="nt">front_cover_svg</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">./assets/front_cover.svg</span>
+<span class="nt">back_cover_svg</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">./assets/back_cover.svg</span>
+<span class="nt">color_theme_path</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">./themes/burgundy.yaml</span>
+<span class="nt">language_config_path</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">./languages/sw.yaml</span>
+
+<span class="c1"># Reproduction options</span>
+<span class="nt">reproduce</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">year</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">1888</span>
+<span class="w">  </span><span class="nt">quarter</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">q4</span>
+<span class="w">  </span><span class="nt">start_lesson</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">1</span>
+<span class="w">  </span><span class="nt">stop_lesson</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">13</span>
+<span class="w">  </span><span class="nt">quarter_start_date</span><span class="p">:</span><span class="w"> </span><span class="s">&#39;2025-04-01&#39;</span>
+
+<span class="c1"># PDF metadata</span>
+<span class="nt">title</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Masomo ya Shule ya Sabato</span>
+<span class="nt">subtitle</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Robo ya 2, 2025</span>
+<span class="nt">publisher</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Gospel Sounders</span>
+</pre></div>
+</div>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="index.html" class="btn btn-neutral float-left" title="Sabbath School Reproducer" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="installation.html" class="btn btn-neutral float-right" title="Installation" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, Brian Onang&#39;o.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

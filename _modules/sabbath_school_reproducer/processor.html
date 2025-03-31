@@ -1,0 +1,767 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>sabbath_school_reproducer.processor &mdash; Sabbath School Lessons Reproducer 0.1.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
+
+  
+      <script src="../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../_static/documentation_options.js?v=01f34227"></script>
+      <script src="../../_static/doctools.js?v=9a2dae69"></script>
+      <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            Sabbath School Lessons Reproducer
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../overview.html">Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../usage.html">Usage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../configuration.html">Configuration</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../modules.html">Modules</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../contributing.html">Contributing</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">Sabbath School Lessons Reproducer</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">sabbath_school_reproducer.processor</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for sabbath_school_reproducer.processor</h1><div class="highlight"><pre>
+<span></span><span class="c1"># Modifications to processor.py</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Markdown Processor for Sabbath School Lessons</span>
+
+<span class="sd">This module processes markdown files, extracting lesson content, front matter, and back matter.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">re</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">markdown</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">bs4</span><span class="w"> </span><span class="kn">import</span> <span class="n">BeautifulSoup</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.utils.language_utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">LanguageConfig</span>
+
+
+<div class="viewcode-block" id="MarkdownProcessor">
+<a class="viewcode-back" href="../../modules.html#sabbath_school_reproducer.processor.MarkdownProcessor">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">MarkdownProcessor</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Processes markdown files to extract structured content.&quot;&quot;&quot;</span>
+    
+<div class="viewcode-block" id="MarkdownProcessor.adjust_dates">
+<a class="viewcode-back" href="../../modules.html#sabbath_school_reproducer.processor.MarkdownProcessor.adjust_dates">[docs]</a>
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">adjust_dates</span><span class="p">(</span><span class="n">lessons</span><span class="p">,</span> <span class="n">config</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Adjust lesson dates based on the quarter_start_date in config</span>
+<span class="sd">        </span>
+<span class="sd">        Args:</span>
+<span class="sd">            lessons (list): List of lesson dictionaries</span>
+<span class="sd">            config (dict): Configuration dictionary with reproduction settings</span>
+<span class="sd">            </span>
+<span class="sd">        Returns:</span>
+<span class="sd">            list: Updated list of lesson dictionaries with adjusted dates</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">config</span> <span class="ow">or</span> <span class="s1">&#39;reproduce&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">config</span> <span class="ow">or</span> <span class="ow">not</span> <span class="n">config</span><span class="p">[</span><span class="s1">&#39;reproduce&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;quarter_start_date&#39;</span><span class="p">):</span>
+            <span class="k">return</span> <span class="n">lessons</span>  <span class="c1"># No date adjustment needed</span>
+        
+        <span class="k">try</span><span class="p">:</span>
+            <span class="c1"># Parse the quarter start date</span>
+            <span class="kn">from</span><span class="w"> </span><span class="nn">datetime</span><span class="w"> </span><span class="kn">import</span> <span class="n">datetime</span><span class="p">,</span> <span class="n">timedelta</span>
+            <span class="n">quarter_start</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">strptime</span><span class="p">(</span><span class="n">config</span><span class="p">[</span><span class="s1">&#39;reproduce&#39;</span><span class="p">][</span><span class="s1">&#39;quarter_start_date&#39;</span><span class="p">],</span> <span class="s1">&#39;%Y-%m-</span><span class="si">%d</span><span class="s1">&#39;</span><span class="p">)</span>
+            
+            <span class="c1"># Set new lesson numbers if needed</span>
+            <span class="n">start_lesson</span> <span class="o">=</span> <span class="n">config</span><span class="p">[</span><span class="s1">&#39;reproduce&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;start_lesson&#39;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+            
+            <span class="c1"># Get language code</span>
+            <span class="n">language_code</span> <span class="o">=</span> <span class="n">config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;language&#39;</span><span class="p">,</span> <span class="s1">&#39;en&#39;</span><span class="p">)</span>
+            
+            <span class="c1"># Sort lessons by their original number</span>
+            <span class="n">lessons</span><span class="o">.</span><span class="n">sort</span><span class="p">(</span><span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">l</span><span class="p">:</span> <span class="nb">int</span><span class="p">(</span><span class="n">l</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;number&#39;</span><span class="p">,</span> <span class="mi">0</span><span class="p">)))</span>
+            
+            <span class="c1"># Apply new dates and lesson numbers</span>
+            <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">lesson</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">lessons</span><span class="p">):</span>
+                <span class="c1"># Store original date for reference if needed</span>
+                <span class="k">if</span> <span class="n">lesson</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;date&#39;</span><span class="p">):</span>
+                    <span class="n">lesson</span><span class="p">[</span><span class="s1">&#39;original_date&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">lesson</span><span class="p">[</span><span class="s1">&#39;date&#39;</span><span class="p">]</span>
+                
+                <span class="c1"># Set the new lesson number (1-based)</span>
+                <span class="n">new_lesson_number</span> <span class="o">=</span> <span class="n">i</span> <span class="o">+</span> <span class="mi">1</span>
+                <span class="n">lesson</span><span class="p">[</span><span class="s1">&#39;number&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">new_lesson_number</span><span class="p">)</span>
+                
+                <span class="c1"># Calculate new date (one week apart)</span>
+                <span class="n">lesson_date</span> <span class="o">=</span> <span class="n">quarter_start</span> <span class="o">+</span> <span class="n">timedelta</span><span class="p">(</span><span class="n">days</span><span class="o">=</span><span class="mi">7</span> <span class="o">*</span> <span class="n">i</span><span class="p">)</span>
+                
+                <span class="c1"># Format the date based on language</span>
+                <span class="n">new_date</span> <span class="o">=</span> <span class="n">LanguageConfig</span><span class="o">.</span><span class="n">format_date</span><span class="p">(</span><span class="n">lesson_date</span><span class="p">,</span> <span class="n">language_code</span><span class="p">)</span>
+                <span class="n">lesson</span><span class="p">[</span><span class="s1">&#39;date&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">new_date</span>
+            
+            <span class="k">return</span> <span class="n">lessons</span>
+                
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Warning: Error adjusting lesson dates: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">lessons</span>  <span class="c1"># Return original lessons if date adjustment fails</span></div>
+
+    
+<div class="viewcode-block" id="MarkdownProcessor.parse_file_sections">
+<a class="viewcode-back" href="../../modules.html#sabbath_school_reproducer.processor.MarkdownProcessor.parse_file_sections">[docs]</a>
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">parse_file_sections</span><span class="p">(</span><span class="n">content</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Extract content from different file sections marked with special headers</span>
+<span class="sd">        </span>
+<span class="sd">        Args:</span>
+<span class="sd">            content (str): Combined markdown file content</span>
+<span class="sd">            </span>
+<span class="sd">        Returns:</span>
+<span class="sd">            tuple: (lessons_content, frontmatter_content, backmatter_content)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># Find all file sections</span>
+        <span class="n">file_sections</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">findall</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;# File: ([^\n]+)[\r\n]+#-+[\r\n]+(.*?)(?=# File:|$)&#39;</span><span class="p">,</span> <span class="n">content</span><span class="p">,</span> <span class="n">re</span><span class="o">.</span><span class="n">DOTALL</span><span class="p">)</span>
+        
+        <span class="n">frontmatter_content</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+        <span class="n">backmatter_content</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+        <span class="n">lessons_content</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+        
+        <span class="k">for</span> <span class="n">filename</span><span class="p">,</span> <span class="n">section_content</span> <span class="ow">in</span> <span class="n">file_sections</span><span class="p">:</span>
+            <span class="n">filename</span> <span class="o">=</span> <span class="n">filename</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
+            
+            <span class="k">if</span> <span class="s1">&#39;front-matter&#39;</span> <span class="ow">in</span> <span class="n">filename</span><span class="p">:</span>
+                <span class="n">frontmatter_content</span> <span class="o">=</span> <span class="n">section_content</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+            <span class="k">elif</span> <span class="s1">&#39;back-matter&#39;</span> <span class="ow">in</span> <span class="n">filename</span><span class="p">:</span>
+                <span class="n">backmatter_content</span> <span class="o">=</span> <span class="n">section_content</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+            <span class="k">elif</span> <span class="s1">&#39;week-&#39;</span> <span class="ow">in</span> <span class="n">filename</span> <span class="ow">or</span> <span class="s1">&#39;lesson-&#39;</span> <span class="ow">in</span> <span class="n">filename</span><span class="p">:</span>
+                <span class="n">lessons_content</span> <span class="o">+=</span> <span class="n">section_content</span> <span class="o">+</span> <span class="s2">&quot;</span><span class="se">\n\n</span><span class="s2">&quot;</span>
+        
+        <span class="k">return</span> <span class="n">lessons_content</span><span class="p">,</span> <span class="n">frontmatter_content</span><span class="p">,</span> <span class="n">backmatter_content</span></div>
+
+    
+<div class="viewcode-block" id="MarkdownProcessor.extract_and_remove_date">
+<a class="viewcode-back" href="../../modules.html#sabbath_school_reproducer.processor.MarkdownProcessor.extract_and_remove_date">[docs]</a>
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">extract_and_remove_date</span><span class="p">(</span><span class="n">markdown_text</span><span class="p">,</span> <span class="n">language_code</span><span class="o">=</span><span class="s1">&#39;en&#39;</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Extract date from markdown and return the text with the date removed</span>
+<span class="sd">        </span>
+<span class="sd">        Args:</span>
+<span class="sd">            markdown_text (str): The markdown text to process</span>
+<span class="sd">            language_code (str): The language code</span>
+<span class="sd">            </span>
+<span class="sd">        Returns:</span>
+<span class="sd">            tuple: (extracted_date, cleaned_text)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># Get date formats for the specified language</span>
+        <span class="n">date_patterns</span> <span class="o">=</span> <span class="n">LanguageConfig</span><span class="o">.</span><span class="n">get_date_formats</span><span class="p">(</span><span class="n">language_code</span><span class="p">)</span>
+        
+        <span class="n">extracted_date</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+        <span class="n">cleaned_text</span> <span class="o">=</span> <span class="n">markdown_text</span>
+        
+        <span class="c1"># Try to find and extract a date</span>
+        <span class="k">for</span> <span class="n">pattern</span> <span class="ow">in</span> <span class="n">date_patterns</span><span class="p">:</span>
+            <span class="n">date_match</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="n">pattern</span><span class="p">,</span> <span class="n">markdown_text</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">date_match</span><span class="p">:</span>
+                <span class="n">extracted_date</span> <span class="o">=</span> <span class="n">date_match</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+                <span class="c1"># Only remove the date if it appears on its own line</span>
+                <span class="n">date_line_pattern</span> <span class="o">=</span> <span class="sa">r</span><span class="s1">&#39;(?m)^(\s*&#39;</span> <span class="o">+</span> <span class="n">re</span><span class="o">.</span><span class="n">escape</span><span class="p">(</span><span class="n">extracted_date</span><span class="p">)</span> <span class="o">+</span> <span class="sa">r</span><span class="s1">&#39;\s*)$&#39;</span>
+                <span class="n">date_line_match</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="n">date_line_pattern</span><span class="p">,</span> <span class="n">markdown_text</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">date_line_match</span><span class="p">:</span>
+                    <span class="c1"># Remove only the line containing just the date</span>
+                    <span class="n">cleaned_text</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="n">date_line_pattern</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="n">markdown_text</span><span class="p">)</span>
+                    <span class="c1"># Clean up any resulting double newlines</span>
+                    <span class="n">cleaned_text</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;\n\s*\n\s*\n&#39;</span><span class="p">,</span> <span class="s1">&#39;</span><span class="se">\n\n</span><span class="s1">&#39;</span><span class="p">,</span> <span class="n">cleaned_text</span><span class="p">)</span>
+                <span class="k">break</span>
+        
+        <span class="k">return</span> <span class="n">extracted_date</span><span class="p">,</span> <span class="n">cleaned_text</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span></div>
+
+    
+<div class="viewcode-block" id="MarkdownProcessor.add_new_lines_to_markdown">
+<a class="viewcode-back" href="../../modules.html#sabbath_school_reproducer.processor.MarkdownProcessor.add_new_lines_to_markdown">[docs]</a>
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">add_new_lines_to_markdown</span><span class="p">(</span><span class="n">markdown_content</span><span class="p">):</span>
+        <span class="c1"># Split the content into lines</span>
+        <span class="n">lines</span> <span class="o">=</span> <span class="n">markdown_content</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">lines</span><span class="p">)):</span>
+            <span class="n">current_line</span> <span class="o">=</span> <span class="n">lines</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+
+            <span class="c1"># Add the current line to the result list</span>
+            <span class="n">result</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">lines</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
+
+            <span class="c1"># Check if the current line is not a numbered list and not a table</span>
+            <span class="k">if</span> <span class="n">current_line</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">re</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;^\d+\.&#39;</span><span class="p">,</span> <span class="n">current_line</span><span class="p">)</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">current_line</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">&#39;|&#39;</span><span class="p">):</span>
+                <span class="c1"># Check if the next line exists, is not blank, and is not a numbered list or table</span>
+                <span class="k">if</span> <span class="n">i</span> <span class="o">+</span> <span class="mi">1</span> <span class="o">&lt;</span> <span class="nb">len</span><span class="p">(</span><span class="n">lines</span><span class="p">):</span>
+                    <span class="n">next_line</span> <span class="o">=</span> <span class="n">lines</span><span class="p">[</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+
+                    <span class="k">if</span> <span class="n">next_line</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">re</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;^\d+\.&#39;</span><span class="p">,</span> <span class="n">next_line</span><span class="p">)</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">next_line</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">&#39;|&#39;</span><span class="p">):</span>
+                        <span class="n">result</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;&#39;</span><span class="p">)</span>  <span class="c1"># Add a blank line between paragraphs</span>
+        
+        <span class="c1"># Join the result back into a single string</span>
+        <span class="k">return</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">result</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="MarkdownProcessor.parse_lessons">
+<a class="viewcode-back" href="../../modules.html#sabbath_school_reproducer.processor.MarkdownProcessor.parse_lessons">[docs]</a>
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">parse_lessons</span><span class="p">(</span><span class="n">markdown_content</span><span class="p">,</span> <span class="n">language_code</span><span class="o">=</span><span class="s1">&#39;en&#39;</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Parse the markdown content to extract lessons using a line-by-line approach</span>
+<span class="sd">        </span>
+<span class="sd">        Args:</span>
+<span class="sd">            markdown_content (str): Markdown content containing lessons</span>
+<span class="sd">            language_code (str): Language code for translations</span>
+<span class="sd">            </span>
+<span class="sd">        Returns:</span>
+<span class="sd">            list: List of lesson dictionaries</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># Add paragraph and line spacing</span>
+        <span class="n">markdown_content</span> <span class="o">=</span> <span class="n">MarkdownProcessor</span><span class="o">.</span><span class="n">add_new_lines_to_markdown</span><span class="p">(</span><span class="n">markdown_content</span><span class="p">)</span>
+        
+        <span class="c1"># Get language-specific terms</span>
+        <span class="n">lesson_term</span> <span class="o">=</span> <span class="n">LanguageConfig</span><span class="o">.</span><span class="n">get_translation</span><span class="p">(</span><span class="n">language_code</span><span class="p">,</span> <span class="s1">&#39;lesson&#39;</span><span class="p">,</span> <span class="s1">&#39;LESSON&#39;</span><span class="p">)</span>
+        <span class="n">notes_term</span> <span class="o">=</span> <span class="n">LanguageConfig</span><span class="o">.</span><span class="n">get_translation</span><span class="p">(</span><span class="n">language_code</span><span class="p">,</span> <span class="s1">&#39;notes&#39;</span><span class="p">,</span> <span class="s1">&#39;NOTES&#39;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="n">notes_term</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="n">notes_term</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="n">notes_term</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="n">notes_term</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="n">notes_term</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="n">notes_term</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="n">notes_term</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="n">notes_term</span><span class="p">)</span>
+        <span class="n">note_term</span> <span class="o">=</span> <span class="n">LanguageConfig</span><span class="o">.</span><span class="n">get_translation</span><span class="p">(</span><span class="n">language_code</span><span class="p">,</span> <span class="s1">&#39;note&#39;</span><span class="p">,</span> <span class="s1">&#39;NOTE&#39;</span><span class="p">)</span>
+        <span class="n">questions_term</span> <span class="o">=</span> <span class="n">LanguageConfig</span><span class="o">.</span><span class="n">get_translation</span><span class="p">(</span><span class="n">language_code</span><span class="p">,</span> <span class="s1">&#39;questions&#39;</span><span class="p">,</span> <span class="s1">&#39;QUESTIONS&#39;</span><span class="p">)</span>
+        
+        <span class="c1"># # Create case-insensitive patterns for language-specific terms</span>
+        <span class="c1"># lesson_pattern = re.compile(r&#39;^#\s*&#39; + re.escape(lesson_term) + r&#39;\s+\d+&#39;, re.IGNORECASE)</span>
+        <span class="c1"># notes_pattern = re.compile(r&#39;^#{2,3}\s+(&#39; + re.escape(notes_term) + r&#39;|&#39; + re.escape(note_term) + r&#39;)$&#39;, re.IGNORECASE)</span>
+        <span class="c1"># questions_pattern = re.compile(r&#39;^#{2,3}\s+&#39; + re.escape(questions_term) + r&#39;$&#39;, re.IGNORECASE)</span>
+        
+        <span class="c1"># # Split the content by lesson headers</span>
+        <span class="c1"># lesson_blocks = re.split(r&#39;(?=&#39; + lesson_pattern.pattern + r&#39;)&#39;, markdown_content, flags=re.MULTILINE)</span>
+        <span class="n">lesson_pattern</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;^#\s*&#39;</span> <span class="o">+</span> <span class="n">re</span><span class="o">.</span><span class="n">escape</span><span class="p">(</span><span class="n">lesson_term</span><span class="p">)</span> <span class="o">+</span> <span class="sa">r</span><span class="s1">&#39;\s+\d+&#39;</span><span class="p">,</span> <span class="n">re</span><span class="o">.</span><span class="n">IGNORECASE</span> <span class="o">|</span> <span class="n">re</span><span class="o">.</span><span class="n">MULTILINE</span><span class="p">)</span>
+        <span class="n">notes_pattern</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;^#{2,3}\s+(&#39;</span> <span class="o">+</span> <span class="n">re</span><span class="o">.</span><span class="n">escape</span><span class="p">(</span><span class="n">notes_term</span><span class="p">)</span> <span class="o">+</span> <span class="sa">r</span><span class="s1">&#39;|&#39;</span> <span class="o">+</span> <span class="n">re</span><span class="o">.</span><span class="n">escape</span><span class="p">(</span><span class="n">note_term</span><span class="p">)</span> <span class="o">+</span> <span class="sa">r</span><span class="s1">&#39;)$&#39;</span><span class="p">,</span> <span class="n">re</span><span class="o">.</span><span class="n">IGNORECASE</span> <span class="o">|</span> <span class="n">re</span><span class="o">.</span><span class="n">MULTILINE</span><span class="p">)</span>
+        <span class="n">questions_pattern</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;^#{2,3}\s+&#39;</span> <span class="o">+</span> <span class="n">re</span><span class="o">.</span><span class="n">escape</span><span class="p">(</span><span class="n">questions_term</span><span class="p">)</span> <span class="o">+</span> <span class="sa">r</span><span class="s1">&#39;$&#39;</span><span class="p">,</span> <span class="n">re</span><span class="o">.</span><span class="n">IGNORECASE</span> <span class="o">|</span> <span class="n">re</span><span class="o">.</span><span class="n">MULTILINE</span><span class="p">)</span>
+
+        <span class="c1"># Split the content by lesson headers - IMPORTANT: Use the re.MULTILINE flag here too!</span>
+        <span class="n">lesson_blocks</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;(?=^#\s*&#39;</span> <span class="o">+</span> <span class="n">re</span><span class="o">.</span><span class="n">escape</span><span class="p">(</span><span class="n">lesson_term</span><span class="p">)</span> <span class="o">+</span> <span class="sa">r</span><span class="s1">&#39;\s+\d+)&#39;</span><span class="p">,</span> <span class="n">markdown_content</span><span class="p">,</span> <span class="n">flags</span><span class="o">=</span><span class="n">re</span><span class="o">.</span><span class="n">MULTILINE</span> <span class="o">|</span> <span class="n">re</span><span class="o">.</span><span class="n">IGNORECASE</span><span class="p">)</span>
+
+        
+        <span class="c1"># Remove any empty blocks</span>
+        <span class="n">lesson_blocks</span> <span class="o">=</span> <span class="p">[</span><span class="n">block</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span> <span class="k">for</span> <span class="n">block</span> <span class="ow">in</span> <span class="n">lesson_blocks</span> <span class="k">if</span> <span class="n">block</span><span class="o">.</span><span class="n">strip</span><span class="p">()]</span>
+        
+        <span class="n">lessons</span> <span class="o">=</span> <span class="p">[]</span>
+        
+        <span class="k">for</span> <span class="n">block</span> <span class="ow">in</span> <span class="n">lesson_blocks</span><span class="p">:</span>
+            <span class="n">lines</span> <span class="o">=</span> <span class="n">block</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
+            <span class="c1"># Initialize lesson structure</span>
+            <span class="n">lesson</span> <span class="o">=</span> <span class="p">{</span>
+                <span class="s1">&#39;number&#39;</span><span class="p">:</span> <span class="s1">&#39;&#39;</span><span class="p">,</span>
+                <span class="s1">&#39;date&#39;</span><span class="p">:</span> <span class="s1">&#39;&#39;</span><span class="p">,</span>
+                <span class="s1">&#39;title&#39;</span><span class="p">:</span> <span class="s1">&#39;&#39;</span><span class="p">,</span>
+                <span class="s1">&#39;preliminary_note&#39;</span><span class="p">:</span> <span class="s1">&#39;&#39;</span><span class="p">,</span>
+                <span class="s1">&#39;questions&#39;</span><span class="p">:</span> <span class="p">[],</span>
+                <span class="s1">&#39;question_headers&#39;</span><span class="p">:</span> <span class="p">[],</span>
+                <span class="s1">&#39;notes&#39;</span><span class="p">:</span> <span class="s1">&#39;&#39;</span><span class="p">,</span>
+                <span class="s1">&#39;additional_sections&#39;</span><span class="p">:</span> <span class="p">[]</span>
+            <span class="p">}</span>
+            
+            <span class="c1"># Process the lesson header (first line)</span>
+            <span class="k">if</span> <span class="n">lines</span> <span class="ow">and</span> <span class="n">re</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="n">lesson_pattern</span><span class="p">,</span> <span class="n">lines</span><span class="p">[</span><span class="mi">0</span><span class="p">]):</span>
+                <span class="n">header_line</span> <span class="o">=</span> <span class="n">lines</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+                
+                <span class="c1"># Extract lesson number</span>
+                <span class="n">number_match</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;#\s*(?:&#39;</span> <span class="o">+</span> <span class="n">re</span><span class="o">.</span><span class="n">escape</span><span class="p">(</span><span class="n">lesson_term</span><span class="p">)</span> <span class="o">+</span> <span class="sa">r</span><span class="s1">&#39;)\s+(\d+)&#39;</span><span class="p">,</span> <span class="n">header_line</span><span class="p">,</span> <span class="n">re</span><span class="o">.</span><span class="n">IGNORECASE</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">number_match</span><span class="p">:</span>
+                    <span class="n">lesson</span><span class="p">[</span><span class="s1">&#39;number&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">number_match</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+                
+                <span class="c1"># Check for date in em-dash format</span>
+                <span class="n">em_dash_date_match</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;[—–-]\s*([A-Za-z]+ \d+, \d</span><span class="si">{4}</span><span class="s1">)&#39;</span><span class="p">,</span> <span class="n">header_line</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">em_dash_date_match</span><span class="p">:</span>
+                    <span class="n">lesson</span><span class="p">[</span><span class="s1">&#39;date&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">em_dash_date_match</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="c1"># Check for title after dash</span>
+                    <span class="n">title_match</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;[-–—]\s*(.*?)$&#39;</span><span class="p">,</span> <span class="n">header_line</span><span class="p">)</span>
+                    <span class="k">if</span> <span class="n">title_match</span><span class="p">:</span>
+                        <span class="n">lesson</span><span class="p">[</span><span class="s1">&#39;title&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">title_match</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+            
+            <span class="c1"># Process the rest of the lines</span>
+            <span class="n">line_index</span> <span class="o">=</span> <span class="mi">1</span>  <span class="c1"># Start from the second line</span>
+            <span class="n">preliminary_lines</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="n">current_section</span> <span class="o">=</span> <span class="kc">None</span>
+            <span class="n">current_question_section</span> <span class="o">=</span> <span class="kc">None</span>
+            <span class="n">question_list</span> <span class="o">=</span> <span class="p">[]</span>
+            
+            <span class="c1"># Flag to track if we&#39;ve seen any section after questions</span>
+            <span class="n">seen_non_question_section</span> <span class="o">=</span> <span class="kc">False</span>
+            
+            <span class="c1"># Look for the title in level 2 headers</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">lesson</span><span class="p">[</span><span class="s1">&#39;title&#39;</span><span class="p">]</span> <span class="ow">and</span> <span class="n">line_index</span> <span class="o">&lt;</span> <span class="nb">len</span><span class="p">(</span><span class="n">lines</span><span class="p">):</span>
+                <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">line_index</span><span class="p">,</span> <span class="nb">min</span><span class="p">(</span><span class="n">line_index</span> <span class="o">+</span> <span class="mi">10</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">lines</span><span class="p">))):</span>
+                    <span class="k">if</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="nb">len</span><span class="p">(</span><span class="n">lines</span><span class="p">)</span> <span class="ow">and</span> <span class="n">re</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;^##\s+&#39;</span><span class="p">,</span> <span class="n">lines</span><span class="p">[</span><span class="n">i</span><span class="p">]):</span>
+                        <span class="n">title_match</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;^##\s+(.*?)$&#39;</span><span class="p">,</span> <span class="n">lines</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
+                        <span class="k">if</span> <span class="n">title_match</span><span class="p">:</span>
+                            <span class="n">lesson</span><span class="p">[</span><span class="s1">&#39;title&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">title_match</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+                            <span class="n">line_index</span> <span class="o">=</span> <span class="n">i</span> <span class="o">+</span> <span class="mi">1</span>
+                            <span class="k">break</span>
+            
+            <span class="c1"># Look for date on its own line</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">lesson</span><span class="p">[</span><span class="s1">&#39;date&#39;</span><span class="p">]</span> <span class="ow">and</span> <span class="n">line_index</span> <span class="o">&lt;</span> <span class="nb">len</span><span class="p">(</span><span class="n">lines</span><span class="p">):</span>
+                <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">line_index</span><span class="p">,</span> <span class="nb">min</span><span class="p">(</span><span class="n">line_index</span> <span class="o">+</span> <span class="mi">5</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">lines</span><span class="p">))):</span>
+                    <span class="k">if</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="nb">len</span><span class="p">(</span><span class="n">lines</span><span class="p">):</span>
+                        <span class="c1"># Use language-specific date patterns</span>
+                        <span class="k">for</span> <span class="n">pattern</span> <span class="ow">in</span> <span class="n">LanguageConfig</span><span class="o">.</span><span class="n">get_date_formats</span><span class="p">(</span><span class="n">language_code</span><span class="p">):</span>
+                            <span class="n">date_match</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="n">pattern</span><span class="p">,</span> <span class="n">lines</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">strip</span><span class="p">())</span>
+                            <span class="k">if</span> <span class="n">date_match</span><span class="p">:</span>
+                                <span class="n">lesson</span><span class="p">[</span><span class="s1">&#39;date&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">date_match</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+                                <span class="n">line_index</span> <span class="o">=</span> <span class="n">i</span> <span class="o">+</span> <span class="mi">1</span>
+                                <span class="k">break</span>
+                        
+                        <span class="c1"># Also check for italicized date</span>
+                        <span class="k">for</span> <span class="n">pattern</span> <span class="ow">in</span> <span class="n">LanguageConfig</span><span class="o">.</span><span class="n">get_date_formats</span><span class="p">(</span><span class="n">language_code</span><span class="p">):</span>
+                            <span class="n">italics_pattern</span> <span class="o">=</span> <span class="sa">r</span><span class="s1">&#39;^\*(&#39;</span> <span class="o">+</span> <span class="n">pattern</span><span class="p">[</span><span class="mi">1</span><span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="sa">r</span><span class="s1">&#39;)\*$&#39;</span>
+                            <span class="n">italics_date_match</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="n">italics_pattern</span><span class="p">,</span> <span class="n">lines</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">strip</span><span class="p">())</span>
+                            <span class="k">if</span> <span class="n">italics_date_match</span><span class="p">:</span>
+                                <span class="n">lesson</span><span class="p">[</span><span class="s1">&#39;date&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">italics_date_match</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+                                <span class="n">line_index</span> <span class="o">=</span> <span class="n">i</span> <span class="o">+</span> <span class="mi">1</span>
+                                <span class="k">break</span>
+            
+            <span class="c1"># Find where content actually starts</span>
+            <span class="k">while</span> <span class="n">line_index</span> <span class="o">&lt;</span> <span class="nb">len</span><span class="p">(</span><span class="n">lines</span><span class="p">)</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">lines</span><span class="p">[</span><span class="n">line_index</span><span class="p">]</span><span class="o">.</span><span class="n">strip</span><span class="p">():</span>
+                <span class="n">line_index</span> <span class="o">+=</span> <span class="mi">1</span>
+            
+            <span class="c1"># Collect preliminary content - but we need to look ahead to see if it&#39;s followed by questions</span>
+            <span class="n">has_preliminary</span> <span class="o">=</span> <span class="kc">False</span>
+            <span class="n">preliminary_start_index</span> <span class="o">=</span> <span class="n">line_index</span>
+            <span class="n">preliminary_end_index</span> <span class="o">=</span> <span class="n">line_index</span>
+            
+            <span class="c1"># Scan ahead to find patterns</span>
+            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">line_index</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">lines</span><span class="p">)):</span>
+                <span class="n">line</span> <span class="o">=</span> <span class="n">lines</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+                <span class="c1"># If we find a numbered list, this is likely where questions start</span>
+                <span class="k">if</span> <span class="n">re</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;^\s*\d+\.\s+&#39;</span><span class="p">,</span> <span class="n">line</span><span class="p">):</span>
+                    <span class="c1"># If there was content between line_index and i, it might be preliminary</span>
+                    <span class="k">if</span> <span class="n">i</span> <span class="o">&gt;</span> <span class="n">line_index</span><span class="p">:</span>
+                        <span class="c1"># Check if the non-blank line right before this is a section header</span>
+                        <span class="c1"># If it is, don&#39;t include the header in preliminary</span>
+                        <span class="n">question_start_index</span> <span class="o">=</span> <span class="n">i</span>
+                        <span class="n">header_index</span> <span class="o">=</span> <span class="kc">None</span>
+                        
+                        <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">i</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="nb">max</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">line_index</span><span class="o">-</span><span class="mi">1</span><span class="p">),</span> <span class="o">-</span><span class="mi">1</span><span class="p">):</span>
+                            <span class="k">if</span> <span class="n">j</span> <span class="o">&gt;=</span> <span class="mi">0</span> <span class="ow">and</span> <span class="n">lines</span><span class="p">[</span><span class="n">j</span><span class="p">]</span><span class="o">.</span><span class="n">strip</span><span class="p">():</span>
+                                <span class="k">if</span> <span class="n">re</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;^#{2,3}\s+&#39;</span><span class="p">,</span> <span class="n">lines</span><span class="p">[</span><span class="n">j</span><span class="p">]):</span>
+                                    <span class="c1"># Found a header right before questions</span>
+                                    <span class="n">header_index</span> <span class="o">=</span> <span class="n">j</span>
+                                <span class="k">break</span>
+                        <span class="k">if</span> <span class="n">header_index</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                            <span class="c1"># If a header was found, preliminary ends before that header</span>
+                            <span class="k">if</span> <span class="n">header_index</span> <span class="o">&gt;</span> <span class="n">line_index</span><span class="p">:</span>
+                                <span class="n">has_preliminary</span> <span class="o">=</span> <span class="kc">True</span>
+                                <span class="n">preliminary_end_index</span> <span class="o">=</span> <span class="n">header_index</span>
+                        <span class="k">else</span><span class="p">:</span>
+                            <span class="c1"># No header found before questions, everything up to questions is preliminary</span>
+                            <span class="n">has_preliminary</span> <span class="o">=</span> <span class="kc">True</span>
+                            <span class="n">preliminary_end_index</span> <span class="o">=</span> <span class="n">i</span>
+                    <span class="k">break</span>
+            
+            <span class="c1"># Collect the preliminary content if we found some</span>
+            <span class="k">if</span> <span class="n">has_preliminary</span><span class="p">:</span>
+                <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">preliminary_start_index</span><span class="p">,</span> <span class="n">preliminary_end_index</span><span class="p">):</span>
+                    <span class="n">preliminary_lines</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">lines</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
+                <span class="n">line_index</span> <span class="o">=</span> <span class="n">preliminary_end_index</span>
+            
+            <span class="c1"># Save preliminary matter</span>
+            <span class="n">lesson</span><span class="p">[</span><span class="s1">&#39;preliminary_note&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">preliminary_lines</span><span class="p">)</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+            <span class="c1"># Process sections (questions, notes, and additional)</span>
+            <span class="n">section_buffer</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="n">current_question_text</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+            <span class="n">in_question</span> <span class="o">=</span> <span class="kc">False</span>
+            
+            <span class="k">while</span> <span class="n">line_index</span> <span class="o">&lt;</span> <span class="nb">len</span><span class="p">(</span><span class="n">lines</span><span class="p">):</span>
+                <span class="n">line</span> <span class="o">=</span> <span class="n">lines</span><span class="p">[</span><span class="n">line_index</span><span class="p">]</span>
+                
+                <span class="c1"># Check if this line is a section header</span>
+                <span class="n">header_match</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;^#{2,3}\s+(.*?)$&#39;</span><span class="p">,</span> <span class="n">line</span><span class="p">)</span>
+                
+                <span class="k">if</span> <span class="n">header_match</span><span class="p">:</span>
+                    <span class="c1"># If we were collecting a question, save it</span>
+                    <span class="k">if</span> <span class="n">in_question</span> <span class="ow">and</span> <span class="n">current_question_text</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">seen_non_question_section</span><span class="p">:</span>
+                        <span class="n">question_obj</span> <span class="o">=</span> <span class="n">MarkdownProcessor</span><span class="o">.</span><span class="n">_parse_question</span><span class="p">(</span><span class="n">current_question_text</span><span class="p">,</span> <span class="n">current_question_section</span> <span class="ow">or</span> <span class="n">questions_term</span><span class="p">,</span> <span class="n">language_code</span><span class="p">)</span>
+                        <span class="n">question_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">question_obj</span><span class="p">)</span>
+                        <span class="n">current_question_text</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+                        <span class="n">in_question</span> <span class="o">=</span> <span class="kc">False</span>
+                    
+                    <span class="c1"># Save the previous section if we have one</span>
+                    <span class="k">if</span> <span class="n">current_section</span><span class="p">:</span>
+                        <span class="c1"># Check if this is notes section using language-specific pattern</span>
+                        <span class="k">if</span> <span class="n">re</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="n">notes_pattern</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;## </span><span class="si">{</span><span class="n">current_section</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">):</span>
+                            <span class="n">fixed_notes</span> <span class="o">=</span> <span class="n">MarkdownProcessor</span><span class="o">.</span><span class="n">_fix_notes_numbering</span><span class="p">(</span><span class="n">section_buffer</span><span class="p">)</span>
+                            <span class="n">lesson</span><span class="p">[</span><span class="s1">&#39;notes&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">fixed_notes</span><span class="p">)</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+                        <span class="k">elif</span> <span class="n">current_section</span> <span class="o">!=</span> <span class="s1">&#39;questions&#39;</span><span class="p">:</span>
+                            <span class="c1"># This is an additional section</span>
+                            <span class="n">lesson</span><span class="p">[</span><span class="s1">&#39;additional_sections&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">({</span>
+                                <span class="s1">&#39;title&#39;</span><span class="p">:</span> <span class="n">current_section</span><span class="p">,</span>
+                                <span class="s1">&#39;content&#39;</span><span class="p">:</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">section_buffer</span><span class="p">)</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+                            <span class="p">})</span>
+                            <span class="c1"># Once we&#39;ve seen an additional section, no more questions</span>
+                            <span class="n">seen_non_question_section</span> <span class="o">=</span> <span class="kc">True</span>
+                        
+                        <span class="c1"># Clear the buffer for the new section</span>
+                        <span class="n">section_buffer</span> <span class="o">=</span> <span class="p">[]</span>
+                    
+                    <span class="n">header_text</span> <span class="o">=</span> <span class="n">header_match</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+                    
+                    <span class="c1"># Look ahead to see if the next section is questions (has numbered list)</span>
+                    <span class="n">is_question_section</span> <span class="o">=</span> <span class="kc">False</span>
+                    <span class="k">if</span> <span class="ow">not</span> <span class="n">seen_non_question_section</span><span class="p">:</span>  <span class="c1"># Only check for question sections if we haven&#39;t seen non-question sections</span>
+                        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">line_index</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="nb">min</span><span class="p">(</span><span class="n">line_index</span> <span class="o">+</span> <span class="mi">5</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">lines</span><span class="p">))):</span>
+                            <span class="k">if</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="nb">len</span><span class="p">(</span><span class="n">lines</span><span class="p">):</span>
+                                <span class="n">numbered_list_match</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;^\s*\d+\.\s+&#39;</span><span class="p">,</span> <span class="n">lines</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
+                                <span class="k">if</span> <span class="n">numbered_list_match</span><span class="p">:</span>
+                                    <span class="n">is_question_section</span> <span class="o">=</span> <span class="kc">True</span>
+                                    <span class="k">break</span>
+                                <span class="k">elif</span> <span class="n">lines</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">re</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;^\s*$&#39;</span><span class="p">,</span> <span class="n">lines</span><span class="p">[</span><span class="n">i</span><span class="p">]):</span>
+                                    <span class="c1"># If we encounter non-empty, non-numbered list content, it&#39;s not a question section</span>
+                                    <span class="k">break</span>
+                    
+                    <span class="c1"># Determine the type of the new section</span>
+                    <span class="k">if</span> <span class="n">re</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="n">notes_pattern</span><span class="p">,</span> <span class="n">line</span><span class="p">):</span>
+                        <span class="n">current_section</span> <span class="o">=</span> <span class="n">header_text</span>
+                        <span class="n">current_question_section</span> <span class="o">=</span> <span class="kc">None</span>
+                        <span class="n">seen_non_question_section</span> <span class="o">=</span> <span class="kc">True</span>
+                    <span class="k">elif</span> <span class="p">(</span><span class="n">is_question_section</span> <span class="ow">or</span> <span class="n">re</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="n">questions_pattern</span><span class="p">,</span> <span class="n">line</span><span class="p">))</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">seen_non_question_section</span><span class="p">:</span>
+                        <span class="c1"># This is a questions section (only if we haven&#39;t seen non-question sections yet)</span>
+                        <span class="n">current_section</span> <span class="o">=</span> <span class="s1">&#39;questions&#39;</span>
+                        
+                        <span class="c1"># Track the question section header</span>
+                        <span class="n">current_question_section</span> <span class="o">=</span> <span class="n">header_text</span>
+                        <span class="k">if</span> <span class="n">current_question_section</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">lesson</span><span class="p">[</span><span class="s1">&#39;question_headers&#39;</span><span class="p">]:</span>
+                            <span class="n">lesson</span><span class="p">[</span><span class="s1">&#39;question_headers&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">current_question_section</span><span class="p">)</span>
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="c1"># This is an additional section</span>
+                        <span class="n">current_section</span> <span class="o">=</span> <span class="n">header_text</span>
+                        <span class="n">current_question_section</span> <span class="o">=</span> <span class="kc">None</span>
+                        <span class="n">seen_non_question_section</span> <span class="o">=</span> <span class="kc">True</span>
+                
+                <span class="k">elif</span> <span class="n">re</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;^\s*\d+\.\s+&#39;</span><span class="p">,</span> <span class="n">line</span><span class="p">):</span>
+                    <span class="c1"># This is a numbered list item, which could be a question or a note</span>
+                    
+                    <span class="c1"># If this is immediately after the NOTES header, it&#39;s a note</span>
+                    <span class="k">if</span> <span class="n">current_section</span> <span class="ow">and</span> <span class="n">re</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="n">notes_pattern</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;## </span><span class="si">{</span><span class="n">current_section</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">):</span>
+                        <span class="n">section_buffer</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">line</span><span class="p">)</span>
+                    <span class="k">elif</span> <span class="ow">not</span> <span class="n">seen_non_question_section</span><span class="p">:</span>
+                        <span class="c1"># This is a question (only if we haven&#39;t seen non-question sections yet)</span>
+                        
+                        <span class="c1"># If we were collecting a question, save it</span>
+                        <span class="k">if</span> <span class="n">in_question</span> <span class="ow">and</span> <span class="n">current_question_text</span><span class="p">:</span>
+                            <span class="n">question_obj</span> <span class="o">=</span> <span class="n">MarkdownProcessor</span><span class="o">.</span><span class="n">_parse_question</span><span class="p">(</span><span class="n">current_question_text</span><span class="p">,</span> <span class="n">current_question_section</span> <span class="ow">or</span> <span class="n">questions_term</span><span class="p">,</span> <span class="n">language_code</span><span class="p">)</span>
+                            <span class="n">question_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">question_obj</span><span class="p">)</span>
+                        
+                        <span class="c1"># Start collecting a new question</span>
+                        <span class="n">in_question</span> <span class="o">=</span> <span class="kc">True</span>
+                        <span class="n">current_question_text</span> <span class="o">=</span> <span class="n">line</span>
+                        
+                        <span class="c1"># If this is the first question and we don&#39;t have a section yet, use default</span>
+                        <span class="k">if</span> <span class="ow">not</span> <span class="n">current_section</span> <span class="ow">or</span> <span class="n">current_section</span> <span class="o">!=</span> <span class="s1">&#39;questions&#39;</span><span class="p">:</span>
+                            <span class="n">current_section</span> <span class="o">=</span> <span class="s1">&#39;questions&#39;</span>
+                            <span class="k">if</span> <span class="n">questions_term</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">lesson</span><span class="p">[</span><span class="s1">&#39;question_headers&#39;</span><span class="p">]:</span>
+                                <span class="n">current_question_section</span> <span class="o">=</span> <span class="n">questions_term</span>
+                                <span class="n">lesson</span><span class="p">[</span><span class="s1">&#39;question_headers&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">current_question_section</span><span class="p">)</span>
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="c1"># This is numbered content in another section</span>
+                        <span class="n">section_buffer</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">line</span><span class="p">)</span>
+                
+                <span class="k">elif</span> <span class="n">in_question</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">seen_non_question_section</span><span class="p">:</span>
+                    <span class="c1"># Continue collecting the current question</span>
+                    <span class="n">current_question_text</span> <span class="o">+=</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span> <span class="o">+</span> <span class="n">line</span>
+                
+                <span class="k">elif</span> <span class="n">current_section</span><span class="p">:</span>
+                    <span class="c1"># Collecting content for the current section</span>
+                    <span class="n">section_buffer</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">line</span><span class="p">)</span>
+                
+                <span class="n">line_index</span> <span class="o">+=</span> <span class="mi">1</span>
+            
+            <span class="c1"># Save any final question</span>
+            <span class="k">if</span> <span class="n">in_question</span> <span class="ow">and</span> <span class="n">current_question_text</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">seen_non_question_section</span><span class="p">:</span>
+                <span class="n">question_obj</span> <span class="o">=</span> <span class="n">MarkdownProcessor</span><span class="o">.</span><span class="n">_parse_question</span><span class="p">(</span><span class="n">current_question_text</span><span class="p">,</span> <span class="n">current_question_section</span> <span class="ow">or</span> <span class="n">questions_term</span><span class="p">,</span> <span class="n">language_code</span><span class="p">)</span>
+                <span class="n">question_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">question_obj</span><span class="p">)</span>
+            
+            <span class="c1"># Save the final section if there is one</span>
+            <span class="k">if</span> <span class="n">current_section</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">re</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="n">notes_pattern</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;## </span><span class="si">{</span><span class="n">current_section</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">):</span>
+                    <span class="n">fixed_notes</span> <span class="o">=</span> <span class="n">MarkdownProcessor</span><span class="o">.</span><span class="n">_fix_notes_numbering</span><span class="p">(</span><span class="n">section_buffer</span><span class="p">)</span>
+                    <span class="n">lesson</span><span class="p">[</span><span class="s1">&#39;notes&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">fixed_notes</span><span class="p">)</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+                <span class="k">elif</span> <span class="n">current_section</span> <span class="o">!=</span> <span class="s1">&#39;questions&#39;</span><span class="p">:</span>
+                    <span class="c1"># This is an additional section</span>
+                    <span class="n">lesson</span><span class="p">[</span><span class="s1">&#39;additional_sections&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">({</span>
+                        <span class="s1">&#39;title&#39;</span><span class="p">:</span> <span class="n">current_section</span><span class="p">,</span>
+                        <span class="s1">&#39;content&#39;</span><span class="p">:</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">section_buffer</span><span class="p">)</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+                    <span class="p">})</span>
+            
+            <span class="c1"># Add all questions to the lesson</span>
+            <span class="n">lesson</span><span class="p">[</span><span class="s1">&#39;questions&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">question_list</span>
+            
+            <span class="c1"># Add the lesson to the list</span>
+            <span class="n">lessons</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">lesson</span><span class="p">)</span>
+        
+        <span class="k">return</span> <span class="n">lessons</span></div>
+
+        
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_fix_notes_numbering</span><span class="p">(</span><span class="n">lines</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Fix numbering in the Notes section to handle multi-paragraph notes correctly.</span>
+<span class="sd">        </span>
+<span class="sd">        Args:</span>
+<span class="sd">            lines (list): List of lines in the notes section</span>
+<span class="sd">            </span>
+<span class="sd">        Returns:</span>
+<span class="sd">            list: Fixed lines with correct numbering</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">fixed_lines</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">expected_number</span> <span class="o">=</span> <span class="mi">1</span>
+        <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span>
+        
+        <span class="k">while</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="nb">len</span><span class="p">(</span><span class="n">lines</span><span class="p">):</span>
+            <span class="n">line</span> <span class="o">=</span> <span class="n">lines</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+            <span class="n">num_match</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;^\s*(\d+)\.\s+&#39;</span><span class="p">,</span> <span class="n">line</span><span class="p">)</span>
+            
+            <span class="k">if</span> <span class="n">num_match</span><span class="p">:</span>
+                <span class="c1"># Found a numbered item</span>
+                <span class="n">current_number</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">num_match</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="mi">1</span><span class="p">))</span>
+                
+                <span class="c1"># If the number is 1 but we expect a higher number</span>
+                <span class="c1"># and this isn&#39;t the first numbered item</span>
+                <span class="k">if</span> <span class="n">current_number</span> <span class="o">==</span> <span class="mi">1</span> <span class="ow">and</span> <span class="n">expected_number</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+                    <span class="c1"># Look ahead to see if the next numbered item is 2</span>
+                    <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">lines</span><span class="p">)):</span>
+                        <span class="n">next_match</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;^\s*(\d+)\.\s+&#39;</span><span class="p">,</span> <span class="n">lines</span><span class="p">[</span><span class="n">j</span><span class="p">])</span>
+                        <span class="k">if</span> <span class="n">next_match</span><span class="p">:</span>
+                            <span class="n">next_number</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">next_match</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="mi">1</span><span class="p">))</span>
+                            <span class="c1"># If next is 2, this confirms it&#39;s a restart</span>
+                            <span class="k">if</span> <span class="n">next_number</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
+                                <span class="c1"># Fix this number</span>
+                                <span class="n">line</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;^\s*\d+\.&#39;</span><span class="p">,</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">expected_number</span><span class="si">}</span><span class="s1">.&#39;</span><span class="p">,</span> <span class="n">line</span><span class="p">)</span>
+                            <span class="k">break</span>
+                
+                <span class="c1"># Update expected number for next item</span>
+                <span class="n">expected_number</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">num_match</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="mi">1</span><span class="p">))</span> <span class="o">+</span> <span class="mi">1</span>
+            
+            <span class="n">fixed_lines</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">line</span><span class="p">)</span>
+            <span class="n">i</span> <span class="o">+=</span> <span class="mi">1</span>
+        
+        <span class="k">return</span> <span class="n">fixed_lines</span>
+        
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_parse_question</span><span class="p">(</span><span class="n">question_text</span><span class="p">,</span> <span class="n">section_name</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">language_code</span><span class="o">=</span><span class="s1">&#39;en&#39;</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Parse a question text into question and answer parts</span>
+<span class="sd">        </span>
+<span class="sd">        Args:</span>
+<span class="sd">            question_text (str): The full text of the question</span>
+<span class="sd">            section_name (str, optional): The section this question belongs to</span>
+<span class="sd">            language_code (str): Language code for translations</span>
+<span class="sd">            </span>
+<span class="sd">        Returns:</span>
+<span class="sd">            dict: A dictionary with &#39;text&#39;, &#39;answer&#39;, &#39;scripture&#39;, and &#39;section&#39; keys</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># Remove the question number</span>
+        <span class="n">num_match</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;^\s*\d+\.\s+&#39;</span><span class="p">,</span> <span class="n">question_text</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">num_match</span><span class="p">:</span>
+            <span class="n">question_text</span> <span class="o">=</span> <span class="n">question_text</span><span class="p">[</span><span class="n">num_match</span><span class="o">.</span><span class="n">end</span><span class="p">():]</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+        
+        <span class="c1"># Handle answer separator formats:</span>
+        <span class="c1"># Format 1: Question? — Answer</span>
+        <span class="c1"># Format 2: Question? Answer</span>
+        <span class="n">question_part</span> <span class="o">=</span> <span class="n">question_text</span>
+        <span class="n">answer_part</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+        
+        <span class="k">if</span> <span class="s1">&#39;?&#39;</span> <span class="ow">in</span> <span class="n">question_text</span><span class="p">:</span>
+            <span class="c1"># Split at the last question mark</span>
+            <span class="n">last_q_idx</span> <span class="o">=</span> <span class="n">question_text</span><span class="o">.</span><span class="n">rfind</span><span class="p">(</span><span class="s1">&#39;?&#39;</span><span class="p">)</span>
+            <span class="n">question_part</span> <span class="o">=</span> <span class="n">question_text</span><span class="p">[:</span><span class="n">last_q_idx</span><span class="o">+</span><span class="mi">1</span><span class="p">]</span>
+            <span class="n">answer_part</span> <span class="o">=</span> <span class="n">question_text</span><span class="p">[</span><span class="n">last_q_idx</span><span class="o">+</span><span class="mi">1</span><span class="p">:]</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+            
+            <span class="c1"># Check if answer starts with an em-dash</span>
+            <span class="k">if</span> <span class="n">answer_part</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">&#39;—&#39;</span><span class="p">)</span> <span class="ow">or</span> <span class="n">answer_part</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">&#39;-&#39;</span><span class="p">)</span> <span class="ow">or</span> <span class="n">answer_part</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">&#39;–&#39;</span><span class="p">):</span>
+                <span class="n">answer_part</span> <span class="o">=</span> <span class="n">answer_part</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+        
+        <span class="k">return</span> <span class="p">{</span>
+            <span class="s1">&#39;text&#39;</span><span class="p">:</span> <span class="n">question_part</span><span class="p">,</span>
+            <span class="s1">&#39;scripture&#39;</span><span class="p">:</span> <span class="n">answer_part</span><span class="p">,</span>
+            <span class="s1">&#39;section&#39;</span><span class="p">:</span> <span class="n">section_name</span>
+        <span class="p">}</span>
+    
+
+<div class="viewcode-block" id="MarkdownProcessor.parse_questions_from_markdown">
+<a class="viewcode-back" href="../../modules.html#sabbath_school_reproducer.processor.MarkdownProcessor.parse_questions_from_markdown">[docs]</a>
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">parse_questions_from_markdown</span><span class="p">(</span><span class="n">markdown_content</span><span class="p">,</span> <span class="n">language_code</span><span class="o">=</span><span class="s1">&#39;en&#39;</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Parse questions from markdown content.</span>
+<span class="sd">        </span>
+<span class="sd">        Args:</span>
+<span class="sd">            markdown_content (str): Markdown content containing questions</span>
+<span class="sd">            language_code (str): Language code for translations</span>
+<span class="sd">            </span>
+<span class="sd">        Returns:</span>
+<span class="sd">            list: List of question dictionaries</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">question_list</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">lines</span> <span class="o">=</span> <span class="n">markdown_content</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
+        
+        <span class="n">current_question_text</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+        <span class="n">in_question</span> <span class="o">=</span> <span class="kc">False</span>
+        
+        <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">lines</span><span class="p">:</span>
+            <span class="c1"># Check if this is a new question</span>
+            <span class="n">num_match</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;^\s*\d+\.\s+&#39;</span><span class="p">,</span> <span class="n">line</span><span class="p">)</span>
+            
+            <span class="k">if</span> <span class="n">num_match</span><span class="p">:</span>
+                <span class="c1"># If we were collecting a question, save it</span>
+                <span class="k">if</span> <span class="n">in_question</span> <span class="ow">and</span> <span class="n">current_question_text</span><span class="p">:</span>
+                    <span class="n">question_obj</span> <span class="o">=</span> <span class="n">MarkdownProcessor</span><span class="o">.</span><span class="n">_parse_question</span><span class="p">(</span><span class="n">current_question_text</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="n">language_code</span><span class="p">)</span>
+                    <span class="n">question_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">question_obj</span><span class="p">)</span>
+                
+                <span class="c1"># Start collecting a new question</span>
+                <span class="n">in_question</span> <span class="o">=</span> <span class="kc">True</span>
+                <span class="n">current_question_text</span> <span class="o">=</span> <span class="n">line</span>
+            
+            <span class="k">elif</span> <span class="n">in_question</span><span class="p">:</span>
+                <span class="c1"># Continue collecting the current question</span>
+                <span class="n">current_question_text</span> <span class="o">+=</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span> <span class="o">+</span> <span class="n">line</span>
+        
+        <span class="c1"># Save any final question</span>
+        <span class="k">if</span> <span class="n">in_question</span> <span class="ow">and</span> <span class="n">current_question_text</span><span class="p">:</span>
+            <span class="n">question_obj</span> <span class="o">=</span> <span class="n">MarkdownProcessor</span><span class="o">.</span><span class="n">_parse_question</span><span class="p">(</span><span class="n">current_question_text</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="n">language_code</span><span class="p">)</span>
+            <span class="n">question_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">question_obj</span><span class="p">)</span>
+        
+        <span class="k">return</span> <span class="n">question_list</span></div>
+
+        
+<div class="viewcode-block" id="MarkdownProcessor.process_markdown_file">
+<a class="viewcode-back" href="../../modules.html#sabbath_school_reproducer.processor.MarkdownProcessor.process_markdown_file">[docs]</a>
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">process_markdown_file</span><span class="p">(</span><span class="n">markdown_file</span><span class="p">,</span> <span class="n">config</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Process the markdown file to extract content</span>
+<span class="sd">        </span>
+<span class="sd">        Args:</span>
+<span class="sd">            markdown_file (str): Path to the markdown file</span>
+<span class="sd">            config (dict, optional): Configuration dictionary for reproduction</span>
+<span class="sd">            </span>
+<span class="sd">        Returns:</span>
+<span class="sd">            dict: Dictionary with extracted content</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># Get language code from config</span>
+        <span class="n">language_code</span> <span class="o">=</span> <span class="n">config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;language&#39;</span><span class="p">,</span> <span class="s1">&#39;en&#39;</span><span class="p">)</span> <span class="k">if</span> <span class="n">config</span> <span class="k">else</span> <span class="s1">&#39;en&#39;</span>
+        
+        <span class="c1"># Read the markdown file</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">markdown_file</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s1">&#39;utf-8&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+            <span class="n">content</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
+        
+        <span class="c1"># Extract file sections first</span>
+        <span class="n">lessons_content</span><span class="p">,</span> <span class="n">frontmatter_content</span><span class="p">,</span> <span class="n">backmatter_content</span> <span class="o">=</span> <span class="n">MarkdownProcessor</span><span class="o">.</span><span class="n">parse_file_sections</span><span class="p">(</span><span class="n">content</span><span class="p">)</span>
+        
+        <span class="c1"># Parse lessons from the lessons content (pass language code)</span>
+        <span class="n">lessons</span> <span class="o">=</span> <span class="n">MarkdownProcessor</span><span class="o">.</span><span class="n">parse_lessons</span><span class="p">(</span><span class="n">lessons_content</span><span class="p">,</span> <span class="n">language_code</span><span class="p">)</span>
+        
+        <span class="c1"># Apply date adjustments if reproduction settings exist</span>
+        <span class="k">if</span> <span class="n">config</span> <span class="ow">and</span> <span class="s1">&#39;reproduce&#39;</span> <span class="ow">in</span> <span class="n">config</span><span class="p">:</span>
+            <span class="n">lessons</span> <span class="o">=</span> <span class="n">MarkdownProcessor</span><span class="o">.</span><span class="n">adjust_dates</span><span class="p">(</span><span class="n">lessons</span><span class="p">,</span> <span class="n">config</span><span class="p">)</span>
+        
+        <span class="c1"># Log debugging information</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Found </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">lessons</span><span class="p">)</span><span class="si">}</span><span class="s2"> lessons&quot;</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">lesson</span> <span class="ow">in</span> <span class="n">lessons</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Lesson </span><span class="si">{</span><span class="n">lesson</span><span class="p">[</span><span class="s1">&#39;number&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">lesson</span><span class="p">[</span><span class="s1">&#39;title&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2"> (</span><span class="si">{</span><span class="n">lesson</span><span class="p">[</span><span class="s1">&#39;date&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">)&quot;</span><span class="p">)</span>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Questions: </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">lesson</span><span class="p">[</span><span class="s1">&#39;questions&#39;</span><span class="p">])</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Notes: </span><span class="si">{</span><span class="s1">&#39;Yes&#39;</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="n">lesson</span><span class="p">[</span><span class="s1">&#39;notes&#39;</span><span class="p">]</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="s1">&#39;No&#39;</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Preliminary: </span><span class="si">{</span><span class="s1">&#39;Yes&#39;</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="n">lesson</span><span class="p">[</span><span class="s1">&#39;preliminary_note&#39;</span><span class="p">]</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="s1">&#39;No&#39;</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        
+        <span class="c1"># Log frontmatter and backmatter status</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Frontmatter present: </span><span class="si">{</span><span class="s1">&#39;Yes&#39;</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="n">frontmatter_content</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="s1">&#39;No&#39;</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Backmatter present: </span><span class="si">{</span><span class="s1">&#39;Yes&#39;</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="n">backmatter_content</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="s1">&#39;No&#39;</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        
+        <span class="k">return</span> <span class="p">{</span>
+            <span class="s1">&#39;lessons&#39;</span><span class="p">:</span> <span class="n">lessons</span><span class="p">,</span>
+            <span class="s1">&#39;metadata&#39;</span><span class="p">:</span> <span class="p">{},</span>
+            <span class="s1">&#39;frontmatter&#39;</span><span class="p">:</span> <span class="n">frontmatter_content</span><span class="p">,</span>
+            <span class="s1">&#39;backmatter&#39;</span><span class="p">:</span> <span class="n">backmatter_content</span>
+        <span class="p">}</span></div>
+</div>
+
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, Brian Onang&#39;o.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

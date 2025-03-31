@@ -1,0 +1,36 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 500 200" width="500" height="200">
+  <!-- Background Shield -->
+  <path d="M250,30 L350,60 C350,140 320,170 250,180 C180,170 150,140 150,60 Z" fill="#f9f5eb" stroke="#8b4513" stroke-width="2" />
+  
+  <!-- Open Book -->
+  <path d="M190,65 C190,60 220,55 250,55 C280,55 310,60 310,65 L310,115 C310,120 280,125 250,125 C220,125 190,120 190,115 Z" fill="#f0e6d2" stroke="#6d3c14" stroke-width="1.5" />
+  <path d="M190,65 C190,70 220,75 250,75 C280,75 310,70 310,65" fill="none" stroke="#6d3c14" stroke-width="1.5" />
+  <path d="M250,55 L250,125" stroke="#6d3c14" stroke-width="1.5" />
+  
+  <!-- Digital Transformation Element -->
+  <rect x="215" y="85" width="70" height="25" rx="3" fill="#e6d7bf" stroke="#7d2b2b" stroke-width="1" />
+  <path d="M225,90 L275,90" stroke="#7d2b2b" stroke-width="1" />
+  <path d="M225,95 L265,95" stroke="#7d2b2b" stroke-width="1" />
+  <path d="M225,100 L270,100" stroke="#7d2b2b" stroke-width="1" />
+  <path d="M225,105 L260,105" stroke="#7d2b2b" stroke-width="1" />
+  
+  <!-- Binary Code (representing digital conversion) -->
+  <text x="282" y="93" font-family="Courier, monospace" font-size="5" fill="#7d2b2b">10</text>
+  <text x="282" y="98" font-family="Courier, monospace" font-size="5" fill="#7d2b2b">01</text>
+  <text x="282" y="103" font-family="Courier, monospace" font-size="5" fill="#7d2b2b">10</text>
+  <text x="282" y="108" font-family="Courier, monospace" font-size="5" fill="#7d2b2b">01</text>
+  
+  <!-- Decorative Elements -->
+  <circle cx="190" cy="65" r="5" fill="#dbc8a0" stroke="#6d3c14" stroke-width="1" />
+  <circle cx="310" cy="65" r="5" fill="#dbc8a0" stroke="#6d3c14" stroke-width="1" />
+  
+  <!-- Timeline Element -->
+  <rect x="210" y="130" width="80" height="4" rx="2" fill="#7d2b2b" />
+  <circle cx="220" cy="132" r="3" fill="#dbc8a0" stroke="#6d3c14" stroke-width="0.5" />
+  <circle cx="250" cy="132" r="3" fill="#dbc8a0" stroke="#6d3c14" stroke-width="0.5" />
+  <circle cx="280" cy="132" r="3" fill="#dbc8a0" stroke="#6d3c14" stroke-width="0.5" />
+  
+  <!-- Text -->
+  <text x="250" y="150" font-family="Palatino, Georgia, serif" font-size="16" font-weight="bold" text-anchor="middle" fill="#6d3c14">Sabbath School</text>
+  <text x="250" y="170" font-family="Palatino, Georgia, serif" font-size="14" font-weight="bold" text-anchor="middle" fill="#7d2b2b">Reproducer</text>
+</svg>

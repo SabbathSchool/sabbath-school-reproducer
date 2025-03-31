@@ -1,0 +1,575 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>sabbath_school_reproducer.bin.generate_config &mdash; Sabbath School Lessons Reproducer 0.1.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=e59714d7" />
+
+  
+      <script src="../../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../../_static/documentation_options.js?v=01f34227"></script>
+      <script src="../../../_static/doctools.js?v=9a2dae69"></script>
+      <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../index.html" class="icon icon-home">
+            Sabbath School Lessons Reproducer
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../overview.html">Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../usage.html">Usage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../configuration.html">Configuration</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../modules.html">Modules</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../contributing.html">Contributing</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">Sabbath School Lessons Reproducer</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">sabbath_school_reproducer.bin.generate_config</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for sabbath_school_reproducer.bin.generate_config</h1><div class="highlight"><pre>
+<span></span><span class="ch">#!/usr/bin/env python3</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Configuration Template Generator</span>
+
+<span class="sd">This script generates a template YAML configuration file and color theme.</span>
+
+<span class="sd">Usage:</span>
+<span class="sd">python3 generate_config.py [output_file]</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">sys</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">yaml</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">datetime</span><span class="w"> </span><span class="kn">import</span> <span class="n">datetime</span>
+
+<div class="viewcode-block" id="generate_default_theme">
+<a class="viewcode-back" href="../../../api/sabbath_school_reproducer.bin.html#sabbath_school_reproducer.bin.generate_config.generate_default_theme">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">generate_default_theme</span><span class="p">(</span><span class="n">theme_directory</span><span class="o">=</span><span class="s2">&quot;themes&quot;</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Generate a default burgundy color theme and save it to the themes directory</span>
+<span class="sd">    </span>
+<span class="sd">    Args:</span>
+<span class="sd">        theme_directory (str): Directory to save the theme file</span>
+<span class="sd">        </span>
+<span class="sd">    Returns:</span>
+<span class="sd">        str: Path to the generated theme file</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># Create themes directory if it doesn&#39;t exist</span>
+    <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">theme_directory</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    
+    <span class="c1"># Define the theme file path</span>
+    <span class="n">theme_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">theme_directory</span><span class="p">,</span> <span class="s2">&quot;burgundy.yaml&quot;</span><span class="p">)</span>
+    
+    <span class="c1"># Skip if the theme file already exists</span>
+    <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">theme_path</span><span class="p">):</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Theme file already exists at: </span><span class="si">{</span><span class="n">theme_path</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">theme_path</span>
+    
+    <span class="c1"># Create the default burgundy theme content with detailed comments</span>
+    <span class="n">theme_content</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;# Burgundy Theme for Sabbath School Lessons PDF</span>
+<span class="s2"># This default theme uses warm, burgundy tones for a traditional look.</span>
+
+<span class="s2"># Text colors</span>
+<span class="s2">text:</span>
+<span class="s2">  primary: &#39;#3c1815&#39;    # Main body text color (deep burgundy)</span>
+<span class="s2">  secondary: &#39;#5a4130&#39;  # Secondary text, used in footers/headers (brown)</span>
+<span class="s2">  accent: &#39;#7d2b2b&#39;     # Accent text color for headings (rich burgundy)</span>
+<span class="s2">  link: &#39;#007bff&#39;       # Color for links (blue)</span>
+
+<span class="s2"># Background colors</span>
+<span class="s2">background:</span>
+<span class="s2">  light: &#39;#f9f7f1&#39;        # Light background color (cream)</span>
+<span class="s2">  medium: &#39;#f5f1e6&#39;       # Medium background color (light tan)</span>
+<span class="s2">  dark: &#39;#e0d5c0&#39;         # Dark background color (tan)</span>
+<span class="s2">  additional: &#39;#f0e5d8&#39;   # Additional section background (lighter tan)</span>
+<span class="s2">  tableHeader: &#39;#f4f4f4&#39;  # Table header background (light grey)</span>
+<span class="s2">  tableRowEven: &#39;#f9f7f1&#39; # Even row background in tables (cream)</span>
+<span class="s2">  hover: &#39;#f0f0f0&#39;        # Hover state background (light grey)</span>
+
+<span class="s2"># Border colors</span>
+<span class="s2">border:</span>
+<span class="s2">  primary: &#39;#8b4513&#39;     # Primary border color (saddle brown)</span>
+<span class="s2">  secondary: &#39;#d4c7a5&#39;   # Secondary, lighter border (light tan)</span>
+<span class="s2">  additional: &#39;#6a4e23&#39;  # Additional section border (darker brown)</span>
+<span class="s2">  table: &#39;#ddd&#39;          # Table border color (light grey)</span>
+
+<span class="s2"># Accent colors</span>
+<span class="s2">accent:</span>
+<span class="s2">  primary: &#39;#7d2b2b&#39;      # Primary accent color (rich burgundy)</span>
+<span class="s2">  secondary: &#39;#4b3b2f&#39;    # Secondary accent color (dark brown)</span>
+<span class="s2">  tertiary: &#39;#696969&#39;     # Tertiary accent color (dim grey)</span>
+<span class="s2">  quaternary: &#39;#808080&#39;   # Quaternary accent color (grey)</span>
+
+<span class="s2"># Special colors for specific elements</span>
+<span class="s2">special:</span>
+<span class="s2">  sun: &#39;#FFD700&#39;       # Sun color in illustrations (gold)</span>
+<span class="s2">  lake: &#39;#4682B4&#39;      # Lake color in illustrations (steel blue)</span>
+<span class="s2">  grass: &#39;#228B22&#39;     # Grass color in illustrations (forest green)</span>
+<span class="s2">  tree: &#39;#8B4513&#39;      # Tree color in illustrations (saddle brown)</span>
+<span class="s2">&quot;&quot;&quot;</span>
+    
+    <span class="c1"># Write the theme to file</span>
+    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">theme_path</span><span class="p">,</span> <span class="s1">&#39;w&#39;</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s1">&#39;utf-8&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+        <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">theme_content</span><span class="p">)</span>
+    
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Default burgundy theme generated at: </span><span class="si">{</span><span class="n">theme_path</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">theme_path</span></div>
+
+
+
+<div class="viewcode-block" id="generate_language_template">
+<a class="viewcode-back" href="../../../api/sabbath_school_reproducer.bin.html#sabbath_school_reproducer.bin.generate_config.generate_language_template">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">generate_language_template</span><span class="p">(</span><span class="n">language_code</span><span class="o">=</span><span class="s1">&#39;en&#39;</span><span class="p">,</span> <span class="n">output_directory</span><span class="o">=</span><span class="s1">&#39;languages&#39;</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Generate a language configuration template file for the specified language</span>
+<span class="sd">    </span>
+<span class="sd">    Args:</span>
+<span class="sd">        language_code (str): Language code (e.g., &#39;en&#39;, &#39;swa&#39;, &#39;luo&#39;)</span>
+<span class="sd">        output_directory (str): Directory to save the language file</span>
+<span class="sd">        </span>
+<span class="sd">    Returns:</span>
+<span class="sd">        str: Path to the generated language file</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># Create languages directory if it doesn&#39;t exist</span>
+    <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">output_directory</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    
+    <span class="c1"># Define the language file path</span>
+    <span class="n">language_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">output_directory</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">language_code</span><span class="si">}</span><span class="s2">.yaml&quot;</span><span class="p">)</span>
+    
+    <span class="c1"># Skip if the language file already exists</span>
+    <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">language_path</span><span class="p">):</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Language file already exists at: </span><span class="si">{</span><span class="n">language_path</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">language_path</span>
+    
+    <span class="c1"># Define default translations based on language code</span>
+    <span class="n">translations</span> <span class="o">=</span> <span class="p">{}</span>
+    
+    <span class="k">if</span> <span class="n">language_code</span> <span class="o">==</span> <span class="s1">&#39;en&#39;</span><span class="p">:</span>
+        <span class="n">translations</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s1">&#39;notes&#39;</span><span class="p">:</span> <span class="s1">&#39;NOTES&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;note&#39;</span><span class="p">:</span> <span class="s1">&#39;NOTE&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;questions&#39;</span><span class="p">:</span> <span class="s1">&#39;QUESTIONS&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;answer_prefix&#39;</span><span class="p">:</span> <span class="s1">&#39;Ans.&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;lesson&#39;</span><span class="p">:</span> <span class="s1">&#39;LESSON&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;sabbath_school&#39;</span><span class="p">:</span> <span class="s1">&#39;SABBATH SCHOOL&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;lessons&#39;</span><span class="p">:</span> <span class="s1">&#39;LESSONS&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;adapted_from&#39;</span><span class="p">:</span> <span class="s1">&#39;Adapted from&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;from_text&#39;</span><span class="p">:</span> <span class="s1">&#39;from&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;quarter_names&#39;</span><span class="p">:</span> <span class="p">{</span>
+                <span class="s1">&#39;q1&#39;</span><span class="p">:</span> <span class="s1">&#39;FIRST QUARTER&#39;</span><span class="p">,</span>
+                <span class="s1">&#39;q2&#39;</span><span class="p">:</span> <span class="s1">&#39;SECOND QUARTER&#39;</span><span class="p">,</span>
+                <span class="s1">&#39;q3&#39;</span><span class="p">:</span> <span class="s1">&#39;THIRD QUARTER&#39;</span><span class="p">,</span>
+                <span class="s1">&#39;q4&#39;</span><span class="p">:</span> <span class="s1">&#39;FOURTH QUARTER&#39;</span>
+            <span class="p">},</span>
+            <span class="s1">&#39;quarter_months&#39;</span><span class="p">:</span> <span class="p">{</span>
+                <span class="s1">&#39;q1&#39;</span><span class="p">:</span> <span class="s1">&#39;January - March&#39;</span><span class="p">,</span>
+                <span class="s1">&#39;q2&#39;</span><span class="p">:</span> <span class="s1">&#39;April - June&#39;</span><span class="p">,</span>
+                <span class="s1">&#39;q3&#39;</span><span class="p">:</span> <span class="s1">&#39;July - September&#39;</span><span class="p">,</span>
+                <span class="s1">&#39;q4&#39;</span><span class="p">:</span> <span class="s1">&#39;October - December&#39;</span>
+            <span class="p">},</span>
+            <span class="s1">&#39;table_of_contents&#39;</span><span class="p">:</span> <span class="s1">&#39;TABLE OF CONTENTS&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;lesson_column&#39;</span><span class="p">:</span> <span class="s1">&#39;Lesson&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;title_column&#39;</span><span class="p">:</span> <span class="s1">&#39;Title&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;date_column&#39;</span><span class="p">:</span> <span class="s1">&#39;Date&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;page_column&#39;</span><span class="p">:</span> <span class="s1">&#39;Page&#39;</span>
+        <span class="p">}</span>
+    <span class="k">elif</span> <span class="n">language_code</span> <span class="o">==</span> <span class="s1">&#39;swa&#39;</span><span class="p">:</span>
+        <span class="n">translations</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s1">&#39;notes&#39;</span><span class="p">:</span> <span class="s1">&#39;MAELEZO&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;note&#39;</span><span class="p">:</span> <span class="s1">&#39;ELEZO&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;questions&#39;</span><span class="p">:</span> <span class="s1">&#39;MASWALI&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;answer_prefix&#39;</span><span class="p">:</span> <span class="s1">&#39;Jibu&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;lesson&#39;</span><span class="p">:</span> <span class="s1">&#39;SOMO&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;sabbath_school&#39;</span><span class="p">:</span> <span class="s1">&#39;SHULE YA SABATO&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;lessons&#39;</span><span class="p">:</span> <span class="s1">&#39;MASOMO&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;adapted_from&#39;</span><span class="p">:</span> <span class="s1">&#39;Imetoholewa kutoka&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;from_text&#39;</span><span class="p">:</span> <span class="s1">&#39;kutoka&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;quarter_names&#39;</span><span class="p">:</span> <span class="p">{</span>
+                <span class="s1">&#39;q1&#39;</span><span class="p">:</span> <span class="s1">&#39;ROBO YA KWANZA&#39;</span><span class="p">,</span>
+                <span class="s1">&#39;q2&#39;</span><span class="p">:</span> <span class="s1">&#39;ROBO YA PILI&#39;</span><span class="p">,</span>
+                <span class="s1">&#39;q3&#39;</span><span class="p">:</span> <span class="s1">&#39;ROBO YA TATU&#39;</span><span class="p">,</span>
+                <span class="s1">&#39;q4&#39;</span><span class="p">:</span> <span class="s1">&#39;ROBO YA NNE&#39;</span>
+            <span class="p">},</span>
+            <span class="s1">&#39;quarter_months&#39;</span><span class="p">:</span> <span class="p">{</span>
+                <span class="s1">&#39;q1&#39;</span><span class="p">:</span> <span class="s1">&#39;Januari - Machi&#39;</span><span class="p">,</span>
+                <span class="s1">&#39;q2&#39;</span><span class="p">:</span> <span class="s1">&#39;Aprili - Juni&#39;</span><span class="p">,</span>
+                <span class="s1">&#39;q3&#39;</span><span class="p">:</span> <span class="s1">&#39;Julai - Septemba&#39;</span><span class="p">,</span>
+                <span class="s1">&#39;q4&#39;</span><span class="p">:</span> <span class="s1">&#39;Oktoba - Desemba&#39;</span>
+            <span class="p">},</span>
+            <span class="s1">&#39;table_of_contents&#39;</span><span class="p">:</span> <span class="s1">&#39;YALIYOMO&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;lesson_column&#39;</span><span class="p">:</span> <span class="s1">&#39;Somo&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;title_column&#39;</span><span class="p">:</span> <span class="s1">&#39;Kichwa&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;date_column&#39;</span><span class="p">:</span> <span class="s1">&#39;Tarehe&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;page_column&#39;</span><span class="p">:</span> <span class="s1">&#39;Ukurasa&#39;</span>
+        <span class="p">}</span>
+    <span class="k">elif</span> <span class="n">language_code</span> <span class="o">==</span> <span class="s1">&#39;luo&#39;</span><span class="p">:</span>
+        <span class="n">translations</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s1">&#39;notes&#39;</span><span class="p">:</span> <span class="s1">&#39;WECHE&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;note&#39;</span><span class="p">:</span> <span class="s1">&#39;WACH&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;questions&#39;</span><span class="p">:</span> <span class="s1">&#39;PENJO&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;answer_prefix&#39;</span><span class="p">:</span> <span class="s1">&#39;Duoko&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;lesson&#39;</span><span class="p">:</span> <span class="s1">&#39;PUONJ&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;sabbath_school&#39;</span><span class="p">:</span> <span class="s1">&#39;SKUL MAR SABATO&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;lessons&#39;</span><span class="p">:</span> <span class="s1">&#39;PUONJO&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;adapted_from&#39;</span><span class="p">:</span> <span class="s1">&#39;Olos kuom&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;from_text&#39;</span><span class="p">:</span> <span class="s1">&#39;kuom&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;quarter_names&#39;</span><span class="p">:</span> <span class="p">{</span>
+                <span class="s1">&#39;q1&#39;</span><span class="p">:</span> <span class="s1">&#39;NUT MOKWONGO MAR HIGA&#39;</span><span class="p">,</span>
+                <span class="s1">&#39;q2&#39;</span><span class="p">:</span> <span class="s1">&#39;NUT MAR ARIYO MAR HIGA&#39;</span><span class="p">,</span>
+                <span class="s1">&#39;q3&#39;</span><span class="p">:</span> <span class="s1">&#39;NUT MAR ADEK MAR HIGA&#39;</span><span class="p">,</span>
+                <span class="s1">&#39;q4&#39;</span><span class="p">:</span> <span class="s1">&#39;NUT MAR ANGʼWEN MAR HIGA&#39;</span>
+            <span class="p">},</span>
+            <span class="s1">&#39;quarter_months&#39;</span><span class="p">:</span> <span class="p">{</span>
+                <span class="s1">&#39;q1&#39;</span><span class="p">:</span> <span class="s1">&#39;Januari - Mach&#39;</span><span class="p">,</span>
+                <span class="s1">&#39;q2&#39;</span><span class="p">:</span> <span class="s1">&#39;April - Jun&#39;</span><span class="p">,</span>
+                <span class="s1">&#39;q3&#39;</span><span class="p">:</span> <span class="s1">&#39;July - September&#39;</span><span class="p">,</span>
+                <span class="s1">&#39;q4&#39;</span><span class="p">:</span> <span class="s1">&#39;October - December&#39;</span>
+            <span class="p">},</span>
+            <span class="s1">&#39;table_of_contents&#39;</span><span class="p">:</span> <span class="s1">&#39;GIKO MAR PUONJ&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;lesson_column&#39;</span><span class="p">:</span> <span class="s1">&#39;Puonj&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;title_column&#39;</span><span class="p">:</span> <span class="s1">&#39;Wach Motelo&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;date_column&#39;</span><span class="p">:</span> <span class="s1">&#39;Tarik&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;page_column&#39;</span><span class="p">:</span> <span class="s1">&#39;Kama Ondike&#39;</span>
+        <span class="p">}</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="c1"># For unsupported languages, use English as template</span>
+        <span class="n">translations</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s1">&#39;notes&#39;</span><span class="p">:</span> <span class="s1">&#39;NOTES&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;note&#39;</span><span class="p">:</span> <span class="s1">&#39;NOTE&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;questions&#39;</span><span class="p">:</span> <span class="s1">&#39;QUESTIONS&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;answer_prefix&#39;</span><span class="p">:</span> <span class="s1">&#39;Ans.&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;lesson&#39;</span><span class="p">:</span> <span class="s1">&#39;LESSON&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;sabbath_school&#39;</span><span class="p">:</span> <span class="s1">&#39;SABBATH SCHOOL&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;lessons&#39;</span><span class="p">:</span> <span class="s1">&#39;LESSONS&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;adapted_from&#39;</span><span class="p">:</span> <span class="s1">&#39;Adapted from&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;from_text&#39;</span><span class="p">:</span> <span class="s1">&#39;from&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;quarter_names&#39;</span><span class="p">:</span> <span class="p">{</span>
+                <span class="s1">&#39;q1&#39;</span><span class="p">:</span> <span class="s1">&#39;FIRST QUARTER&#39;</span><span class="p">,</span>
+                <span class="s1">&#39;q2&#39;</span><span class="p">:</span> <span class="s1">&#39;SECOND QUARTER&#39;</span><span class="p">,</span>
+                <span class="s1">&#39;q3&#39;</span><span class="p">:</span> <span class="s1">&#39;THIRD QUARTER&#39;</span><span class="p">,</span>
+                <span class="s1">&#39;q4&#39;</span><span class="p">:</span> <span class="s1">&#39;FOURTH QUARTER&#39;</span>
+            <span class="p">},</span>
+            <span class="s1">&#39;quarter_months&#39;</span><span class="p">:</span> <span class="p">{</span>
+                <span class="s1">&#39;q1&#39;</span><span class="p">:</span> <span class="s1">&#39;January - March&#39;</span><span class="p">,</span>
+                <span class="s1">&#39;q2&#39;</span><span class="p">:</span> <span class="s1">&#39;April - June&#39;</span><span class="p">,</span>
+                <span class="s1">&#39;q3&#39;</span><span class="p">:</span> <span class="s1">&#39;July - September&#39;</span><span class="p">,</span>
+                <span class="s1">&#39;q4&#39;</span><span class="p">:</span> <span class="s1">&#39;October - December&#39;</span>
+            <span class="p">},</span>
+            <span class="s1">&#39;table_of_contents&#39;</span><span class="p">:</span> <span class="s1">&#39;TABLE OF CONTENTS&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;lesson_column&#39;</span><span class="p">:</span> <span class="s1">&#39;Lesson&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;title_column&#39;</span><span class="p">:</span> <span class="s1">&#39;Title&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;date_column&#39;</span><span class="p">:</span> <span class="s1">&#39;Date&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;page_column&#39;</span><span class="p">:</span> <span class="s1">&#39;Page&#39;</span>
+        <span class="p">}</span>
+    
+    <span class="c1"># Add month names</span>
+    <span class="k">if</span> <span class="n">language_code</span> <span class="o">==</span> <span class="s1">&#39;en&#39;</span><span class="p">:</span>
+        <span class="n">translations</span><span class="p">[</span><span class="s1">&#39;month_names&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="s1">&#39;January&#39;</span><span class="p">,</span> <span class="s1">&#39;February&#39;</span><span class="p">,</span> <span class="s1">&#39;March&#39;</span><span class="p">,</span> <span class="s1">&#39;April&#39;</span><span class="p">,</span> <span class="s1">&#39;May&#39;</span><span class="p">,</span> <span class="s1">&#39;June&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;July&#39;</span><span class="p">,</span> <span class="s1">&#39;August&#39;</span><span class="p">,</span> <span class="s1">&#39;September&#39;</span><span class="p">,</span> <span class="s1">&#39;October&#39;</span><span class="p">,</span> <span class="s1">&#39;November&#39;</span><span class="p">,</span> <span class="s1">&#39;December&#39;</span>
+        <span class="p">]</span>
+    <span class="k">elif</span> <span class="n">language_code</span> <span class="o">==</span> <span class="s1">&#39;swa&#39;</span><span class="p">:</span>
+        <span class="n">translations</span><span class="p">[</span><span class="s1">&#39;month_names&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="s1">&#39;Januari&#39;</span><span class="p">,</span> <span class="s1">&#39;Februari&#39;</span><span class="p">,</span> <span class="s1">&#39;Machi&#39;</span><span class="p">,</span> <span class="s1">&#39;Aprili&#39;</span><span class="p">,</span> <span class="s1">&#39;Mei&#39;</span><span class="p">,</span> <span class="s1">&#39;Juni&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;Julai&#39;</span><span class="p">,</span> <span class="s1">&#39;Agosti&#39;</span><span class="p">,</span> <span class="s1">&#39;Septemba&#39;</span><span class="p">,</span> <span class="s1">&#39;Oktoba&#39;</span><span class="p">,</span> <span class="s1">&#39;Novemba&#39;</span><span class="p">,</span> <span class="s1">&#39;Desemba&#39;</span>
+        <span class="p">]</span>
+    <span class="k">elif</span> <span class="n">language_code</span> <span class="o">==</span> <span class="s1">&#39;luo&#39;</span><span class="p">:</span>
+        <span class="n">translations</span><span class="p">[</span><span class="s1">&#39;month_names&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="s1">&#39;Januari&#39;</span><span class="p">,</span> <span class="s1">&#39;Februari&#39;</span><span class="p">,</span> <span class="s1">&#39;Mach&#39;</span><span class="p">,</span> <span class="s1">&#39;April&#39;</span><span class="p">,</span> <span class="s1">&#39;May&#39;</span><span class="p">,</span> <span class="s1">&#39;Jun&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;July&#39;</span><span class="p">,</span> <span class="s1">&#39;Agost&#39;</span><span class="p">,</span> <span class="s1">&#39;September&#39;</span><span class="p">,</span> <span class="s1">&#39;October&#39;</span><span class="p">,</span> <span class="s1">&#39;November&#39;</span><span class="p">,</span> <span class="s1">&#39;December&#39;</span>
+        <span class="p">]</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">translations</span><span class="p">[</span><span class="s1">&#39;month_names&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="s1">&#39;January&#39;</span><span class="p">,</span> <span class="s1">&#39;February&#39;</span><span class="p">,</span> <span class="s1">&#39;March&#39;</span><span class="p">,</span> <span class="s1">&#39;April&#39;</span><span class="p">,</span> <span class="s1">&#39;May&#39;</span><span class="p">,</span> <span class="s1">&#39;June&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;July&#39;</span><span class="p">,</span> <span class="s1">&#39;August&#39;</span><span class="p">,</span> <span class="s1">&#39;September&#39;</span><span class="p">,</span> <span class="s1">&#39;October&#39;</span><span class="p">,</span> <span class="s1">&#39;November&#39;</span><span class="p">,</span> <span class="s1">&#39;December&#39;</span>
+        <span class="p">]</span>
+    
+    <span class="c1"># Add date formats</span>
+    <span class="k">if</span> <span class="n">language_code</span> <span class="o">==</span> <span class="s1">&#39;en&#39;</span><span class="p">:</span>
+        <span class="n">translations</span><span class="p">[</span><span class="s1">&#39;date_formats&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="s1">&#39;([A-Za-z]+ \d+, \d</span><span class="si">{4}</span><span class="s1">)&#39;</span><span class="p">,</span>  <span class="c1"># e.g., &quot;May 20, 1905&quot;</span>
+            <span class="s1">&#39;(\d+ [A-Za-z]+, \d</span><span class="si">{4}</span><span class="s1">)&#39;</span><span class="p">,</span>   <span class="c1"># e.g., &quot;20 May, 1905&quot;</span>
+            <span class="s1">&#39;(\d{1,2}/\d{1,2}/\d</span><span class="si">{4}</span><span class="s1">)&#39;</span>   <span class="c1"># e.g., &quot;5/20/1905&quot;</span>
+        <span class="p">]</span>
+    <span class="k">elif</span> <span class="n">language_code</span> <span class="o">==</span> <span class="s1">&#39;swa&#39;</span><span class="p">:</span>
+        <span class="n">translations</span><span class="p">[</span><span class="s1">&#39;date_formats&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="s1">&#39;([A-Za-z]+ \d+, \d</span><span class="si">{4}</span><span class="s1">)&#39;</span><span class="p">,</span>  <span class="c1"># e.g., &quot;Mei 20, 1905&quot;</span>
+            <span class="s1">&#39;(\d+ [A-Za-z]+, \d</span><span class="si">{4}</span><span class="s1">)&#39;</span><span class="p">,</span>   <span class="c1"># e.g., &quot;20 Mei, 1905&quot;</span>
+            <span class="s1">&#39;(\d{1,2}/\d{1,2}/\d</span><span class="si">{4}</span><span class="s1">)&#39;</span>   <span class="c1"># e.g., &quot;20/5/1905&quot;</span>
+        <span class="p">]</span>
+    <span class="k">elif</span> <span class="n">language_code</span> <span class="o">==</span> <span class="s1">&#39;luo&#39;</span><span class="p">:</span>
+        <span class="n">translations</span><span class="p">[</span><span class="s1">&#39;date_formats&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="s1">&#39;([A-Za-z]+ \d+, \d</span><span class="si">{4}</span><span class="s1">)&#39;</span><span class="p">,</span>  <span class="c1"># e.g., &quot;May 20, 1905&quot;</span>
+            <span class="s1">&#39;(\d+ [A-Za-z]+, \d</span><span class="si">{4}</span><span class="s1">)&#39;</span><span class="p">,</span>   <span class="c1"># e.g., &quot;20 May, 1905&quot;</span>
+            <span class="s1">&#39;(\d{1,2}/\d{1,2}/\d</span><span class="si">{4}</span><span class="s1">)&#39;</span>   <span class="c1"># e.g., &quot;20/5/1905&quot;</span>
+        <span class="p">]</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">translations</span><span class="p">[</span><span class="s1">&#39;date_formats&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="s1">&#39;([A-Za-z]+ \d+, \d</span><span class="si">{4}</span><span class="s1">)&#39;</span><span class="p">,</span>  <span class="c1"># e.g., &quot;May 20, 1905&quot;</span>
+            <span class="s1">&#39;(\d+ [A-Za-z]+, \d</span><span class="si">{4}</span><span class="s1">)&#39;</span><span class="p">,</span>   <span class="c1"># e.g., &quot;20 May, 1905&quot;</span>
+            <span class="s1">&#39;(\d{1,2}/\d{1,2}/\d</span><span class="si">{4}</span><span class="s1">)&#39;</span>   <span class="c1"># e.g., &quot;5/20/1905&quot;</span>
+        <span class="p">]</span>
+    
+    <span class="c1"># Add date format template</span>
+    <span class="n">translations</span><span class="p">[</span><span class="s1">&#39;date_format_template&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="si">{month}</span><span class="s1"> </span><span class="si">{day}</span><span class="s1">, </span><span class="si">{year}</span><span class="s1">&#39;</span> <span class="k">if</span> <span class="n">language_code</span> <span class="o">==</span> <span class="s1">&#39;en&#39;</span> <span class="k">else</span> <span class="s1">&#39;</span><span class="si">{day}</span><span class="s1"> </span><span class="si">{month}</span><span class="s1">, </span><span class="si">{year}</span><span class="s1">&#39;</span>
+    
+    <span class="c1"># Create the YAML content with comments</span>
+    <span class="n">yaml_content</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;&quot;&quot;# Language configuration for </span><span class="si">{</span><span class="n">language_code</span><span class="si">}</span>
+<span class="s2"># This file contains language-specific translations for Sabbath School Lesson Downloader</span>
+
+<span class="s2"># Basic terms</span>
+<span class="s2">notes: &#39;</span><span class="si">{</span><span class="n">translations</span><span class="p">[</span><span class="s1">&#39;notes&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">&#39;  # Used for section headers and headings</span>
+<span class="s2">note: &#39;</span><span class="si">{</span><span class="n">translations</span><span class="p">[</span><span class="s1">&#39;note&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">&#39;    # Used for single-note sections</span>
+<span class="s2">questions: &#39;</span><span class="si">{</span><span class="n">translations</span><span class="p">[</span><span class="s1">&#39;questions&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">&#39;  # Questions section header</span>
+<span class="s2">answer_prefix: &#39;</span><span class="si">{</span><span class="n">translations</span><span class="p">[</span><span class="s1">&#39;answer_prefix&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">&#39;  # Prefix for answers in questions</span>
+<span class="s2">lesson: &#39;</span><span class="si">{</span><span class="n">translations</span><span class="p">[</span><span class="s1">&#39;lesson&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">&#39;  # Used for lesson titles</span>
+
+<span class="s2"># Cover page terms</span>
+<span class="s2">sabbath_school: &#39;</span><span class="si">{</span><span class="n">translations</span><span class="p">[</span><span class="s1">&#39;sabbath_school&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">&#39;  # Main title on cover page</span>
+<span class="s2">lessons: &#39;</span><span class="si">{</span><span class="n">translations</span><span class="p">[</span><span class="s1">&#39;lessons&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">&#39;  # Secondary title on cover page</span>
+<span class="s2">adapted_from: &#39;</span><span class="si">{</span><span class="n">translations</span><span class="p">[</span><span class="s1">&#39;adapted_from&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">&#39;  # Text used in &quot;Adapted from X&quot; on cover</span>
+<span class="s2">from_text: &#39;</span><span class="si">{</span><span class="n">translations</span><span class="p">[</span><span class="s1">&#39;from_text&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">&#39;  # Text used in &quot;from X&quot; in titles</span>
+
+<span class="s2"># Quarter names (used in headings and footers)</span>
+<span class="s2">quarter_names:</span>
+<span class="s2">  q1: &#39;</span><span class="si">{</span><span class="n">translations</span><span class="p">[</span><span class="s1">&#39;quarter_names&#39;</span><span class="p">][</span><span class="s1">&#39;q1&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">&#39;</span>
+<span class="s2">  q2: &#39;</span><span class="si">{</span><span class="n">translations</span><span class="p">[</span><span class="s1">&#39;quarter_names&#39;</span><span class="p">][</span><span class="s1">&#39;q2&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">&#39;</span>
+<span class="s2">  q3: &#39;</span><span class="si">{</span><span class="n">translations</span><span class="p">[</span><span class="s1">&#39;quarter_names&#39;</span><span class="p">][</span><span class="s1">&#39;q3&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">&#39;</span>
+<span class="s2">  q4: &#39;</span><span class="si">{</span><span class="n">translations</span><span class="p">[</span><span class="s1">&#39;quarter_names&#39;</span><span class="p">][</span><span class="s1">&#39;q4&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">&#39;</span>
+
+<span class="s2"># Quarter month ranges (used in cover pages)</span>
+<span class="s2">quarter_months:</span>
+<span class="s2">  q1: &#39;</span><span class="si">{</span><span class="n">translations</span><span class="p">[</span><span class="s1">&#39;quarter_months&#39;</span><span class="p">][</span><span class="s1">&#39;q1&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">&#39;</span>
+<span class="s2">  q2: &#39;</span><span class="si">{</span><span class="n">translations</span><span class="p">[</span><span class="s1">&#39;quarter_months&#39;</span><span class="p">][</span><span class="s1">&#39;q2&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">&#39;</span>
+<span class="s2">  q3: &#39;</span><span class="si">{</span><span class="n">translations</span><span class="p">[</span><span class="s1">&#39;quarter_months&#39;</span><span class="p">][</span><span class="s1">&#39;q3&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">&#39;</span>
+<span class="s2">  q4: &#39;</span><span class="si">{</span><span class="n">translations</span><span class="p">[</span><span class="s1">&#39;quarter_months&#39;</span><span class="p">][</span><span class="s1">&#39;q4&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">&#39;</span>
+
+<span class="s2"># Table of contents translations</span>
+<span class="s2">table_of_contents: &#39;</span><span class="si">{</span><span class="n">translations</span><span class="p">[</span><span class="s1">&#39;table_of_contents&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">&#39;</span>
+<span class="s2">lesson_column: &#39;</span><span class="si">{</span><span class="n">translations</span><span class="p">[</span><span class="s1">&#39;lesson_column&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">&#39;</span>
+<span class="s2">title_column: &#39;</span><span class="si">{</span><span class="n">translations</span><span class="p">[</span><span class="s1">&#39;title_column&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">&#39;</span>
+<span class="s2">date_column: &#39;</span><span class="si">{</span><span class="n">translations</span><span class="p">[</span><span class="s1">&#39;date_column&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">&#39;</span>
+<span class="s2">page_column: &#39;</span><span class="si">{</span><span class="n">translations</span><span class="p">[</span><span class="s1">&#39;page_column&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">&#39;</span>
+
+<span class="s2"># Month names for date formatting</span>
+<span class="s2">month_names:</span>
+<span class="s2">&quot;&quot;&quot;</span>
+
+    <span class="c1"># Add month names</span>
+    <span class="k">for</span> <span class="n">month</span> <span class="ow">in</span> <span class="n">translations</span><span class="p">[</span><span class="s1">&#39;month_names&#39;</span><span class="p">]:</span>
+        <span class="n">yaml_content</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot;  - &#39;</span><span class="si">{</span><span class="n">month</span><span class="si">}</span><span class="s2">&#39;</span><span class="se">\n</span><span class="s2">&quot;</span>
+    
+    <span class="c1"># Add date formats</span>
+    <span class="n">yaml_content</span> <span class="o">+=</span> <span class="s2">&quot;&quot;&quot;</span>
+<span class="s2"># Date format regular expressions (used for extracting dates from content)</span>
+<span class="s2">date_formats:</span>
+<span class="s2">&quot;&quot;&quot;</span>
+    <span class="k">for</span> <span class="n">format_regex</span> <span class="ow">in</span> <span class="n">translations</span><span class="p">[</span><span class="s1">&#39;date_formats&#39;</span><span class="p">]:</span>
+        <span class="n">yaml_content</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot;  - &#39;</span><span class="si">{</span><span class="n">format_regex</span><span class="si">}</span><span class="s2">&#39;</span><span class="se">\n</span><span class="s2">&quot;</span>
+    
+    <span class="c1"># Add date format template</span>
+    <span class="n">yaml_content</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot;&quot;&quot;</span>
+<span class="s2"># Date format template for generating new dates</span>
+<span class="s2">date_format_template: &#39;</span><span class="si">{</span><span class="n">translations</span><span class="p">[</span><span class="s1">&#39;date_format_template&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">&#39;</span>
+<span class="s2">&quot;&quot;&quot;</span>
+    
+    <span class="c1"># Write the YAML content to file</span>
+    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">language_path</span><span class="p">,</span> <span class="s1">&#39;w&#39;</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s1">&#39;utf-8&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+        <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">yaml_content</span><span class="p">)</span>
+    
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Language template for &#39;</span><span class="si">{</span><span class="n">language_code</span><span class="si">}</span><span class="s2">&#39; generated at: </span><span class="si">{</span><span class="n">language_path</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">language_path</span></div>
+
+
+
+<div class="viewcode-block" id="generate_template_config">
+<a class="viewcode-back" href="../../../api/sabbath_school_reproducer.bin.html#sabbath_school_reproducer.bin.generate_config.generate_template_config">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">generate_template_config</span><span class="p">(</span><span class="n">output_path</span><span class="o">=</span><span class="s2">&quot;config.yaml&quot;</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Generate a template configuration file with default values</span>
+<span class="sd">    </span>
+<span class="sd">    Args:</span>
+<span class="sd">        output_path (str): Path to save the configuration file</span>
+<span class="sd">        </span>
+<span class="sd">    Returns:</span>
+<span class="sd">        str: Path to the generated configuration file</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># Check if the config file already exists</span>
+    <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">output_path</span><span class="p">):</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Configuration file already exists at: </span><span class="si">{</span><span class="n">output_path</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">output_path</span>
+    
+    <span class="c1"># Get current year and determine current quarter</span>
+    <span class="n">now</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">()</span>
+    <span class="n">year</span> <span class="o">=</span> <span class="n">now</span><span class="o">.</span><span class="n">year</span>
+    <span class="n">quarter</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;q</span><span class="si">{</span><span class="p">(</span><span class="n">now</span><span class="o">.</span><span class="n">month</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="mi">1</span><span class="p">)</span><span class="w"> </span><span class="o">//</span><span class="w"> </span><span class="mi">3</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">1</span><span class="si">}</span><span class="s2">&quot;</span>
+    
+    <span class="c1"># Calculate default start date (first day of current quarter)</span>
+    <span class="n">quarter_month</span> <span class="o">=</span> <span class="p">((</span><span class="nb">int</span><span class="p">(</span><span class="n">quarter</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="mi">3</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span>  <span class="c1"># q1-&gt;1, q2-&gt;4, q3-&gt;7, q4-&gt;10</span>
+    <span class="n">start_date</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">year</span><span class="si">}</span><span class="s2">-</span><span class="si">{</span><span class="n">quarter_month</span><span class="si">:</span><span class="s2">02d</span><span class="si">}</span><span class="s2">-01&quot;</span>  <span class="c1"># Format: YYYY-MM-DD</span>
+    
+    <span class="c1"># Generate the default color theme and get its path</span>
+    <span class="n">theme_path</span> <span class="o">=</span> <span class="n">generate_default_theme</span><span class="p">()</span>
+    <span class="c1"># Convert to relative path for config file</span>
+    <span class="n">rel_theme_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">relpath</span><span class="p">(</span><span class="n">theme_path</span><span class="p">,</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">output_path</span><span class="p">))</span>
+    
+    <span class="c1"># Create a string for the YAML output with manual comments for fields</span>
+    <span class="n">yaml_output</span> <span class="o">=</span> <span class="s2">&quot;# Sabbath School Lesson Configuration</span><span class="se">\n\n</span><span class="s2">&quot;</span>
+    <span class="n">yaml_output</span> <span class="o">+=</span> <span class="s2">&quot;# Year and quarter to download</span><span class="se">\n</span><span class="s2">&quot;</span>
+    <span class="n">yaml_output</span> <span class="o">+=</span> <span class="s2">&quot;# The year of the lessons (e.g., 2025)</span><span class="se">\n</span><span class="s2">&quot;</span>
+    <span class="n">yaml_output</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot;year: </span><span class="si">{</span><span class="n">year</span><span class="si">}</span><span class="se">\n</span><span class="s2">&quot;</span>
+    <span class="n">yaml_output</span> <span class="o">+=</span> <span class="s2">&quot;# The quarter of the lessons (q1, q2, q3, q4)</span><span class="se">\n</span><span class="s2">&quot;</span>
+    <span class="n">yaml_output</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot;quarter: </span><span class="si">{</span><span class="n">quarter</span><span class="si">}</span><span class="se">\n</span><span class="s2">&quot;</span>
+    <span class="n">yaml_output</span> <span class="o">+=</span> <span class="s2">&quot;# The language of the lessons (e.g., &#39;en&#39; for English)</span><span class="se">\n</span><span class="s2">&quot;</span>
+    <span class="n">yaml_output</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot;language: en</span><span class="se">\n</span><span class="s2">&quot;</span>
+
+    <span class="n">yaml_output</span> <span class="o">+=</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2"># File paths</span><span class="se">\n</span><span class="s2">&quot;</span>
+    <span class="n">yaml_output</span> <span class="o">+=</span> <span class="s2">&quot;# Path to the output PDF file for the lessons</span><span class="se">\n</span><span class="s2">&quot;</span>
+    <span class="c1"># yaml_output += f&quot;output_file: ./output/sabbath_school_lesson_{year}_{quarter}_en.pdf\n&quot;</span>
+    <span class="n">yaml_output</span> <span class="o">+=</span> <span class="s2">&quot;# Path to the front cover SVG file</span><span class="se">\n</span><span class="s2">&quot;</span>
+    <span class="n">yaml_output</span> <span class="o">+=</span> <span class="s2">&quot;front_cover_svg: ./assets/front_cover.svg</span><span class="se">\n</span><span class="s2">&quot;</span>
+    <span class="n">yaml_output</span> <span class="o">+=</span> <span class="s2">&quot;# Path to the back cover SVG file</span><span class="se">\n</span><span class="s2">&quot;</span>
+    <span class="n">yaml_output</span> <span class="o">+=</span> <span class="s2">&quot;back_cover_svg: ./assets/back_cover.svg</span><span class="se">\n</span><span class="s2">&quot;</span>
+    <span class="n">yaml_output</span> <span class="o">+=</span> <span class="s2">&quot;# Path to the color theme YAML file</span><span class="se">\n</span><span class="s2">&quot;</span>
+    <span class="n">yaml_output</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot;color_theme_path: </span><span class="si">{</span><span class="n">rel_theme_path</span><span class="si">}</span><span class="se">\n</span><span class="s2">&quot;</span>
+
+    <span class="n">yaml_output</span> <span class="o">+=</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2"># Reproduction options</span><span class="se">\n</span><span class="s2">&quot;</span>
+    <span class="n">yaml_output</span> <span class="o">+=</span> <span class="s2">&quot;# Historical year to adapt (e.g., 1905)</span><span class="se">\n</span><span class="s2">&quot;</span>
+    <span class="n">yaml_output</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot;reproduce:</span><span class="se">\n</span><span class="s2">&quot;</span>
+    <span class="n">yaml_output</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot;  year: 1905</span><span class="se">\n</span><span class="s2">&quot;</span>
+    <span class="n">yaml_output</span> <span class="o">+=</span> <span class="s2">&quot;# Historical quarter to adapt (e.g., q2)</span><span class="se">\n</span><span class="s2">&quot;</span>
+    <span class="n">yaml_output</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot;  quarter: q2</span><span class="se">\n</span><span class="s2">&quot;</span>
+    <span class="n">yaml_output</span> <span class="o">+=</span> <span class="s2">&quot;# First lesson to include (default is 1)</span><span class="se">\n</span><span class="s2">&quot;</span>
+    <span class="n">yaml_output</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot;  start_lesson: 1</span><span class="se">\n</span><span class="s2">&quot;</span>
+    <span class="n">yaml_output</span> <span class="o">+=</span> <span class="s2">&quot;# Last lesson to include (None for all lessons)</span><span class="se">\n</span><span class="s2">&quot;</span>
+    <span class="n">yaml_output</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot;  stop_lesson: null</span><span class="se">\n</span><span class="s2">&quot;</span>
+    <span class="n">yaml_output</span> <span class="o">+=</span> <span class="s2">&quot;# The start date of the quarter (format: YYYY-MM-DD)</span><span class="se">\n</span><span class="s2">&quot;</span>
+    <span class="n">yaml_output</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot;  quarter_start_date: &#39;</span><span class="si">{</span><span class="n">start_date</span><span class="si">}</span><span class="s2">&#39;</span><span class="se">\n</span><span class="s2">&quot;</span>
+
+    <span class="n">yaml_output</span> <span class="o">+=</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2"># PDF metadata</span><span class="se">\n</span><span class="s2">&quot;</span>
+    <span class="n">yaml_output</span> <span class="o">+=</span> <span class="s2">&quot;# The title of the generated PDF</span><span class="se">\n</span><span class="s2">&quot;</span>
+    <span class="n">yaml_output</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot;title: Sabbath School Lessons</span><span class="se">\n</span><span class="s2">&quot;</span>
+    <span class="n">yaml_output</span> <span class="o">+=</span> <span class="s2">&quot;# The subtitle for the PDF (typically the quarter and year)</span><span class="se">\n</span><span class="s2">&quot;</span>
+    <span class="n">yaml_output</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot;subtitle: Quarter </span><span class="si">{</span><span class="n">quarter</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="si">}</span><span class="s2">, </span><span class="si">{</span><span class="n">year</span><span class="si">}</span><span class="se">\n</span><span class="s2">&quot;</span>
+    <span class="n">yaml_output</span> <span class="o">+=</span> <span class="s2">&quot;# The publisher of the generated PDF</span><span class="se">\n</span><span class="s2">&quot;</span>
+    <span class="n">yaml_output</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot;publisher: Gospel Sounders</span><span class="se">\n</span><span class="s2">&quot;</span>
+
+    <span class="n">yaml_output</span> <span class="o">+=</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2"># Language settings</span><span class="se">\n</span><span class="s2">&quot;</span>
+    <span class="n">yaml_output</span> <span class="o">+=</span> <span class="s2">&quot;# Path to the language configuration file</span><span class="se">\n</span><span class="s2">&quot;</span>
+    <span class="n">yaml_output</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot;languages_dir: ./languages</span><span class="se">\n</span><span class="s2">&quot;</span>
+    <span class="n">yaml_output</span> <span class="o">+=</span> <span class="s2">&quot;# lesson title: will use lesson title from english repo if this is not give&quot;</span>
+    <span class="n">yaml_output</span> <span class="o">+=</span> <span class="s2">&quot;lesson_title: lesson title&quot;</span>
+
+
+    <span class="c1"># Write the output to the specified file</span>
+    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">output_path</span><span class="p">,</span> <span class="s1">&#39;w&#39;</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s1">&#39;utf-8&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+        <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">yaml_output</span><span class="p">)</span>
+    
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Template configuration generated at: </span><span class="si">{</span><span class="n">output_path</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">output_path</span></div>
+
+
+<div class="viewcode-block" id="main">
+<a class="viewcode-back" href="../../../api/sabbath_school_reproducer.bin.html#sabbath_school_reproducer.bin.generate_config.main">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">main</span><span class="p">():</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Main function</span>
+<span class="sd">    </span>
+<span class="sd">    Returns:</span>
+<span class="sd">        int: Exit code</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># Get output path from command line argument or use default</span>
+    <span class="n">output_path</span> <span class="o">=</span> <span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span> <span class="k">else</span> <span class="s2">&quot;config.yaml&quot;</span>
+
+    <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="s2">&quot;languages&quot;</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">lang</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;en&quot;</span><span class="p">,</span> <span class="s2">&quot;swa&quot;</span><span class="p">,</span> <span class="s2">&quot;luo&quot;</span><span class="p">]:</span>
+        <span class="n">generate_language_template</span><span class="p">(</span><span class="n">lang</span><span class="p">,</span> <span class="s2">&quot;languages&quot;</span><span class="p">)</span>
+    
+    <span class="c1"># Generate the configuration file (won&#39;t overwrite existing files)</span>
+    <span class="n">generate_template_config</span><span class="p">(</span><span class="n">output_path</span><span class="p">)</span>
+    
+    <span class="c1"># Always ensure we have the default theme</span>
+    <span class="n">generate_default_theme</span><span class="p">()</span>
+    
+    <span class="k">return</span> <span class="mi">0</span></div>
+
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+    <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">(</span><span class="n">main</span><span class="p">())</span>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, Brian Onang&#39;o.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

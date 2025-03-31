@@ -1,0 +1,887 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>sabbath_school_reproducer.generator.html_generator &mdash; Sabbath School Lessons Reproducer 0.1.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=e59714d7" />
+
+  
+      <script src="../../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../../_static/documentation_options.js?v=01f34227"></script>
+      <script src="../../../_static/doctools.js?v=9a2dae69"></script>
+      <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../index.html" class="icon icon-home">
+            Sabbath School Lessons Reproducer
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../overview.html">Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../usage.html">Usage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../configuration.html">Configuration</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../modules.html">Modules</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../contributing.html">Contributing</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">Sabbath School Lessons Reproducer</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">sabbath_school_reproducer.generator.html_generator</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for sabbath_school_reproducer.generator.html_generator</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span><span class="w"> </span><span class="nn">markdown</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">re</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">json</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">requests</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">sabbath_school_reproducer.generator.css_styles</span><span class="w"> </span><span class="kn">import</span> <span class="n">CSS_TEMPLATE</span><span class="p">,</span> <span class="n">CssUpdater</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">sabbath_school_reproducer.generator.css_editor</span><span class="w"> </span><span class="kn">import</span>  <span class="n">CSSEditor</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">sabbath_school_reproducer.utils.language_utils</span><span class="w"> </span><span class="kn">import</span>  <span class="n">LanguageConfig</span>
+
+
+<div class="viewcode-block" id="HtmlGenerator">
+<a class="viewcode-back" href="../../../modules.html#sabbath_school_reproducer.generator.html_generator.HtmlGenerator">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">HtmlGenerator</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Generates HTML content for PDF generation with incremental approach.&quot;&quot;&quot;</span>
+    
+<div class="viewcode-block" id="HtmlGenerator.get_quarter_display">
+<a class="viewcode-back" href="../../../modules.html#sabbath_school_reproducer.generator.html_generator.HtmlGenerator.get_quarter_display">[docs]</a>
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_quarter_display</span><span class="p">(</span><span class="n">quarter</span><span class="p">,</span> <span class="n">language_code</span><span class="o">=</span><span class="s1">&#39;en&#39;</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get a formatted display for the quarter</span>
+<span class="sd">        </span>
+<span class="sd">        Args:</span>
+<span class="sd">            quarter (str): Quarter code (e.g., q1, q2, q3, q4)</span>
+<span class="sd">            language_code (str): Language code for translations</span>
+<span class="sd">            </span>
+<span class="sd">        Returns:</span>
+<span class="sd">            str: Formatted quarter display</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">LanguageConfig</span><span class="o">.</span><span class="n">get_translation</span><span class="p">(</span>
+            <span class="n">language_code</span><span class="p">,</span> 
+            <span class="sa">f</span><span class="s1">&#39;quarter_names.</span><span class="si">{</span><span class="n">quarter</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">,</span>
+            <span class="s2">&quot;Quarter&quot;</span>
+        <span class="p">)</span></div>
+
+<div class="viewcode-block" id="HtmlGenerator.read_svg_file">
+<a class="viewcode-back" href="../../../modules.html#sabbath_school_reproducer.generator.html_generator.HtmlGenerator.read_svg_file">[docs]</a>
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">read_svg_file</span><span class="p">(</span><span class="n">filepath</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Read SVG file content from the specified path</span>
+<span class="sd">        </span>
+<span class="sd">        Args:</span>
+<span class="sd">            filepath (str): Path to SVG file</span>
+<span class="sd">            </span>
+<span class="sd">        Returns:</span>
+<span class="sd">            str or None: SVG content or None if error</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">filepath</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s1">&#39;utf-8&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+                <span class="k">return</span> <span class="n">f</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Warning: Could not read SVG from </span><span class="si">{</span><span class="n">filepath</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="kc">None</span></div>
+
+    
+<div class="viewcode-block" id="HtmlGenerator.create_cover_page">
+<a class="viewcode-back" href="../../../modules.html#sabbath_school_reproducer.generator.html_generator.HtmlGenerator.create_cover_page">[docs]</a>
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">create_cover_page</span><span class="p">(</span><span class="n">front_cover_svg_path</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">config</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Creates the cover page HTML using the SVG from file if provided</span>
+<span class="sd">        </span>
+<span class="sd">        Args:</span>
+<span class="sd">            front_cover_svg_path (str, optional): Path to front cover SVG</span>
+<span class="sd">            config (dict, optional): Configuration dictionary</span>
+<span class="sd">            </span>
+<span class="sd">        Returns:</span>
+<span class="sd">            str: HTML for cover page</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">svg_content</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+                    
+        <span class="c1"># Set default values</span>
+        <span class="n">year</span> <span class="o">=</span> <span class="mi">2025</span>
+        <span class="n">quarter</span> <span class="o">=</span> <span class="s2">&quot;q1&quot;</span>
+        <span class="n">lesson_title</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+        
+        <span class="c1"># Get language code from config</span>
+        <span class="n">language_code</span> <span class="o">=</span> <span class="n">config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;language&#39;</span><span class="p">,</span> <span class="s1">&#39;en&#39;</span><span class="p">)</span> <span class="k">if</span> <span class="n">config</span> <span class="k">else</span> <span class="s1">&#39;en&#39;</span>
+        
+        <span class="c1"># Use values from config if available</span>
+        <span class="k">if</span> <span class="n">config</span><span class="p">:</span>
+            <span class="c1"># Use the target year and quarter for display (not the source/reproduction year)</span>
+            <span class="n">year</span> <span class="o">=</span> <span class="n">config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;year&quot;</span><span class="p">,</span> <span class="mi">2025</span><span class="p">)</span>
+            <span class="n">quarter</span> <span class="o">=</span> <span class="n">config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;quarter&quot;</span><span class="p">,</span> <span class="s2">&quot;q1&quot;</span><span class="p">)</span>
+
+            <span class="n">reproduce</span> <span class="o">=</span> <span class="n">config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;reproduce&quot;</span><span class="p">,</span> <span class="p">{})</span>
+            <span class="n">year_orig</span> <span class="o">=</span> <span class="n">reproduce</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;year&quot;</span><span class="p">,</span> <span class="mi">2025</span><span class="p">)</span>  <span class="c1"># Default to 2025 if &#39;year&#39; is not found</span>
+            <span class="n">quarter_orig</span> <span class="o">=</span> <span class="n">reproduce</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;quarter&quot;</span><span class="p">,</span> <span class="s2">&quot;q1&quot;</span><span class="p">)</span> 
+            
+            <span class="c1"># Get title from config or generate a default</span>
+            <span class="n">lesson_title</span> <span class="o">=</span> <span class="n">config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;lesson_title&quot;</span><span class="p">,</span> <span class="n">CSSEditor</span><span class="o">.</span><span class="n">get_lesson_title</span><span class="p">(</span><span class="n">year_orig</span><span class="p">,</span> <span class="n">quarter_orig</span><span class="p">))</span>
+            
+            <span class="c1"># If we&#39;re in reproduction mode, add a note about the original source</span>
+            <span class="k">if</span> <span class="n">config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;reproduce&quot;</span><span class="p">,</span> <span class="p">{})</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;year&quot;</span><span class="p">):</span>
+                <span class="n">source_year</span> <span class="o">=</span> <span class="n">config</span><span class="p">[</span><span class="s2">&quot;reproduce&quot;</span><span class="p">][</span><span class="s2">&quot;year&quot;</span><span class="p">]</span>
+                <span class="n">source_quarter</span> <span class="o">=</span> <span class="n">config</span><span class="p">[</span><span class="s2">&quot;reproduce&quot;</span><span class="p">][</span><span class="s2">&quot;quarter&quot;</span><span class="p">]</span>
+                
+                <span class="c1"># Update title to indicate it&#39;s a reproduction</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="n">config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;title&quot;</span><span class="p">):</span>  <span class="c1"># Only modify if no custom title is set</span>
+                    <span class="c1"># Get translated word for &quot;from&quot; based on language</span>
+                    <span class="n">from_text</span> <span class="o">=</span> <span class="n">LanguageConfig</span><span class="o">.</span><span class="n">get_translation</span><span class="p">(</span><span class="n">language_code</span><span class="p">,</span> <span class="s1">&#39;from_text&#39;</span><span class="p">,</span> <span class="s1">&#39;from&#39;</span><span class="p">,</span> <span class="n">config</span><span class="p">)</span>
+                    <span class="n">lesson_title</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;Sabbath School Lessons (</span><span class="si">{</span><span class="n">from_text</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">source_year</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">source_quarter</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span><span class="si">}</span><span class="s2">)&quot;</span>
+        
+        <span class="c1"># Format quarter display using translated name</span>
+        <span class="n">quarter_display</span> <span class="o">=</span> <span class="n">LanguageConfig</span><span class="o">.</span><span class="n">get_translation</span><span class="p">(</span>
+            <span class="n">language_code</span><span class="p">,</span> 
+            <span class="sa">f</span><span class="s1">&#39;quarter_names.</span><span class="si">{</span><span class="n">quarter</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">,</span> 
+            <span class="n">HtmlGenerator</span><span class="o">.</span><span class="n">get_quarter_display</span><span class="p">(</span><span class="n">quarter</span><span class="p">,</span> <span class="n">language_code</span><span class="p">),</span>
+            <span class="n">config</span>
+        <span class="p">)</span>
+        
+        <span class="c1"># Get quarter months for the specific language</span>
+        <span class="n">quarter_months</span> <span class="o">=</span> <span class="n">LanguageConfig</span><span class="o">.</span><span class="n">get_translation</span><span class="p">(</span>
+            <span class="n">language_code</span><span class="p">,</span> 
+            <span class="sa">f</span><span class="s1">&#39;quarter_months.</span><span class="si">{</span><span class="n">quarter</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">,</span> 
+            <span class="sa">f</span><span class="s2">&quot;Quarter </span><span class="si">{</span><span class="n">quarter</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> 
+            <span class="n">config</span>
+        <span class="p">)</span>
+        
+        <span class="c1"># If a path is provided, try to read the SVG from file</span>
+        <span class="k">if</span> <span class="n">front_cover_svg_path</span><span class="p">:</span>
+            <span class="n">svg_content</span> <span class="o">=</span> <span class="n">HtmlGenerator</span><span class="o">.</span><span class="n">read_svg_file</span><span class="p">(</span><span class="n">front_cover_svg_path</span><span class="p">)</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">svg_content</span><span class="p">:</span>
+                <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Warning: Could not read SVG from </span><span class="si">{</span><span class="n">front_cover_svg_path</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+                <span class="c1"># We&#39;ll fall back to the default SVG</span>
+        
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">svg_content</span><span class="p">:</span>
+            <span class="c1"># Get translated text for the cover page</span>
+            <span class="n">sabbath_school_text</span> <span class="o">=</span> <span class="n">LanguageConfig</span><span class="o">.</span><span class="n">get_translation</span><span class="p">(</span><span class="n">language_code</span><span class="p">,</span> <span class="s1">&#39;sabbath_school&#39;</span><span class="p">,</span> <span class="s1">&#39;SABBATH SCHOOL&#39;</span><span class="p">,</span> <span class="n">config</span><span class="p">)</span>
+            <span class="n">lessons_text</span> <span class="o">=</span> <span class="n">LanguageConfig</span><span class="o">.</span><span class="n">get_translation</span><span class="p">(</span><span class="n">language_code</span><span class="p">,</span> <span class="s1">&#39;lessons&#39;</span><span class="p">,</span> <span class="s1">&#39;LESSONS&#39;</span><span class="p">,</span> <span class="n">config</span><span class="p">)</span>
+            
+            <span class="c1"># Use default fallback SVG with dynamic content</span>
+            <span class="n">svg_content</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">            &lt;svg xmlns=&quot;http://www.w3.org/2000/svg&quot; viewBox=&quot;0 0 800 1000&quot; width=&quot;800&quot; height=&quot;1000&quot;&gt;</span>
+<span class="s2">                &lt;rect width=&quot;800&quot; height=&quot;1000&quot; fill=&quot;#ffffff&quot;/&gt;</span>
+<span class="s2">                &lt;rect x=&quot;30&quot; y=&quot;30&quot; width=&quot;740&quot; height=&quot;940&quot; stroke=&quot;#7d2b2b&quot; stroke-width=&quot;3&quot; fill=&quot;none&quot;/&gt;</span>
+<span class="s2">                &lt;text x=&quot;400&quot; y=&quot;170&quot; font-family=&quot;Georgia, serif&quot; font-size=&quot;48&quot; font-weight=&quot;bold&quot; text-anchor=&quot;middle&quot; fill=&quot;#7d2b2b&quot;&gt;</span><span class="si">{</span><span class="n">sabbath_school_text</span><span class="si">}</span><span class="s2">&lt;/text&gt;</span>
+<span class="s2">                &lt;text x=&quot;400&quot; y=&quot;230&quot; font-family=&quot;Georgia, serif&quot; font-size=&quot;48&quot; font-weight=&quot;bold&quot; text-anchor=&quot;middle&quot; fill=&quot;#7d2b2b&quot;&gt;</span><span class="si">{</span><span class="n">lessons_text</span><span class="si">}</span><span class="s2">&lt;/text&gt;</span>
+<span class="s2">                &lt;text x=&quot;400&quot; y=&quot;730&quot; font-family=&quot;Georgia, serif&quot; font-size=&quot;36&quot; font-weight=&quot;bold&quot; text-anchor=&quot;middle&quot; fill=&quot;#5a4130&quot;&gt;</span><span class="si">{</span><span class="n">lesson_title</span><span class="si">}</span><span class="s2">&lt;/text&gt;</span>
+<span class="s2">                &lt;text x=&quot;400&quot; y=&quot;790&quot; font-family=&quot;Georgia, serif&quot; font-size=&quot;24&quot; text-anchor=&quot;middle&quot; fill=&quot;#5a4130&quot;&gt;</span><span class="si">{</span><span class="n">quarter_display</span><span class="si">}</span><span class="s2">, </span><span class="si">{</span><span class="n">year</span><span class="si">}</span><span class="s2">&lt;/text&gt;</span>
+<span class="s2">                &lt;text x=&quot;400&quot; y=&quot;830&quot; font-family=&quot;Georgia, serif&quot; font-size=&quot;18&quot; text-anchor=&quot;middle&quot; fill=&quot;#5a4130&quot;&gt;</span><span class="si">{</span><span class="n">quarter_months</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">year</span><span class="si">}</span><span class="s2">&lt;/text&gt;</span>
+<span class="s2">            &lt;/svg&gt;</span>
+<span class="s2">            &quot;&quot;&quot;</span>
+                
+            <span class="c1"># Add source attribution if this is a reproduction</span>
+            <span class="k">if</span> <span class="n">config</span> <span class="ow">and</span> <span class="n">config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;reproduce&quot;</span><span class="p">,</span> <span class="p">{})</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;year&quot;</span><span class="p">):</span>
+                <span class="n">source_year</span> <span class="o">=</span> <span class="n">config</span><span class="p">[</span><span class="s2">&quot;reproduce&quot;</span><span class="p">][</span><span class="s2">&quot;year&quot;</span><span class="p">]</span>
+                <span class="n">source_quarter</span> <span class="o">=</span> <span class="n">config</span><span class="p">[</span><span class="s2">&quot;reproduce&quot;</span><span class="p">][</span><span class="s2">&quot;quarter&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
+                
+                <span class="c1"># Get translated quarter name and adapted from text</span>
+                <span class="n">source_quarter_name</span> <span class="o">=</span> <span class="n">LanguageConfig</span><span class="o">.</span><span class="n">get_translation</span><span class="p">(</span>
+                    <span class="n">language_code</span><span class="p">,</span> 
+                    <span class="sa">f</span><span class="s1">&#39;quarter_names.</span><span class="si">{</span><span class="n">source_quarter</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">,</span> 
+                    <span class="n">HtmlGenerator</span><span class="o">.</span><span class="n">get_quarter_display</span><span class="p">(</span><span class="n">source_quarter</span><span class="p">,</span> <span class="n">language_code</span><span class="p">),</span>
+                    <span class="n">config</span>
+                <span class="p">)</span>
+                
+                <span class="n">adapted_from</span> <span class="o">=</span> <span class="n">LanguageConfig</span><span class="o">.</span><span class="n">get_translation</span><span class="p">(</span><span class="n">language_code</span><span class="p">,</span> <span class="s1">&#39;adapted_from&#39;</span><span class="p">,</span> <span class="s1">&#39;Adapted from&#39;</span><span class="p">,</span> <span class="n">config</span><span class="p">)</span>
+                
+                <span class="c1"># Add source attribution text to SVG</span>
+                <span class="n">svg_content</span> <span class="o">=</span> <span class="n">svg_content</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;&lt;/svg&gt;&#39;</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">                &lt;text x=&quot;400&quot; y=&quot;870&quot; font-family=&quot;Georgia, serif&quot; font-size=&quot;16&quot; text-anchor=&quot;middle&quot; font-style=&quot;italic&quot; fill=&quot;#666666&quot;&gt;</span>
+<span class="s2">                    </span><span class="si">{</span><span class="n">adapted_from</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">source_quarter_name</span><span class="si">}</span><span class="s2">, </span><span class="si">{</span><span class="n">source_year</span><span class="si">}</span>
+<span class="s2">                &lt;/text&gt;</span>
+<span class="s2">                &lt;/svg&gt;</span>
+<span class="s2">                &quot;&quot;&quot;</span><span class="p">)</span>
+        
+        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">        &lt;div class=&quot;cover-page&quot;&gt;</span>
+<span class="s2">            </span><span class="si">{</span><span class="n">svg_content</span><span class="si">}</span>
+<span class="s2">        &lt;/div&gt;</span>
+<span class="s2">        &quot;&quot;&quot;</span></div>
+
+
+<div class="viewcode-block" id="HtmlGenerator.create_back_cover">
+<a class="viewcode-back" href="../../../modules.html#sabbath_school_reproducer.generator.html_generator.HtmlGenerator.create_back_cover">[docs]</a>
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">create_back_cover</span><span class="p">(</span><span class="n">back_cover_svg_path</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Creates the back cover page HTML using the SVG from file if provided</span>
+<span class="sd">        </span>
+<span class="sd">        Args:</span>
+<span class="sd">            back_cover_svg_path (str, optional): Path to back cover SVG</span>
+<span class="sd">            </span>
+<span class="sd">        Returns:</span>
+<span class="sd">            str: HTML for back cover</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">back_cover_svg_path</span><span class="p">:</span>
+            <span class="k">return</span> <span class="s2">&quot;&quot;</span>
+            
+        <span class="n">svg_content</span> <span class="o">=</span> <span class="n">HtmlGenerator</span><span class="o">.</span><span class="n">read_svg_file</span><span class="p">(</span><span class="n">back_cover_svg_path</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">svg_content</span><span class="p">:</span>
+            <span class="k">return</span> <span class="s2">&quot;&quot;</span>
+        
+        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">        &lt;div class=&quot;back-cover-page&quot;&gt;</span>
+<span class="s2">            </span><span class="si">{</span><span class="n">svg_content</span><span class="si">}</span>
+<span class="s2">        &lt;/div&gt;</span>
+<span class="s2">        &quot;&quot;&quot;</span></div>
+
+    
+<div class="viewcode-block" id="HtmlGenerator.convert_markdown_to_html">
+<a class="viewcode-back" href="../../../modules.html#sabbath_school_reproducer.generator.html_generator.HtmlGenerator.convert_markdown_to_html">[docs]</a>
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">convert_markdown_to_html</span><span class="p">(</span><span class="n">markdown_content</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Convert markdown to HTML with table support</span>
+<span class="sd">        </span>
+<span class="sd">        Args:</span>
+<span class="sd">            markdown_content (str): Markdown content</span>
+<span class="sd">            </span>
+<span class="sd">        Returns:</span>
+<span class="sd">            str: HTML content</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">markdown</span><span class="o">.</span><span class="n">markdown</span><span class="p">(</span>
+            <span class="n">markdown_content</span><span class="p">,</span>
+            <span class="n">extensions</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;tables&#39;</span><span class="p">,</span> <span class="s1">&#39;extra&#39;</span><span class="p">]</span>  <span class="c1"># Enable table and extra extensions for better markdown support</span>
+        <span class="p">)</span></div>
+
+    
+<div class="viewcode-block" id="HtmlGenerator.create_frontmatter_html">
+<a class="viewcode-back" href="../../../modules.html#sabbath_school_reproducer.generator.html_generator.HtmlGenerator.create_frontmatter_html">[docs]</a>
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">create_frontmatter_html</span><span class="p">(</span><span class="n">frontmatter_content</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Creates HTML for the front matter section with table support</span>
+<span class="sd">        </span>
+<span class="sd">        Args:</span>
+<span class="sd">            frontmatter_content (str): Front matter markdown content</span>
+<span class="sd">            </span>
+<span class="sd">        Returns:</span>
+<span class="sd">            str: HTML for front matter</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">frontmatter_content</span><span class="p">:</span>
+            <span class="k">return</span> <span class="s2">&quot;&quot;</span>
+        
+        <span class="c1"># Convert markdown to HTML with table support</span>
+        <span class="n">html_content</span> <span class="o">=</span> <span class="n">HtmlGenerator</span><span class="o">.</span><span class="n">convert_markdown_to_html</span><span class="p">(</span><span class="n">frontmatter_content</span><span class="p">)</span>
+        
+        <span class="c1"># Wrap in appropriate container</span>
+        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">        &lt;div class=&quot;front-matter&quot;&gt;</span>
+<span class="s2">            </span><span class="si">{</span><span class="n">html_content</span><span class="si">}</span>
+<span class="s2">            &lt;div style=&quot;page-break-after: always;&quot;&gt;&lt;/div&gt;</span>
+<span class="s2">        &lt;/div&gt;</span>
+<span class="s2">        &quot;&quot;&quot;</span></div>
+
+    
+<div class="viewcode-block" id="HtmlGenerator.create_backmatter_html">
+<a class="viewcode-back" href="../../../modules.html#sabbath_school_reproducer.generator.html_generator.HtmlGenerator.create_backmatter_html">[docs]</a>
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">create_backmatter_html</span><span class="p">(</span><span class="n">backmatter_content</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Creates HTML for the back matter section with table support</span>
+<span class="sd">        </span>
+<span class="sd">        Args:</span>
+<span class="sd">            backmatter_content (str): Back matter markdown content</span>
+<span class="sd">            </span>
+<span class="sd">        Returns:</span>
+<span class="sd">            str: HTML for back matter</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">backmatter_content</span><span class="p">:</span>
+            <span class="k">return</span> <span class="s2">&quot;&quot;</span>
+        
+        <span class="c1"># Convert markdown to HTML with table support</span>
+        <span class="n">html_content</span> <span class="o">=</span> <span class="n">HtmlGenerator</span><span class="o">.</span><span class="n">convert_markdown_to_html</span><span class="p">(</span><span class="n">backmatter_content</span><span class="p">)</span>
+        
+        <span class="c1"># Wrap in appropriate container</span>
+        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">        &lt;div class=&quot;back-matter&quot;&gt;</span>
+<span class="s2">            </span><span class="si">{</span><span class="n">html_content</span><span class="si">}</span>
+<span class="s2">        &lt;/div&gt;</span>
+<span class="s2">        &quot;&quot;&quot;</span></div>
+
+    
+    
+<div class="viewcode-block" id="HtmlGenerator.create_lesson_html">
+<a class="viewcode-back" href="../../../modules.html#sabbath_school_reproducer.generator.html_generator.HtmlGenerator.create_lesson_html">[docs]</a>
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">create_lesson_html</span><span class="p">(</span><span class="n">lesson</span><span class="p">,</span> <span class="n">language_code</span><span class="o">=</span><span class="s1">&#39;en&#39;</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Creates HTML for a single lesson with improved formatting for title and date</span>
+<span class="sd">        </span>
+<span class="sd">        Args:</span>
+<span class="sd">            lesson (dict): Lesson dictionary</span>
+<span class="sd">            language_code (str): Language code for translations</span>
+<span class="sd">            </span>
+<span class="sd">        Returns:</span>
+<span class="sd">            str: HTML for lesson</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># Determine title font size based on length</span>
+        <span class="n">title_font_size</span> <span class="o">=</span> <span class="s2">&quot;24px&quot;</span>  <span class="c1"># Default</span>
+        <span class="n">title_top</span> <span class="o">=</span> <span class="s1">&#39;40px&#39;</span>
+        <span class="k">if</span> <span class="n">lesson</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;title&#39;</span><span class="p">):</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">lesson</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;title&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">))</span> <span class="o">&lt;=</span> <span class="mi">31</span><span class="p">:</span>
+                <span class="n">title_top</span> <span class="o">=</span> <span class="s1">&#39;45px&#39;</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">lesson</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;title&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">))</span> <span class="o">&gt;</span> <span class="mi">57</span><span class="p">:</span>
+                <span class="n">title_font_size</span> <span class="o">=</span> <span class="s2">&quot;18px&quot;</span>
+        
+        <span class="c1"># Process preliminary note if present</span>
+        <span class="n">preliminary_html</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">lesson</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;preliminary_note&#39;</span><span class="p">):</span>
+            <span class="c1"># Convert markdown to HTML with proper formatting</span>
+            <span class="n">preliminary_content</span> <span class="o">=</span> <span class="n">HtmlGenerator</span><span class="o">.</span><span class="n">convert_markdown_to_html</span><span class="p">(</span><span class="n">lesson</span><span class="p">[</span><span class="s1">&#39;preliminary_note&#39;</span><span class="p">])</span>
+            
+            <span class="c1"># Remove any lines that match the lesson date</span>
+            <span class="k">if</span> <span class="n">lesson</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;date&#39;</span><span class="p">):</span>
+                <span class="c1"># Create more flexible patterns to match the date in various formats</span>
+                <span class="n">date_only</span> <span class="o">=</span> <span class="n">lesson</span><span class="p">[</span><span class="s1">&#39;date&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+                <span class="n">date_patterns</span> <span class="o">=</span> <span class="p">[</span>
+                    <span class="n">re</span><span class="o">.</span><span class="n">escape</span><span class="p">(</span><span class="n">date_only</span><span class="p">),</span>  <span class="c1"># Exact match</span>
+                    <span class="n">re</span><span class="o">.</span><span class="n">escape</span><span class="p">(</span><span class="n">date_only</span><span class="p">)</span> <span class="o">+</span> <span class="sa">r</span><span class="s1">&#39;\s*$&#39;</span><span class="p">,</span>  <span class="c1"># Date at end of line</span>
+                    <span class="sa">r</span><span class="s1">&#39;^\s*&#39;</span> <span class="o">+</span> <span class="n">re</span><span class="o">.</span><span class="n">escape</span><span class="p">(</span><span class="n">date_only</span><span class="p">),</span>  <span class="c1"># Date at beginning of line</span>
+                    <span class="sa">r</span><span class="s1">&#39;^\s*&#39;</span> <span class="o">+</span> <span class="n">re</span><span class="o">.</span><span class="n">escape</span><span class="p">(</span><span class="n">date_only</span><span class="p">)</span> <span class="o">+</span> <span class="sa">r</span><span class="s1">&#39;\s*$&#39;</span>  <span class="c1"># Date alone on a line</span>
+                <span class="p">]</span>
+                
+                <span class="c1"># Apply each pattern to remove the date</span>
+                <span class="k">for</span> <span class="n">pattern</span> <span class="ow">in</span> <span class="n">date_patterns</span><span class="p">:</span>
+                    <span class="n">preliminary_content</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="n">pattern</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="n">preliminary_content</span><span class="p">,</span> <span class="n">flags</span><span class="o">=</span><span class="n">re</span><span class="o">.</span><span class="n">MULTILINE</span><span class="p">)</span>
+            
+            <span class="c1"># If there&#39;s still content after removing dates, add it</span>
+            <span class="k">if</span> <span class="n">preliminary_content</span><span class="o">.</span><span class="n">strip</span><span class="p">():</span>
+                <span class="n">preliminary_html</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">                &lt;div class=&quot;preliminary-note&quot;&gt;</span>
+<span class="s2">                    </span><span class="si">{</span><span class="n">preliminary_content</span><span class="si">}</span>
+<span class="s2">                &lt;/div&gt;</span>
+<span class="s2">                &quot;&quot;&quot;</span>
+        
+        <span class="c1"># Process question sections with headers</span>
+        <span class="n">question_sections_html</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+        
+        <span class="c1"># Group questions by section</span>
+        <span class="n">question_sections</span> <span class="o">=</span> <span class="p">{}</span>
+        
+        <span class="c1"># Get translations</span>
+        <span class="n">default_questions_header</span> <span class="o">=</span> <span class="n">LanguageConfig</span><span class="o">.</span><span class="n">get_translation</span><span class="p">(</span><span class="n">language_code</span><span class="p">,</span> <span class="s1">&#39;questions&#39;</span><span class="p">,</span> <span class="s1">&#39;QUESTIONS&#39;</span><span class="p">)</span>
+        
+        <span class="c1"># Create a default questions section if no headers are present</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">lesson</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;question_headers&#39;</span><span class="p">):</span>
+            <span class="n">question_sections</span><span class="p">[</span><span class="n">default_questions_header</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+        
+        <span class="c1"># Group questions by their sections</span>
+        <span class="k">for</span> <span class="n">question</span> <span class="ow">in</span> <span class="n">lesson</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;questions&#39;</span><span class="p">,</span> <span class="p">[]):</span>
+            <span class="n">section</span> <span class="o">=</span> <span class="n">question</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;section&#39;</span><span class="p">,</span> <span class="n">default_questions_header</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">section</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">question_sections</span><span class="p">:</span>
+                <span class="n">question_sections</span><span class="p">[</span><span class="n">section</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="n">question_sections</span><span class="p">[</span><span class="n">section</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">question</span><span class="p">)</span>
+        
+        <span class="c1"># Sort sections to ensure they&#39;re in the correct order if numbers are in section names</span>
+        <span class="n">section_names</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">question_sections</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
+        
+        <span class="c1"># Get answer prefix translation</span>
+        <span class="n">answer_prefix</span> <span class="o">=</span> <span class="n">LanguageConfig</span><span class="o">.</span><span class="n">get_translation</span><span class="p">(</span><span class="n">language_code</span><span class="p">,</span> <span class="s1">&#39;answer_prefix&#39;</span><span class="p">,</span> <span class="s1">&#39;Ans.&#39;</span><span class="p">)</span>
+        
+        <span class="c1"># Process each section</span>
+        <span class="k">for</span> <span class="n">section_name</span> <span class="ow">in</span> <span class="n">section_names</span><span class="p">:</span>
+            <span class="n">section_questions</span> <span class="o">=</span> <span class="n">question_sections</span><span class="p">[</span><span class="n">section_name</span><span class="p">]</span>
+            <span class="n">section_questions_html</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+            
+            <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">question</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">section_questions</span><span class="p">,</span> <span class="mi">1</span><span class="p">):</span>
+                <span class="c1"># Handle scripture reference with proper punctuation</span>
+                <span class="n">scripture_html</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+                <span class="k">if</span> <span class="n">question</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;scripture&#39;</span><span class="p">):</span>
+                    <span class="c1"># Ensure the scripture reference ends with a period if it doesn&#39;t already</span>
+                    <span class="n">scripture_with_period</span> <span class="o">=</span> <span class="n">question</span><span class="p">[</span><span class="s1">&#39;scripture&#39;</span><span class="p">]</span>
+                    <span class="k">if</span> <span class="ow">not</span> <span class="n">scripture_with_period</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s1">&#39;.&#39;</span><span class="p">):</span>
+                        <span class="n">scripture_with_period</span> <span class="o">+=</span> <span class="s1">&#39;.&#39;</span>
+                    <span class="n">scripture_html</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;&lt;span class=&quot;scripture-ref&quot;&gt;</span><span class="si">{</span><span class="n">scripture_with_period</span><span class="si">}</span><span class="s1">&lt;/span&gt;&#39;</span>
+                
+                <span class="c1"># Handle answer</span>
+                <span class="n">answer_html</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+                <span class="k">if</span> <span class="n">question</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;answer&#39;</span><span class="p">):</span>
+                    <span class="n">answer_html</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;&lt;div class=&quot;answer&quot;&gt;&lt;em&gt;</span><span class="si">{</span><span class="n">answer_prefix</span><span class="si">}</span><span class="s1"> — </span><span class="si">{</span><span class="n">question</span><span class="p">[</span><span class="s2">&quot;answer&quot;</span><span class="p">]</span><span class="si">}</span><span class="s1">&lt;/em&gt;&lt;/div&gt;&#39;</span>
+                
+                <span class="c1"># Add padding for two-digit numbers</span>
+                <span class="n">num_class</span> <span class="o">=</span> <span class="s2">&quot;two-digit&quot;</span> <span class="k">if</span> <span class="n">i</span> <span class="o">&gt;=</span> <span class="mi">10</span> <span class="k">else</span> <span class="s2">&quot;one-digit&quot;</span>
+                
+                <span class="c1"># Make sure question text ends with proper punctuation</span>
+                <span class="n">question_text</span> <span class="o">=</span> <span class="n">question</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;text&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">question_text</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">re</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;[.?!]$&#39;</span><span class="p">,</span> <span class="n">question_text</span><span class="p">):</span>
+                    <span class="n">question_text</span> <span class="o">+=</span> <span class="s1">&#39;.&#39;</span>
+                    
+                <span class="n">question_html</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">                &lt;div class=&quot;question&quot;&gt;</span>
+<span class="s2">                    &lt;span class=&quot;question-number </span><span class="si">{</span><span class="n">num_class</span><span class="si">}</span><span class="s2">&quot;&gt;</span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s2">.&lt;/span&gt;</span>
+<span class="s2">                    &lt;div class=&quot;question-text&quot;&gt;</span>
+<span class="s2">                        </span><span class="si">{</span><span class="n">question_text</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">scripture_html</span><span class="si">}</span>
+<span class="s2">                        </span><span class="si">{</span><span class="n">answer_html</span><span class="si">}</span>
+<span class="s2">                    &lt;/div&gt;</span>
+<span class="s2">                    &lt;div class=&quot;clearfix&quot;&gt;&lt;/div&gt;</span>
+<span class="s2">                &lt;/div&gt;</span>
+<span class="s2">                &quot;&quot;&quot;</span>
+                <span class="n">section_questions_html</span> <span class="o">+=</span> <span class="n">question_html</span>
+            
+            <span class="c1"># Create the section with the proper header</span>
+            <span class="n">question_sections_html</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">            &lt;div class=&quot;questions-section&quot;&gt;</span>
+<span class="s2">                &lt;div class=&quot;questions-header&quot;&gt;</span><span class="si">{</span><span class="n">section_name</span><span class="si">}</span><span class="s2">&lt;/div&gt;</span>
+<span class="s2">                </span><span class="si">{</span><span class="n">section_questions_html</span><span class="si">}</span>
+<span class="s2">            &lt;/div&gt;</span>
+<span class="s2">            &quot;&quot;&quot;</span>
+        
+        <span class="c1"># Process additional sections if present</span>
+        <span class="n">additional_sections_html</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">lesson</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;additional_sections&#39;</span><span class="p">):</span>
+            <span class="k">for</span> <span class="n">section</span> <span class="ow">in</span> <span class="n">lesson</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;additional_sections&#39;</span><span class="p">,</span> <span class="p">[]):</span>
+                <span class="n">section_title</span> <span class="o">=</span> <span class="n">section</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;title&#39;</span><span class="p">,</span> <span class="s1">&#39;ADDITIONAL&#39;</span><span class="p">)</span>
+                <span class="n">section_content</span> <span class="o">=</span> <span class="n">section</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;content&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">)</span>
+                
+                <span class="c1"># Convert markdown to HTML with proper formatting</span>
+                <span class="n">section_content_html</span> <span class="o">=</span> <span class="n">HtmlGenerator</span><span class="o">.</span><span class="n">convert_markdown_to_html</span><span class="p">(</span><span class="n">section_content</span><span class="p">)</span>
+                
+                <span class="n">additional_sections_html</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">                &lt;div class=&quot;additional-section&quot;&gt;</span>
+<span class="s2">                    &lt;div class=&quot;additional-header&quot;&gt;</span><span class="si">{</span><span class="n">section_title</span><span class="si">}</span><span class="s2">&lt;/div&gt;</span>
+<span class="s2">                    &lt;div class=&quot;additional-content&quot;&gt;</span>
+<span class="s2">                        </span><span class="si">{</span><span class="n">section_content_html</span><span class="si">}</span>
+<span class="s2">                    &lt;/div&gt;</span>
+<span class="s2">                &lt;/div&gt;</span>
+<span class="s2">                &quot;&quot;&quot;</span>
+        
+        <span class="c1"># Process notes if present</span>
+        <span class="n">notes_html</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">lesson</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;notes&#39;</span><span class="p">):</span>
+            <span class="c1"># Get translations for &#39;NOTES&#39; and &#39;NOTE&#39;</span>
+            <span class="n">notes_header</span> <span class="o">=</span> <span class="n">LanguageConfig</span><span class="o">.</span><span class="n">get_translation</span><span class="p">(</span><span class="n">language_code</span><span class="p">,</span> <span class="s1">&#39;notes&#39;</span><span class="p">,</span> <span class="s1">&#39;NOTES&#39;</span><span class="p">)</span>
+            <span class="n">note_header</span> <span class="o">=</span> <span class="n">LanguageConfig</span><span class="o">.</span><span class="n">get_translation</span><span class="p">(</span><span class="n">language_code</span><span class="p">,</span> <span class="s1">&#39;note&#39;</span><span class="p">,</span> <span class="s1">&#39;NOTE&#39;</span><span class="p">)</span>
+            
+            <span class="c1"># Convert markdown to HTML with proper formatting</span>
+            <span class="n">notes_content</span> <span class="o">=</span> <span class="n">HtmlGenerator</span><span class="o">.</span><span class="n">convert_markdown_to_html</span><span class="p">(</span><span class="n">HtmlGenerator</span><span class="o">.</span><span class="n">fix_markdown_lists</span><span class="p">(</span><span class="n">lesson</span><span class="p">[</span><span class="s1">&#39;notes&#39;</span><span class="p">]))</span>
+            <span class="n">paragraphs</span> <span class="o">=</span> <span class="n">notes_content</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;&lt;/p&gt;&#39;</span><span class="p">)</span>
+            <span class="n">non_empty_paragraphs</span> <span class="o">=</span> <span class="p">[</span><span class="n">p</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">paragraphs</span> <span class="k">if</span> <span class="n">p</span><span class="o">.</span><span class="n">strip</span><span class="p">()]</span>
+            
+            <span class="c1"># Use singular or plural form based on number of paragraphs</span>
+            <span class="n">header</span> <span class="o">=</span> <span class="n">note_header</span> <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">non_empty_paragraphs</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span> <span class="k">else</span> <span class="n">notes_header</span>
+
+            <span class="n">notes_html</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">                &lt;div class=&quot;notes-section&quot;&gt;</span>
+<span class="s2">                    &lt;div class=&quot;notes-header&quot;&gt;</span><span class="si">{</span><span class="n">header</span><span class="si">}</span><span class="s2">&lt;/div&gt;</span>
+<span class="s2">                    &lt;div class=&quot;notes-content&quot;&gt;</span>
+<span class="s2">                        </span><span class="si">{</span><span class="n">notes_content</span><span class="si">}</span>
+<span class="s2">                    &lt;/div&gt;</span>
+<span class="s2">                &lt;/div&gt;</span>
+<span class="s2">            &quot;&quot;&quot;</span>
+        
+        <span class="c1"># Combine all sections with updated header structure</span>
+        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">        &lt;div class=&quot;lesson&quot;&gt;</span>
+<span class="s2">            &lt;div class=&quot;lesson-header&quot;&gt;</span>
+<span class="s2">                &lt;div class=&quot;corner top-left&quot;&gt;&lt;/div&gt;</span>
+<span class="s2">                &lt;div class=&quot;corner top-right&quot;&gt;&lt;/div&gt;</span>
+<span class="s2">                &lt;div class=&quot;corner bottom-left&quot;&gt;&lt;/div&gt;</span>
+<span class="s2">                &lt;div class=&quot;corner bottom-right&quot;&gt;&lt;/div&gt;</span>
+<span class="s2">                &lt;div class=&quot;lesson-circle&quot;&gt;</span><span class="si">{</span><span class="n">lesson</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;number&#39;</span><span class="p">,</span><span class="w"> </span><span class="s1">&#39;&#39;</span><span class="p">)</span><span class="si">}</span><span class="s2">&lt;/div&gt;</span>
+<span class="s2">                &lt;div class=&quot;lesson-title-container&quot;&gt;</span>
+<span class="s2">                    &lt;div class=&quot;lesson-title&quot; style=&quot;font-size: </span><span class="si">{</span><span class="n">title_font_size</span><span class="si">}</span><span class="s2">;top: </span><span class="si">{</span><span class="n">title_top</span><span class="si">}</span><span class="s2">&quot;&gt;</span><span class="si">{</span><span class="n">lesson</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;title&#39;</span><span class="p">,</span><span class="w"> </span><span class="s1">&#39;&#39;</span><span class="p">)</span><span class="si">}</span><span class="s2">&lt;/div&gt;</span>
+<span class="s2">                    &lt;div class=&quot;lesson-date&quot;&gt;</span><span class="si">{</span><span class="n">lesson</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;date&#39;</span><span class="p">,</span><span class="w"> </span><span class="s1">&#39;&#39;</span><span class="p">)</span><span class="si">}</span><span class="s2">&lt;/div&gt;</span>
+<span class="s2">                &lt;/div&gt;</span>
+<span class="s2">            &lt;/div&gt;</span>
+<span class="s2">            </span><span class="si">{</span><span class="n">preliminary_html</span><span class="si">}</span>
+<span class="s2">            </span><span class="si">{</span><span class="n">question_sections_html</span><span class="si">}</span>
+<span class="s2">            </span><span class="si">{</span><span class="n">additional_sections_html</span><span class="si">}</span>
+<span class="s2">            </span><span class="si">{</span><span class="n">notes_html</span><span class="si">}</span>
+<span class="s2">        &lt;/div&gt;</span>
+<span class="s2">        &quot;&quot;&quot;</span></div>
+
+
+<div class="viewcode-block" id="HtmlGenerator.create_table_of_contents">
+<a class="viewcode-back" href="../../../modules.html#sabbath_school_reproducer.generator.html_generator.HtmlGenerator.create_table_of_contents">[docs]</a>
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">create_table_of_contents</span><span class="p">(</span><span class="n">lessons</span><span class="p">,</span> <span class="n">language_code</span><span class="o">=</span><span class="s1">&#39;en&#39;</span><span class="p">,</span> <span class="n">config</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Creates the table of contents HTML with links to lessons</span>
+<span class="sd">        </span>
+<span class="sd">        Args:</span>
+<span class="sd">            lessons (list): List of lesson dictionaries</span>
+<span class="sd">            language_code (str): Language code for translations</span>
+<span class="sd">            config (dict, optional): Configuration dictionary containing language_config_path</span>
+<span class="sd">            </span>
+<span class="sd">        Returns:</span>
+<span class="sd">            str: HTML for table of contents</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">toc_rows</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+        
+        <span class="c1"># Get translations</span>
+        <span class="n">table_title</span> <span class="o">=</span> <span class="n">LanguageConfig</span><span class="o">.</span><span class="n">get_translation</span><span class="p">(</span><span class="n">language_code</span><span class="p">,</span> <span class="s1">&#39;table_of_contents&#39;</span><span class="p">,</span> <span class="s1">&#39;TABLE OF CONTENTS&#39;</span><span class="p">,</span> <span class="n">config</span><span class="p">)</span>
+        <span class="n">lesson_column</span> <span class="o">=</span> <span class="n">LanguageConfig</span><span class="o">.</span><span class="n">get_translation</span><span class="p">(</span><span class="n">language_code</span><span class="p">,</span> <span class="s1">&#39;lesson_column&#39;</span><span class="p">,</span> <span class="s1">&#39;Lesson&#39;</span><span class="p">,</span> <span class="n">config</span><span class="p">)</span>
+        <span class="n">title_column</span> <span class="o">=</span> <span class="n">LanguageConfig</span><span class="o">.</span><span class="n">get_translation</span><span class="p">(</span><span class="n">language_code</span><span class="p">,</span> <span class="s1">&#39;title_column&#39;</span><span class="p">,</span> <span class="s1">&#39;Title&#39;</span><span class="p">,</span> <span class="n">config</span><span class="p">)</span>
+        <span class="n">date_column</span> <span class="o">=</span> <span class="n">LanguageConfig</span><span class="o">.</span><span class="n">get_translation</span><span class="p">(</span><span class="n">language_code</span><span class="p">,</span> <span class="s1">&#39;date_column&#39;</span><span class="p">,</span> <span class="s1">&#39;Date&#39;</span><span class="p">,</span> <span class="n">config</span><span class="p">)</span>
+        <span class="n">page_column</span> <span class="o">=</span> <span class="n">LanguageConfig</span><span class="o">.</span><span class="n">get_translation</span><span class="p">(</span><span class="n">language_code</span><span class="p">,</span> <span class="s1">&#39;page_column&#39;</span><span class="p">,</span> <span class="s1">&#39;Page&#39;</span><span class="p">,</span> <span class="n">config</span><span class="p">)</span>
+        
+        <span class="k">for</span> <span class="n">lesson</span> <span class="ow">in</span> <span class="n">lessons</span><span class="p">:</span>
+            <span class="c1"># Only include items that have proper lesson structure</span>
+            <span class="k">if</span> <span class="s1">&#39;number&#39;</span> <span class="ow">in</span> <span class="n">lesson</span> <span class="ow">and</span> <span class="s1">&#39;title&#39;</span> <span class="ow">in</span> <span class="n">lesson</span> <span class="ow">and</span> <span class="s1">&#39;date&#39;</span> <span class="ow">in</span> <span class="n">lesson</span><span class="p">:</span>
+                <span class="n">toc_row</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">                &lt;tr&gt;</span>
+<span class="s2">                    &lt;td style=&quot;width: 40px; padding: 5px;&quot;&gt;</span><span class="si">{</span><span class="n">lesson</span><span class="p">[</span><span class="s1">&#39;number&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">&lt;/td&gt;</span>
+<span class="s2">                    &lt;td style=&quot;&quot;&gt;&lt;a href=&quot;#lesson-</span><span class="si">{</span><span class="n">lesson</span><span class="p">[</span><span class="s1">&#39;number&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;&gt;</span><span class="si">{</span><span class="n">lesson</span><span class="p">[</span><span class="s1">&#39;title&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">&lt;/a&gt;&lt;/td&gt;</span>
+<span class="s2">                    &lt;td style=&quot;&quot;&gt;</span><span class="si">{</span><span class="n">lesson</span><span class="p">[</span><span class="s1">&#39;date&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">&lt;/td&gt;</span>
+<span class="s2">                    &lt;td style=&quot;width: 40px; padding: 5px; text-align: right;&quot;&gt;</span><span class="si">{</span><span class="n">lesson</span><span class="p">[</span><span class="s1">&#39;number&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">&lt;/td&gt;</span>
+<span class="s2">                &lt;/tr&gt;</span>
+<span class="s2">                &quot;&quot;&quot;</span>
+                <span class="n">toc_rows</span> <span class="o">+=</span> <span class="n">toc_row</span>
+        
+        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">        &lt;div class=&quot;toc-title&quot;&gt;</span><span class="si">{</span><span class="n">table_title</span><span class="si">}</span><span class="s2">&lt;/div&gt;</span>
+<span class="s2">        &lt;table class=&quot;toc-table&quot;&gt;</span>
+<span class="s2">            &lt;tr class=&quot;header&quot;&gt;</span>
+<span class="s2">                &lt;td style=&quot;width: 40px; padding: 5px;&quot;&gt;</span><span class="si">{</span><span class="n">lesson_column</span><span class="si">}</span><span class="s2">&lt;/td&gt;</span>
+<span class="s2">                &lt;td style=&quot;padding: 5px;&quot;&gt;</span><span class="si">{</span><span class="n">title_column</span><span class="si">}</span><span class="s2">&lt;/td&gt;</span>
+<span class="s2">                &lt;td style=&quot;width: 100px; padding: 5px;&quot;&gt;</span><span class="si">{</span><span class="n">date_column</span><span class="si">}</span><span class="s2">&lt;/td&gt;</span>
+<span class="s2">                &lt;td style=&quot;width: 40px; padding: 5px; text-align: right;&quot;&gt;</span><span class="si">{</span><span class="n">page_column</span><span class="si">}</span><span class="s2">&lt;/td&gt;</span>
+<span class="s2">            &lt;/tr&gt;</span>
+<span class="s2">            </span><span class="si">{</span><span class="n">toc_rows</span><span class="si">}</span>
+<span class="s2">        &lt;/table&gt;</span>
+<span class="s2">        &lt;div class=&quot;sectionbreaknone&quot;&gt;&lt;/div&gt;</span>
+<span class="s2">        &quot;&quot;&quot;</span></div>
+
+
+<div class="viewcode-block" id="HtmlGenerator.fix_markdown_lists">
+<a class="viewcode-back" href="../../../modules.html#sabbath_school_reproducer.generator.html_generator.HtmlGenerator.fix_markdown_lists">[docs]</a>
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">fix_markdown_lists</span><span class="p">(</span><span class="n">markdown_content</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Fix markdown list rendering by indenting all non-numbered list item lines,</span>
+<span class="sd">        but only if at least one numbered list item exists in the content.</span>
+<span class="sd">        </span>
+<span class="sd">        Args:</span>
+<span class="sd">            markdown_content (str): Markdown content with or without numbered lists</span>
+<span class="sd">                </span>
+<span class="sd">        Returns:</span>
+<span class="sd">            str: Fixed markdown content with proper indentation for list continuity</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># Split the content into lines</span>
+        <span class="n">lines</span> <span class="o">=</span> <span class="n">markdown_content</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
+
+        <span class="c1"># If there&#39;s only one line, return the content as is</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">lines</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">markdown_content</span>
+        
+        <span class="c1"># Check if there&#39;s at least one numbered list item</span>
+        <span class="n">has_numbered_list</span> <span class="o">=</span> <span class="nb">any</span><span class="p">(</span><span class="n">re</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;^\s*(\d+)\.\s+&#39;</span><span class="p">,</span> <span class="n">line</span><span class="p">)</span> <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">lines</span><span class="p">)</span>
+        
+        <span class="c1"># Only indent non-numbered list lines if there&#39;s at least one numbered list item</span>
+        <span class="k">if</span> <span class="n">has_numbered_list</span><span class="p">:</span>
+            <span class="n">lines</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">map</span><span class="p">(</span><span class="k">lambda</span> <span class="n">line</span><span class="p">:</span> <span class="s2">&quot;</span><span class="se">\t</span><span class="s2">&quot;</span> <span class="o">+</span> <span class="n">line</span> <span class="k">if</span> <span class="ow">not</span> <span class="n">re</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;^\s*(\d+)\.\s+&#39;</span><span class="p">,</span> <span class="n">line</span><span class="p">)</span> <span class="k">else</span> <span class="n">line</span><span class="p">,</span> <span class="n">lines</span><span class="p">))</span>
+        
+        <span class="c1"># Join the lines back together and return the modified content</span>
+        <span class="k">return</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">lines</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="HtmlGenerator.create_debug_html_with_css">
+<a class="viewcode-back" href="../../../modules.html#sabbath_school_reproducer.generator.html_generator.HtmlGenerator.create_debug_html_with_css">[docs]</a>
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">create_debug_html_with_css</span><span class="p">(</span><span class="n">content_parts</span><span class="p">,</span> <span class="n">dynamic_css</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Creates HTML with current content parts and CSS</span>
+<span class="sd">        </span>
+<span class="sd">        Args:</span>
+<span class="sd">            content_parts (list): List of HTML content parts</span>
+<span class="sd">            dynamic_css (str): CSS content with modifications</span>
+<span class="sd">            </span>
+<span class="sd">        Returns:</span>
+<span class="sd">            str: Complete HTML string</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># HTML structure with placeholders</span>
+        <span class="n">html_structure</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;&lt;!DOCTYPE html&gt;</span>
+<span class="s2">&lt;html&gt;</span>
+<span class="s2">&lt;head&gt;</span>
+<span class="s2">    &lt;meta charset=&quot;utf-8&quot;&gt;</span>
+<span class="s2">    &lt;title&gt;Sabbath School Lessons&lt;/title&gt;</span>
+<span class="s2">    &lt;!-- CSS_PLACEHOLDER --&gt;</span>
+<span class="s2">&lt;/head&gt;</span>
+<span class="s2">&lt;body&gt;</span>
+<span class="s2">    &lt;!-- CONTENT_PLACEHOLDER --&gt;</span>
+<span class="s2">&lt;/body&gt;</span>
+<span class="s2">&lt;/html&gt;&quot;&quot;&quot;</span>
+        
+        <span class="c1"># Join all content parts</span>
+        <span class="n">all_content</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">content_parts</span><span class="p">)</span>
+        
+        <span class="c1"># Insert the content and CSS into the HTML structure</span>
+        <span class="n">complete_html</span> <span class="o">=</span> <span class="n">html_structure</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;&lt;!-- CSS_PLACEHOLDER --&gt;&quot;</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;&lt;style&gt;</span><span class="si">{</span><span class="n">dynamic_css</span><span class="si">}</span><span class="s2">&lt;/style&gt;&quot;</span><span class="p">)</span>
+        <span class="n">complete_html</span> <span class="o">=</span> <span class="n">complete_html</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;&lt;!-- CONTENT_PLACEHOLDER --&gt;&quot;</span><span class="p">,</span> <span class="n">all_content</span><span class="p">)</span>
+        
+        <span class="k">return</span> <span class="n">complete_html</span></div>
+
+    
+<div class="viewcode-block" id="HtmlGenerator.add_section">
+<a class="viewcode-back" href="../../../modules.html#sabbath_school_reproducer.generator.html_generator.HtmlGenerator.add_section">[docs]</a>
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">add_section</span><span class="p">(</span><span class="n">content_parts</span><span class="p">,</span> <span class="n">dynamic_css</span><span class="p">,</span> <span class="n">state</span><span class="p">,</span> <span class="n">section_name</span><span class="p">,</span> <span class="n">section_html</span><span class="p">,</span> 
+                    <span class="n">start_on_odd</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">reset_counter</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Adds a section to the document, ensuring it starts on the correct page</span>
+<span class="sd">        </span>
+<span class="sd">        Args:</span>
+<span class="sd">            content_parts (list): List of HTML content parts</span>
+<span class="sd">            dynamic_css (str): CSS content with modifications</span>
+<span class="sd">            state (dict): Current state tracking page numbers, etc.</span>
+<span class="sd">            section_name (str): Name of the section for comments</span>
+<span class="sd">            section_html (str): HTML content for the section</span>
+<span class="sd">            start_on_odd (bool): Whether section should start on odd-numbered page</span>
+<span class="sd">            reset_counter (bool): Whether to reset page counter for this section</span>
+<span class="sd">            </span>
+<span class="sd">        Returns:</span>
+<span class="sd">            tuple: (updated content_parts, updated dynamic_css, updated state)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">absolute_page_number</span> <span class="o">=</span> <span class="n">state</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;absolute_page_number&#39;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+        
+        <span class="c1"># Check if we need to add a blank page to start on correct page type</span>
+        <span class="k">if</span> <span class="n">start_on_odd</span> <span class="ow">and</span> <span class="n">absolute_page_number</span> <span class="o">%</span> <span class="mi">2</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>  <span class="c1"># Need odd page but on even</span>
+            <span class="c1"># Add a blank page</span>
+            <span class="n">content_parts</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;&lt;div class=&quot;blank-page&quot; style=&quot;page-break-after: always; height: 100vh;&quot;&gt;&lt;/div&gt;&#39;</span><span class="p">)</span>
+            
+            <span class="c1"># Add comment for debugging</span>
+            <span class="n">content_parts</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;&lt;!-- Added blank page to ensure </span><span class="si">{</span><span class="n">section_name</span><span class="si">}</span><span class="s1"> starts on odd page </span><span class="si">{</span><span class="n">absolute_page_number</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">1</span><span class="si">}</span><span class="s1"> --&gt;&#39;</span><span class="p">)</span>
+            
+            <span class="n">absolute_page_number</span> <span class="o">+=</span> <span class="mi">1</span>
+            <span class="n">state</span><span class="p">[</span><span class="s1">&#39;absolute_page_number&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">absolute_page_number</span>
+        <span class="k">elif</span> <span class="ow">not</span> <span class="n">start_on_odd</span> <span class="ow">and</span> <span class="n">absolute_page_number</span> <span class="o">%</span> <span class="mi">2</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>  <span class="c1"># Need even page but on odd</span>
+            <span class="c1"># Add a blank page</span>
+            <span class="n">content_parts</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;&lt;div class=&quot;blank-page&quot; style=&quot;page-break-after: always; height: 100vh;&quot;&gt;&lt;/div&gt;&#39;</span><span class="p">)</span>
+            
+            <span class="c1"># Add comment for debugging</span>
+            <span class="n">content_parts</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;&lt;!-- Added blank page to ensure </span><span class="si">{</span><span class="n">section_name</span><span class="si">}</span><span class="s1"> starts on even page </span><span class="si">{</span><span class="n">absolute_page_number</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">1</span><span class="si">}</span><span class="s1"> --&gt;&#39;</span><span class="p">)</span>
+            
+            <span class="n">absolute_page_number</span> <span class="o">+=</span> <span class="mi">1</span>
+            <span class="n">state</span><span class="p">[</span><span class="s1">&#39;absolute_page_number&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">absolute_page_number</span>
+        
+        <span class="c1"># Add page-specific CSS rule if needed</span>
+        <span class="n">section_start_page</span> <span class="o">=</span> <span class="n">absolute_page_number</span>
+        <span class="k">if</span> <span class="n">reset_counter</span><span class="p">:</span>
+            <span class="n">dynamic_css</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">/* </span><span class="si">{</span><span class="n">section_name</span><span class="si">}</span><span class="s2"> starts on page </span><span class="si">{</span><span class="n">section_start_page</span><span class="si">}</span><span class="s2"> */</span>
+<span class="s2">@page :nth(</span><span class="si">{</span><span class="n">section_start_page</span><span class="si">}</span><span class="s2">) </span><span class="se">{{</span>
+<span class="s2">    counter-reset: page 1;  /* Reset page counter for </span><span class="si">{</span><span class="n">section_name</span><span class="si">}</span><span class="s2"> */</span>
+<span class="se">}}</span>
+<span class="s2">&quot;&quot;&quot;</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">dynamic_css</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">/* </span><span class="si">{</span><span class="n">section_name</span><span class="si">}</span><span class="s2"> starts on page </span><span class="si">{</span><span class="n">section_start_page</span><span class="si">}</span><span class="s2"> */</span>
+<span class="s2">@page :nth(</span><span class="si">{</span><span class="n">section_start_page</span><span class="si">}</span><span class="s2">) </span><span class="se">{{</span>
+<span class="s2">    /* </span><span class="si">{</span><span class="n">section_name</span><span class="si">}</span><span class="s2"> specific styling can go here */</span>
+<span class="se">}}</span>
+<span class="s2">&quot;&quot;&quot;</span>
+        
+        <span class="c1"># Add the section content</span>
+        <span class="n">content_parts</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">section_html</span><span class="p">)</span>
+        
+        <span class="c1"># Add comment for debugging</span>
+        <span class="n">content_parts</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;&lt;!-- </span><span class="si">{</span><span class="n">section_name</span><span class="si">}</span><span class="s1">: starts at page </span><span class="si">{</span><span class="n">absolute_page_number</span><span class="si">}</span><span class="s1"> --&gt;&#39;</span><span class="p">)</span>
+        
+        <span class="c1"># Estimate how many pages this section will add</span>
+        <span class="c1"># This is a simplistic estimate - for accurate counts, we&#39;d need to render the HTML</span>
+        <span class="n">estimated_pages</span> <span class="o">=</span> <span class="n">section_html</span><span class="o">.</span><span class="n">count</span><span class="p">(</span><span class="s1">&#39;page-break-after: always&#39;</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span>
+        
+        <span class="c1"># Update the absolute page number</span>
+        <span class="n">absolute_page_number</span> <span class="o">+=</span> <span class="n">estimated_pages</span>
+        <span class="n">state</span><span class="p">[</span><span class="s1">&#39;absolute_page_number&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">absolute_page_number</span>
+        
+        <span class="c1"># Add comment about section page count</span>
+        <span class="n">content_parts</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;&lt;!-- </span><span class="si">{</span><span class="n">section_name</span><span class="si">}</span><span class="s1">: estimated </span><span class="si">{</span><span class="n">estimated_pages</span><span class="si">}</span><span class="s1"> pages --&gt;&#39;</span><span class="p">)</span>
+        
+        <span class="k">return</span> <span class="n">content_parts</span><span class="p">,</span> <span class="n">dynamic_css</span><span class="p">,</span> <span class="n">state</span></div>
+
+    
+<div class="viewcode-block" id="HtmlGenerator.generate_html">
+<a class="viewcode-back" href="../../../modules.html#sabbath_school_reproducer.generator.html_generator.HtmlGenerator.generate_html">[docs]</a>
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">generate_html</span><span class="p">(</span><span class="n">content_data</span><span class="p">,</span> <span class="n">front_cover_svg_path</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">back_cover_svg_path</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">config</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Generate complete HTML document from content data with incremental approach</span>
+<span class="sd">        </span>
+<span class="sd">        Args:</span>
+<span class="sd">            content_data (dict): Dictionary with content data</span>
+<span class="sd">            front_cover_svg_path (str, optional): Path to front cover SVG</span>
+<span class="sd">            back_cover_svg_path (str, optional): Path to back cover SVG</span>
+<span class="sd">            config (dict, optional): Configuration dictionary</span>
+<span class="sd">            </span>
+<span class="sd">        Returns:</span>
+<span class="sd">            str: Complete HTML document</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">lessons</span> <span class="o">=</span> <span class="n">content_data</span><span class="p">[</span><span class="s1">&#39;lessons&#39;</span><span class="p">]</span>
+        <span class="n">frontmatter</span> <span class="o">=</span> <span class="n">content_data</span><span class="p">[</span><span class="s1">&#39;frontmatter&#39;</span><span class="p">]</span>
+        <span class="n">backmatter</span> <span class="o">=</span> <span class="n">content_data</span><span class="p">[</span><span class="s1">&#39;backmatter&#39;</span><span class="p">]</span>
+        
+        <span class="c1"># Get language code from config</span>
+        <span class="n">language_code</span> <span class="o">=</span> <span class="n">config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;language&#39;</span><span class="p">,</span> <span class="s1">&#39;en&#39;</span><span class="p">)</span> <span class="k">if</span> <span class="n">config</span> <span class="k">else</span> <span class="s1">&#39;en&#39;</span>
+        
+        <span class="c1"># Initialize state tracking</span>
+        <span class="n">state</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s1">&#39;absolute_page_number&#39;</span><span class="p">:</span> <span class="mi">1</span>
+        <span class="p">}</span>
+        
+        <span class="c1"># Initialize content parts and CSS</span>
+        <span class="n">content_parts</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">dynamic_css</span> <span class="o">=</span> <span class="n">CSS_TEMPLATE</span>
+        
+        <span class="c1"># Update CSS with configuration if available</span>
+        <span class="k">if</span> <span class="n">config</span><span class="p">:</span>
+            <span class="n">dynamic_css</span> <span class="o">=</span> <span class="n">CssUpdater</span><span class="o">.</span><span class="n">update_css_template</span><span class="p">(</span><span class="n">dynamic_css</span><span class="p">,</span> <span class="n">config</span><span class="p">,</span> <span class="n">content_data</span><span class="p">)</span>
+        <span class="c1"># Replace first page selector with nth-child selector for more control</span>
+        <span class="n">dynamic_css</span> <span class="o">=</span> <span class="n">dynamic_css</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;@page :first {&quot;</span><span class="p">,</span> <span class="s2">&quot;@page :nth(1) {&quot;</span><span class="p">)</span>
+        
+        <span class="c1"># 1. Add cover page - pass the config to the cover page creation</span>
+        <span class="n">cover_html</span> <span class="o">=</span> <span class="n">HtmlGenerator</span><span class="o">.</span><span class="n">create_cover_page</span><span class="p">(</span><span class="n">front_cover_svg_path</span><span class="p">,</span> <span class="n">config</span><span class="p">)</span>
+        <span class="n">content_parts</span><span class="p">,</span> <span class="n">dynamic_css</span><span class="p">,</span> <span class="n">state</span> <span class="o">=</span> <span class="n">HtmlGenerator</span><span class="o">.</span><span class="n">add_section</span><span class="p">(</span>
+            <span class="n">content_parts</span><span class="p">,</span> <span class="n">dynamic_css</span><span class="p">,</span> <span class="n">state</span><span class="p">,</span>
+            <span class="s2">&quot;Cover page&quot;</span><span class="p">,</span> <span class="n">cover_html</span><span class="p">,</span>
+            <span class="n">start_on_odd</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">reset_counter</span><span class="o">=</span><span class="kc">False</span>
+        <span class="p">)</span>
+        
+        <span class="c1"># 2. Add front matter if present</span>
+        <span class="k">if</span> <span class="n">frontmatter</span><span class="p">:</span>
+            <span class="n">frontmatter_html</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;&lt;div class=&quot;frontmatter-container&quot;&gt;</span><span class="si">{</span><span class="n">HtmlGenerator</span><span class="o">.</span><span class="n">create_frontmatter_html</span><span class="p">(</span><span class="n">frontmatter</span><span class="p">)</span><span class="si">}</span><span class="s1">&lt;/div&gt;&#39;</span>
+            <span class="n">content_parts</span><span class="p">,</span> <span class="n">dynamic_css</span><span class="p">,</span> <span class="n">state</span> <span class="o">=</span> <span class="n">HtmlGenerator</span><span class="o">.</span><span class="n">add_section</span><span class="p">(</span>
+                <span class="n">content_parts</span><span class="p">,</span> <span class="n">dynamic_css</span><span class="p">,</span> <span class="n">state</span><span class="p">,</span>
+                <span class="s2">&quot;Front matter&quot;</span><span class="p">,</span> <span class="n">frontmatter_html</span><span class="p">,</span>
+                <span class="n">start_on_odd</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">reset_counter</span><span class="o">=</span><span class="kc">True</span>
+            <span class="p">)</span>
+        
+        <span class="c1"># 3. Add table of contents - pass language_code</span>
+        <span class="n">toc_html</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;&lt;div class=&quot;frontmatter-container&quot;&gt;</span><span class="si">{</span><span class="n">HtmlGenerator</span><span class="o">.</span><span class="n">create_table_of_contents</span><span class="p">(</span><span class="n">lessons</span><span class="p">,</span><span class="w"> </span><span class="n">language_code</span><span class="p">)</span><span class="si">}</span><span class="s1">&lt;/div&gt;&#39;</span>
+        <span class="n">content_parts</span><span class="p">,</span> <span class="n">dynamic_css</span><span class="p">,</span> <span class="n">state</span> <span class="o">=</span> <span class="n">HtmlGenerator</span><span class="o">.</span><span class="n">add_section</span><span class="p">(</span>
+            <span class="n">content_parts</span><span class="p">,</span> <span class="n">dynamic_css</span><span class="p">,</span> <span class="n">state</span><span class="p">,</span>
+            <span class="s2">&quot;Table of contents&quot;</span><span class="p">,</span> <span class="n">toc_html</span><span class="p">,</span>
+            <span class="n">start_on_odd</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">reset_counter</span><span class="o">=</span><span class="kc">False</span>
+        <span class="p">)</span>
+        
+        <span class="c1"># 4. Add main content (lessons)</span>
+        <span class="n">main_content_html</span> <span class="o">=</span> <span class="s1">&#39;&lt;div class=&quot;mainmatter-container&quot;&gt;&#39;</span>
+        
+        <span class="c1"># Add each lesson - pass language_code</span>
+        <span class="k">for</span> <span class="n">lesson</span> <span class="ow">in</span> <span class="n">lessons</span><span class="p">:</span>
+            <span class="n">main_content_html</span> <span class="o">+=</span> <span class="sa">f</span><span class="s1">&#39;&lt;div id=&quot;lesson-</span><span class="si">{</span><span class="n">lesson</span><span class="p">[</span><span class="s2">&quot;number&quot;</span><span class="p">]</span><span class="si">}</span><span class="s1">&quot;&gt;</span><span class="si">{</span><span class="n">HtmlGenerator</span><span class="o">.</span><span class="n">create_lesson_html</span><span class="p">(</span><span class="n">lesson</span><span class="p">,</span><span class="w"> </span><span class="n">language_code</span><span class="p">)</span><span class="si">}</span><span class="s1">&lt;/div&gt;&#39;</span>
+        
+        <span class="c1"># Add back matter if present</span>
+        <span class="k">if</span> <span class="n">backmatter</span><span class="p">:</span>
+            <span class="n">main_content_html</span> <span class="o">+=</span> <span class="n">HtmlGenerator</span><span class="o">.</span><span class="n">create_backmatter_html</span><span class="p">(</span><span class="n">backmatter</span><span class="p">)</span>
+            <span class="n">main_content_html</span> <span class="o">+=</span> <span class="s1">&#39;&lt;div style=&quot;page-break-after: always;&quot;&gt;&lt;/div&gt;&#39;</span>
+        
+        <span class="c1"># Close main content container</span>
+        <span class="n">main_content_html</span> <span class="o">+=</span> <span class="s1">&#39;&lt;/div&gt;&#39;</span>
+        
+        <span class="n">content_parts</span><span class="p">,</span> <span class="n">dynamic_css</span><span class="p">,</span> <span class="n">state</span> <span class="o">=</span> <span class="n">HtmlGenerator</span><span class="o">.</span><span class="n">add_section</span><span class="p">(</span>
+            <span class="n">content_parts</span><span class="p">,</span> <span class="n">dynamic_css</span><span class="p">,</span> <span class="n">state</span><span class="p">,</span>
+            <span class="s2">&quot;Main content&quot;</span><span class="p">,</span> <span class="n">main_content_html</span><span class="p">,</span>
+            <span class="n">start_on_odd</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">reset_counter</span><span class="o">=</span><span class="kc">True</span>
+        <span class="p">)</span>
+        
+        <span class="c1"># 5. Add blank pages to ensure total is divisible by 4</span>
+        <span class="n">total_pages</span> <span class="o">=</span> <span class="n">state</span><span class="p">[</span><span class="s1">&#39;absolute_page_number&#39;</span><span class="p">]</span> <span class="o">-</span> <span class="mi">1</span>
+        <span class="n">remainder</span> <span class="o">=</span> <span class="n">total_pages</span> <span class="o">%</span> <span class="mi">4</span>
+        <span class="k">if</span> <span class="n">remainder</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">blank_pages_needed</span> <span class="o">=</span> <span class="mi">4</span> <span class="o">-</span> <span class="n">remainder</span>
+            <span class="n">blank_html</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">blank_pages_needed</span><span class="p">):</span>
+                <span class="n">blank_html</span> <span class="o">+=</span> <span class="s1">&#39;&lt;div class=&quot;blank-page&quot; style=&quot;page-break-after: always; height: 100vh;&quot;&gt;&lt;/div&gt;&#39;</span>
+            
+            <span class="n">content_parts</span><span class="p">,</span> <span class="n">dynamic_css</span><span class="p">,</span> <span class="n">state</span> <span class="o">=</span> <span class="n">HtmlGenerator</span><span class="o">.</span><span class="n">add_section</span><span class="p">(</span>
+                <span class="n">content_parts</span><span class="p">,</span> <span class="n">dynamic_css</span><span class="p">,</span> <span class="n">state</span><span class="p">,</span>
+                <span class="s2">&quot;Padding blank pages&quot;</span><span class="p">,</span> <span class="n">blank_html</span><span class="p">,</span>
+                <span class="n">start_on_odd</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">reset_counter</span><span class="o">=</span><span class="kc">False</span>
+            <span class="p">)</span>
+        
+        <span class="c1"># 6. Add back cover if provided</span>
+        <span class="k">if</span> <span class="n">back_cover_svg_path</span><span class="p">:</span>
+            <span class="n">back_cover_html</span> <span class="o">=</span> <span class="n">HtmlGenerator</span><span class="o">.</span><span class="n">create_back_cover</span><span class="p">(</span><span class="n">back_cover_svg_path</span><span class="p">)</span>
+            <span class="n">content_parts</span><span class="p">,</span> <span class="n">dynamic_css</span><span class="p">,</span> <span class="n">state</span> <span class="o">=</span> <span class="n">HtmlGenerator</span><span class="o">.</span><span class="n">add_section</span><span class="p">(</span>
+                <span class="n">content_parts</span><span class="p">,</span> <span class="n">dynamic_css</span><span class="p">,</span> <span class="n">state</span><span class="p">,</span>
+                <span class="s2">&quot;Back cover&quot;</span><span class="p">,</span> <span class="n">back_cover_html</span><span class="p">,</span>
+                <span class="n">start_on_odd</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">reset_counter</span><span class="o">=</span><span class="kc">False</span>
+            <span class="p">)</span>
+        
+        <span class="c1"># Generate the complete HTML document</span>
+        <span class="k">return</span> <span class="n">HtmlGenerator</span><span class="o">.</span><span class="n">create_debug_html_with_css</span><span class="p">(</span><span class="n">content_parts</span><span class="p">,</span> <span class="n">dynamic_css</span><span class="p">)</span></div>
+</div>
+
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, Brian Onang&#39;o.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

@@ -1,0 +1,236 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="./">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Configuration &mdash; Sabbath School Lessons Reproducer 0.1.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=e59714d7" />
+
+  
+      <script src="_static/jquery.js?v=5d32c60e"></script>
+      <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="_static/documentation_options.js?v=01f34227"></script>
+      <script src="_static/doctools.js?v=9a2dae69"></script>
+      <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Modules" href="modules.html" />
+    <link rel="prev" title="Usage" href="usage.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            Sabbath School Lessons Reproducer
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="overview.html">Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="usage.html">Usage</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Configuration</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#configuration-file-format">Configuration File Format</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#configuration-options">Configuration Options</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#target-output-options">Target Output Options</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#file-paths">File Paths</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#cover-files">Cover Files</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#reproduction-options">Reproduction Options</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#pdf-metadata">PDF Metadata</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#github-repository-structure">GitHub Repository Structure</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#environment-variables">Environment Variables</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="modules.html">Modules</a></li>
+<li class="toctree-l1"><a class="reference internal" href="contributing.html">Contributing</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">Sabbath School Lessons Reproducer</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Configuration</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/configuration.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="configuration">
+<h1>Configuration<a class="headerlink" href="#configuration" title="Link to this heading"></a></h1>
+<p>This page provides details about configuring the Sabbath School Lessons Reproducer.</p>
+<section id="configuration-file-format">
+<h2>Configuration File Format<a class="headerlink" href="#configuration-file-format" title="Link to this heading"></a></h2>
+<p>The configuration is specified in YAML format. Below is a complete example with all available options:</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="c1"># Target output options</span>
+<span class="nt">year</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">2025</span><span class="w">              </span><span class="c1"># Year for generated lessons</span>
+<span class="nt">quarter</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">q2</span><span class="w">             </span><span class="c1"># Quarter (q1, q2, q3, q4)</span>
+<span class="nt">language</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">en</span><span class="w">            </span><span class="c1"># Language code</span>
+
+<span class="c1"># File paths</span>
+<span class="nt">input_file</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">./combined_lessons_2025_q2.md</span><span class="w">   </span><span class="c1"># Path for intermediate markdown file</span>
+<span class="nt">output_file</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">./output/sabbath_school_reproducer_2025_q2.pdf</span><span class="w">  </span><span class="c1"># Final PDF path</span>
+
+<span class="c1"># Optional cover SVG files</span>
+<span class="nt">front_cover_svg</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">./assets/front_cover.svg</span><span class="w">   </span><span class="c1"># Custom front cover</span>
+<span class="nt">back_cover_svg</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">./assets/back_cover.svg</span><span class="w">     </span><span class="c1"># Custom back cover</span>
+
+<span class="c1"># Reproduction options</span>
+<span class="nt">reproduce</span><span class="p">:</span>
+<span class="w">  </span><span class="c1"># Original content to adapt</span>
+<span class="w">  </span><span class="nt">year</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">1905</span><span class="w">            </span><span class="c1"># Historical year to source from</span>
+<span class="w">  </span><span class="nt">quarter</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">q2</span><span class="w">           </span><span class="c1"># Historical quarter to source from</span>
+
+<span class="w">  </span><span class="c1"># Lesson selection</span>
+<span class="w">  </span><span class="nt">start_lesson</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">1</span><span class="w">       </span><span class="c1"># First lesson to include (starting from 1)</span>
+<span class="w">  </span><span class="nt">stop_lesson</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">13</span><span class="w">       </span><span class="c1"># Last lesson to include (or null for all)</span>
+
+<span class="w">  </span><span class="c1"># New date assignment</span>
+<span class="w">  </span><span class="nt">quarter_start_date</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">2025-04-01</span><span class="w">  </span><span class="c1"># First lesson date (YYYY-MM-DD)</span>
+
+<span class="c1"># PDF metadata</span>
+<span class="nt">title</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Sabbath School Lessons</span><span class="w">      </span><span class="c1"># Title for the lesson quarterly</span>
+<span class="nt">subtitle</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Quarter 2, 2025</span><span class="w">          </span><span class="c1"># Subtitle</span>
+<span class="nt">publisher</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Gospel Sounders</span><span class="w">         </span><span class="c1"># Publisher name</span>
+</pre></div>
+</div>
+</section>
+<section id="configuration-options">
+<h2>Configuration Options<a class="headerlink" href="#configuration-options" title="Link to this heading"></a></h2>
+<section id="target-output-options">
+<h3>Target Output Options<a class="headerlink" href="#target-output-options" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">year</span></code> (integer): The year for the generated lessons (e.g., 2025)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">quarter</span></code> (string): The quarter identifier (q1, q2, q3, or q4)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">language</span></code> (string): The language code (e.g., en, es)</p></li>
+</ul>
+</section>
+<section id="file-paths">
+<h3>File Paths<a class="headerlink" href="#file-paths" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">input_file</span></code> (string): Path to save the combined markdown file</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">output_file</span></code> (string): Path to save the generated PDF</p></li>
+</ul>
+</section>
+<section id="cover-files">
+<h3>Cover Files<a class="headerlink" href="#cover-files" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">front_cover_svg</span></code> (string, optional): Path to SVG file for front cover</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">back_cover_svg</span></code> (string, optional): Path to SVG file for back cover</p></li>
+</ul>
+</section>
+<section id="reproduction-options">
+<h3>Reproduction Options<a class="headerlink" href="#reproduction-options" title="Link to this heading"></a></h3>
+<p>The <code class="docutils literal notranslate"><span class="pre">reproduce</span></code> section is optional and contains settings for adapting historical lessons:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">year</span></code> (integer): Historical year to source from</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">quarter</span></code> (string): Historical quarter to source from</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">start_lesson</span></code> (integer, optional): First lesson to include (default: 1)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">stop_lesson</span></code> (integer, optional): Last lesson to include (default: all)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">quarter_start_date</span></code> (string): Start date for the first lesson in YYYY-MM-DD format</p></li>
+</ul>
+</section>
+<section id="pdf-metadata">
+<h3>PDF Metadata<a class="headerlink" href="#pdf-metadata" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">title</span></code> (string, optional): Title for the lesson quarterly</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">subtitle</span></code> (string, optional): Subtitle for the lesson quarterly</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">publisher</span></code> (string, optional): Publisher name</p></li>
+</ul>
+</section>
+</section>
+<section id="github-repository-structure">
+<h2>GitHub Repository Structure<a class="headerlink" href="#github-repository-structure" title="Link to this heading"></a></h2>
+<p>The tool relies on the SabbathSchool/lessons GitHub repository structure:</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>/DECADE/YEAR/QUARTER/LANGUAGE/
+  - contents.json
+  - front-matter.md
+  - back-matter.md
+  - week-01.md
+  - week-02.md
+  - ...
+</pre></div>
+</div>
+<p>Where:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">DECADE</span></code> is formatted as, e.g., “1880s”</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">YEAR</span></code> is the full year, e.g., “1905”</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">QUARTER</span></code> is q1, q2, q3, or q4</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">LANGUAGE</span></code> is the language code, e.g., “en”</p></li>
+</ul>
+</section>
+<section id="environment-variables">
+<h2>Environment Variables<a class="headerlink" href="#environment-variables" title="Link to this heading"></a></h2>
+<p>The tool supports the following environment variables:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">SSL_DEBUG</span></code>: Set to “1” to enable debug mode</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">SSL_CONFIG_PATH</span></code>: Default path to look for configuration file</p></li>
+</ul>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="usage.html" class="btn btn-neutral float-left" title="Usage" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="modules.html" class="btn btn-neutral float-right" title="Modules" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, Brian Onang&#39;o.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
