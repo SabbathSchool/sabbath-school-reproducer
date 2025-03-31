@@ -24,7 +24,7 @@ data_files = [
 
 setup(
     name="sabbath-school-reproducer",
-    version="0.1.0",
+    version="0.1.1",
     description="Download and process Sabbath School lessons from GitHub",
     long_description=long_description,
     long_description_content_type="text/markdown",
@@ -38,7 +38,7 @@ setup(
     install_requires=requirements,
     entry_points={
         "console_scripts": [
-            "sabbath-school-downloader=sabbath_school_reproducer.main:main",
+            "sabbath-school-reproducer=sabbath_school_reproducer.main:main",
         ],
     },
     classifiers=[
