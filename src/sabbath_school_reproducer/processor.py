@@ -133,6 +133,30 @@ class MarkdownProcessor:
         return extracted_date, cleaned_text.strip()
     
     @staticmethod
+    def add_new_lines_to_markdown(markdown_content):
+        # Split the content into lines
+        lines = markdown_content.split('\n')
+        result = []
+
+        for i in range(len(lines)):
+            current_line = lines[i].strip()
+
+            # Add the current line to the result list
+            result.append(lines[i])
+
+            # Check if the current line is not a numbered list and not a table
+            if current_line and not re.match(r'^\d+\.', current_line) and not current_line.startswith('|'):
+                # Check if the next line exists, is not blank, and is not a numbered list or table
+                if i + 1 < len(lines):
+                    next_line = lines[i + 1].strip()
+
+                    if next_line and not re.match(r'^\d+\.', next_line) and not next_line.startswith('|'):
+                        result.append('')  # Add a blank line between paragraphs
+        
+        # Join the result back into a single string
+        return '\n'.join(result)
+
+    @staticmethod
     def parse_lessons(markdown_content):
         """
         Parse the markdown content to extract lessons using a line-by-line approach
@@ -143,6 +167,8 @@ class MarkdownProcessor:
         Returns:
             list: List of lesson dictionaries
         """
+        # add paragraph and line spacing
+        markdown_content = MarkdownProcessor.add_new_lines_to_markdown(markdown_content)
         # Split the content by lesson headers
         lesson_blocks = re.split(r'(?=^#\s*LESSON\s+\d+|^#\s*Lesson\s+\d+)', markdown_content, flags=re.MULTILINE)
         
@@ -239,7 +265,7 @@ class MarkdownProcessor:
                 if re.match(r'^\s*\d+\.\s+', line):
                     # If there was content between line_index and i, it's preliminary
                     if i > line_index:
-                        # Check if the line right before this is a section header
+                        # Check if the non-blank line right before this is a section header
                         prev_line = ""
                         for j in range(i-1, max(0, i-5), -1):
                             if j >= 0 and lines[j].strip():
@@ -291,7 +317,7 @@ class MarkdownProcessor:
                     
                     # Save the previous section if we have one
                     if current_section:
-                        if current_section.upper() == 'NOTES':
+                        if current_section.upper() in ['NOTES', 'NOTE']:
                             lesson['notes'] = '\n'.join(section_buffer).strip()
                         elif current_section != 'questions':
                             # This is an additional section
@@ -321,7 +347,7 @@ class MarkdownProcessor:
                                     break
                     
                     # Determine the type of the new section
-                    if re.search(r'^notes$', header_text, re.IGNORECASE):
+                    if re.search(r'^notes?$', header_text, re.IGNORECASE):
                         current_section = 'NOTES'
                         current_question_section = None
                         seen_non_question_section = True

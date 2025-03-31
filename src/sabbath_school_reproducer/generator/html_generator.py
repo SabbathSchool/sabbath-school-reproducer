@@ -315,8 +315,12 @@ class HtmlGenerator:
         """
         # Determine title font size based on length
         title_font_size = "24px"  # Default
-        if lesson.get('title') and len(lesson.get('title', '')) > 57:
-            title_font_size = "18px"
+        title_top = '40px'
+        if lesson.get('title'):
+            if len(lesson.get('title', '')) <= 31:
+                title_top = '45px'
+            if len(lesson.get('title', '')) > 57:
+                title_font_size = "18px"
         
         # Process preliminary note if present
         preliminary_html = ""
@@ -439,14 +443,17 @@ class HtmlGenerator:
         if lesson.get('notes'):
             # Convert markdown to HTML with proper formatting
             notes_content = HtmlGenerator.convert_markdown_to_html(lesson['notes'])
-            
+            paragraphs = notes_content.split('</p>')
+            non_empty_paragraphs = [p for p in paragraphs if p.strip()]
+            header = "NOTE" if len(non_empty_paragraphs) == 1 else "NOTES"
+
             notes_html = f"""
-            <div class="notes-section">
-                <div class="notes-header">NOTES</div>
-                <div class="notes-content">
-                    {notes_content}
+                <div class="notes-section">
+                    <div class="notes-header">{header} {non_empty_paragraphs}</div>
+                    <div class="notes-content">
+                        {notes_content}
+                    </div>
                 </div>
-            </div>
             """
         
         # Combine all sections with updated header structure
@@ -459,7 +466,7 @@ class HtmlGenerator:
                 <div class="corner bottom-right"></div>
                 <div class="lesson-circle">{lesson.get('number', '')}</div>
                 <div class="lesson-title-container">
-                    <div class="lesson-title" style="font-size: {title_font_size};">{lesson.get('title', '')}</div>
+                    <div class="lesson-title" style="font-size: {title_font_size};top: {title_top}">{lesson.get('title', '')}</div>
                     <div class="lesson-date">{lesson.get('date', '')}</div>
                 </div>
             </div>
