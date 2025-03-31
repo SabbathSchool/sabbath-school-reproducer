@@ -83,7 +83,7 @@ class Config:
         Raises:
             ValueError: If validation fails
         """
-        required_fields = ['year', 'quarter', 'language', 'input_file', 'output_file']
+        required_fields = ['year', 'quarter', 'language']
         
         # Check required fields
         for field in required_fields:
@@ -105,6 +105,27 @@ class Config:
         # Validate language (simple check for now)
         if not isinstance(config['language'], str) or len(config['language']) < 2:
             raise ValueError(f"Invalid language code: {config['language']}")
+        
+        # Check if language is supported
+        from .utils.language_utils import LanguageConfig
+        if config['language'] not in LanguageConfig.SUPPORTED_LANGUAGES:
+            print(f"Warning: Language '{config['language']}' is not officially supported. Using English as fallback.")
+        
+        # Check language config path if specified
+        if 'language_config_path' in config:
+            language_path = config['language_config_path']
+            if not os.path.exists(language_path):
+                print(f"Warning: Language configuration file '{language_path}' not found.")
+                print(f"Generating a template language file for '{config['language']}'...")
+                
+                # Try to generate the language template
+                try:
+                    from .bin.generate_config import generate_language_template
+                    lang_dir = os.path.dirname(language_path)
+                    generate_language_template(config['language'], lang_dir)
+                except Exception as e:
+                    print(f"Error generating language template: {e}")
+                    print("Using default language settings.")
         
         # Validate reproduction settings if present
         if 'reproduce' in config:

@@ -5,34 +5,29 @@ import json
 import requests
 from sabbath_school_reproducer.generator.css_styles import CSS_TEMPLATE, CssUpdater
 from sabbath_school_reproducer.generator.css_editor import  CSSEditor
+from sabbath_school_reproducer.utils.language_utils import  LanguageConfig
 
 
 class HtmlGenerator:
     """Generates HTML content for PDF generation with incremental approach."""
     
     @staticmethod
-    def get_quarter_display(quarter):
+    def get_quarter_display(quarter, language_code='en'):
         """
         Get a formatted display for the quarter
         
         Args:
             quarter (str): Quarter code (e.g., q1, q2, q3, q4)
+            language_code (str): Language code for translations
             
         Returns:
-            str: Formatted quarter display (e.g., First Quarter)
+            str: Formatted quarter display
         """
-        quarter_map = {
-            "q1": "First Quarter",
-            "Q1": "First Quarter",
-            "q2": "Second Quarter",
-            "Q2": "Second Quarter",
-            "q3": "Third Quarter", 
-            "Q3": "Third Quarter",
-            "q4": "Fourth Quarter",
-            "Q4": "Fourth Quarter"
-        }
-        return quarter_map.get(quarter, "Quarter")
-    
+        return LanguageConfig.get_translation(
+            language_code, 
+            f'quarter_names.{quarter.lower()}',
+            "Quarter"
+        )
     @staticmethod
     def read_svg_file(filepath):
         """
@@ -64,18 +59,20 @@ class HtmlGenerator:
             str: HTML for cover page
         """
         svg_content = ""
-                
+                    
         # Set default values
         year = 2025
         quarter = "q1"
         lesson_title = ""
+        
+        # Get language code from config
+        language_code = config.get('language', 'en') if config else 'en'
         
         # Use values from config if available
         if config:
             # Use the target year and quarter for display (not the source/reproduction year)
             year = config.get("year", 2025)
             quarter = config.get("quarter", "q1")
-
 
             reproduce = config.get("reproduce", {})
             year_orig = reproduce.get("year", 2025)  # Default to 2025 if 'year' is not found
@@ -91,10 +88,17 @@ class HtmlGenerator:
                 
                 # Update title to indicate it's a reproduction
                 if not config.get("title"):  # Only modify if no custom title is set
-                    lesson_title = f"Sabbath School Lessons (from {source_year} {source_quarter.upper()})"
+                    # Get translated word for "from" based on language
+                    from_text = LanguageConfig.get_translation(language_code, 'from_text', 'from', config)
+                    lesson_title = f"Sabbath School Lessons ({from_text} {source_year} {source_quarter.upper()})"
         
-        # Format quarter display
-        quarter_display = HtmlGenerator.get_quarter_display(quarter)
+        # Format quarter display using translated name
+        quarter_display = LanguageConfig.get_translation(
+            language_code, 
+            f'quarter_names.{quarter.lower()}', 
+            HtmlGenerator.get_quarter_display(quarter),
+            config
+        )
         
         # If a path is provided, try to read the SVG from file
         if front_cover_svg_path:
@@ -104,28 +108,50 @@ class HtmlGenerator:
                 # We'll fall back to the default SVG
         
         if not svg_content:
+            # Get translated text for the cover page
+            sabbath_school_text = LanguageConfig.get_translation(language_code, 'sabbath_school', 'SABBATH SCHOOL', config)
+            lessons_text = LanguageConfig.get_translation(language_code, 'lessons', 'LESSONS', config)
+            
+            # Get month range for quarter
+            quarter_months = LanguageConfig.get_translation(
+                language_code, 
+                f'quarter_months.{quarter.lower()}', 
+                f"Quarter {quarter[1]}", 
+                config
+            )
+            
             # Use default fallback SVG with dynamic content
             svg_content = f"""
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 1000" width="800" height="1000">
                 <rect width="800" height="1000" fill="#ffffff"/>
                 <rect x="30" y="30" width="740" height="940" stroke="#7d2b2b" stroke-width="3" fill="none"/>
-                <text x="400" y="170" font-family="Georgia, serif" font-size="48" font-weight="bold" text-anchor="middle" fill="#7d2b2b">SABBATH SCHOOL</text>
-                <text x="400" y="230" font-family="Georgia, serif" font-size="48" font-weight="bold" text-anchor="middle" fill="#7d2b2b">LESSONS</text>
+                <text x="400" y="170" font-family="Georgia, serif" font-size="48" font-weight="bold" text-anchor="middle" fill="#7d2b2b">{sabbath_school_text}</text>
+                <text x="400" y="230" font-family="Georgia, serif" font-size="48" font-weight="bold" text-anchor="middle" fill="#7d2b2b">{lessons_text}</text>
                 <text x="400" y="730" font-family="Georgia, serif" font-size="36" font-weight="bold" text-anchor="middle" fill="#5a4130">{lesson_title}</text>
                 <text x="400" y="800" font-family="Georgia, serif" font-size="20" text-anchor="middle" fill="#5a4130">{quarter_display}, {year}</text>
+                <text x="400" y="840" font-family="Georgia, serif" font-size="18" text-anchor="middle" fill="#5a4130">{quarter_months} {year}</text>
             </svg>
             """
-            
+                
             # Add source attribution if this is a reproduction
             if config and config.get("reproduce", {}).get("year"):
                 source_year = config["reproduce"]["year"]
                 source_quarter = config["reproduce"]["quarter"].upper()
-                source_quarter_name = HtmlGenerator.get_quarter_display(source_quarter)
+                
+                # Get translated quarter name and adapted from text
+                source_quarter_name = LanguageConfig.get_translation(
+                    language_code, 
+                    f'quarter_names.{source_quarter.lower()}', 
+                    HtmlGenerator.get_quarter_display(source_quarter),
+                    config
+                )
+                
+                adapted_from = LanguageConfig.get_translation(language_code, 'adapted_from', 'Adapted from', config)
                 
                 # Add source attribution text to SVG
                 svg_content = svg_content.replace('</svg>', f"""
-                <text x="400" y="850" font-family="Georgia, serif" font-size="16" text-anchor="middle" font-style="italic" fill="#666666">
-                    Adapted from {source_quarter_name}, {source_year}
+                <text x="400" y="870" font-family="Georgia, serif" font-size="16" text-anchor="middle" font-style="italic" fill="#666666">
+                    {adapted_from} {source_quarter_name}, {source_year}
                 </text>
                 </svg>
                 """)
@@ -135,7 +161,6 @@ class HtmlGenerator:
             {svg_content}
         </div>
         """
-    
     @staticmethod
     def create_back_cover(back_cover_svg_path=None):
         """
@@ -225,53 +250,15 @@ class HtmlGenerator:
         </div>
         """
     
-    @staticmethod
-    def create_table_of_contents(lessons):
-        """
-        Creates the table of contents HTML with links to lessons
-        
-        Args:
-            lessons (list): List of lesson dictionaries
-            
-        Returns:
-            str: HTML for table of contents
-        """
-        toc_rows = ""
-        
-        for lesson in lessons:
-            # Only include items that have proper lesson structure
-            if 'number' in lesson and 'title' in lesson and 'date' in lesson:
-                toc_row = f"""
-                <tr>
-                    <td style="width: 40px; padding: 5px;">{lesson['number']}</td>
-                    <td style=""><a href="#lesson-{lesson['number']}">{lesson['title']}</a></td>
-                    <td style="">{lesson['date']}</td>
-                    <td style="width: 40px; padding: 5px; text-align: right;">{lesson['number']}</td>
-                </tr>
-                """
-                toc_rows += toc_row
-        
-        return f"""
-        <div class="toc-title">TABLE OF CONTENTS</div>
-        <table class="toc-table">
-            <tr class="header">
-                <td style="width: 40px; padding: 5px;">Lesson</td>
-                <td style="padding: 5px;">Title</td>
-                <td style="width: 100px; padding: 5px;">Date</td>
-                <td style="width: 40px; padding: 5px; text-align: right;">Page</td>
-            </tr>
-            {toc_rows}
-        </table>
-        <div class="sectionbreaknone"></div>
-        """
     
     @staticmethod
-    def create_lesson_html(lesson):
+    def create_lesson_html(lesson, language_code='en'):
         """
         Creates HTML for a single lesson with improved formatting for title and date
         
         Args:
             lesson (dict): Lesson dictionary
+            language_code (str): Language code for translations
             
         Returns:
             str: HTML for lesson
@@ -320,13 +307,16 @@ class HtmlGenerator:
         # Group questions by section
         question_sections = {}
         
-        # Create a default "QUESTIONS" section if no headers are present
+        # Get translations
+        default_questions_header = LanguageConfig.get_translation(language_code, 'questions', 'QUESTIONS')
+        
+        # Create a default questions section if no headers are present
         if not lesson.get('question_headers'):
-            question_sections["QUESTIONS"] = []
+            question_sections[default_questions_header] = []
         
         # Group questions by their sections
         for question in lesson.get('questions', []):
-            section = question.get('section', 'QUESTIONS')
+            section = question.get('section', default_questions_header)
             if section not in question_sections:
                 question_sections[section] = []
             question_sections[section].append(question)
@@ -334,46 +324,28 @@ class HtmlGenerator:
         # Sort sections to ensure they're in the correct order if numbers are in section names
         section_names = sorted(question_sections.keys())
         
+        # Get answer prefix translation
+        answer_prefix = LanguageConfig.get_translation(language_code, 'answer_prefix', 'Ans.')
         
-        def add_period_to_sentence(scripture_with_period):
-            # List of markdown special characters (escaped for regex)
-            special_characters = r'\*\~\_\*'
-
-            # Remove trailing markdown special characters and extra periods
-            stripped_text = re.sub(rf'[{re.escape(special_characters)}]+$', '', scripture_with_period)
-            # Remove any existing periods at the end (if there are multiple)
-            
-            # Check if we need to add a period (only if it doesn't already end with a period)
-            if not stripped_text.endswith('.'):
-                stripped_text += '.'
-            # Now reattach the markdown special characters (if any were removed)
-            if re.search(rf'[{re.escape(special_characters)}]+$', scripture_with_period):
-                # Add the markdown special characters back to the end
-                stripped_text += re.search(rf'[{re.escape(special_characters)}]+$', scripture_with_period).group()
-
-            return stripped_text
-
         # Process each section
         for section_name in section_names:
             section_questions = question_sections[section_name]
             section_questions_html = ""
             
-
             for i, question in enumerate(section_questions, 1):
                 # Handle scripture reference with proper punctuation
                 scripture_html = ""
                 if question.get('scripture'):
                     # Ensure the scripture reference ends with a period if it doesn't already
-                    scripture_with_period = add_period_to_sentence(question['scripture'])
-                    
-                    html_text = HtmlGenerator.convert_markdown_to_html(scripture_with_period)
-
-                    scripture_html = f'<span class="scripture-ref">{html_text}</span>'
+                    scripture_with_period = question['scripture']
+                    if not scripture_with_period.endswith('.'):
+                        scripture_with_period += '.'
+                    scripture_html = f'<span class="scripture-ref">{scripture_with_period}</span>'
                 
                 # Handle answer
                 answer_html = ""
                 if question.get('answer'):
-                    answer_html = f'<div class="answer"><em>Ans. — {HtmlGenerator.convert_markdown_to_html(question["answer"])}</em></div>'
+                    answer_html = f'<div class="answer"><em>{answer_prefix} — {question["answer"]}</em></div>'
                 
                 # Add padding for two-digit numbers
                 num_class = "two-digit" if i >= 10 else "one-digit"
@@ -425,11 +397,17 @@ class HtmlGenerator:
         # Process notes if present
         notes_html = ""
         if lesson.get('notes'):
+            # Get translations for 'NOTES' and 'NOTE'
+            notes_header = LanguageConfig.get_translation(language_code, 'notes', 'NOTES')
+            note_header = LanguageConfig.get_translation(language_code, 'note', 'NOTE')
+            
             # Convert markdown to HTML with proper formatting
             notes_content = HtmlGenerator.convert_markdown_to_html(HtmlGenerator.fix_markdown_lists(lesson['notes']))
             paragraphs = notes_content.split('</p>')
             non_empty_paragraphs = [p for p in paragraphs if p.strip()]
-            header = "NOTE" if len(non_empty_paragraphs) == 1 else "NOTES"
+            
+            # Use singular or plural form based on number of paragraphs
+            header = note_header if len(non_empty_paragraphs) == 1 else notes_header
 
             notes_html = f"""
                 <div class="notes-section">
@@ -460,16 +438,64 @@ class HtmlGenerator:
             {notes_html}
         </div>
         """
-    
+
+    @staticmethod
+    def create_table_of_contents(lessons, language_code='en', config=None):
+        """
+        Creates the table of contents HTML with links to lessons
+        
+        Args:
+            lessons (list): List of lesson dictionaries
+            language_code (str): Language code for translations
+            config (dict, optional): Configuration dictionary containing language_config_path
+            
+        Returns:
+            str: HTML for table of contents
+        """
+        toc_rows = ""
+        
+        # Get translations
+        table_title = LanguageConfig.get_translation(language_code, 'table_of_contents', 'TABLE OF CONTENTS', config)
+        lesson_column = LanguageConfig.get_translation(language_code, 'lesson_column', 'Lesson', config)
+        title_column = LanguageConfig.get_translation(language_code, 'title_column', 'Title', config)
+        date_column = LanguageConfig.get_translation(language_code, 'date_column', 'Date', config)
+        page_column = LanguageConfig.get_translation(language_code, 'page_column', 'Page', config)
+        
+        for lesson in lessons:
+            # Only include items that have proper lesson structure
+            if 'number' in lesson and 'title' in lesson and 'date' in lesson:
+                toc_row = f"""
+                <tr>
+                    <td style="width: 40px; padding: 5px;">{lesson['number']}</td>
+                    <td style=""><a href="#lesson-{lesson['number']}">{lesson['title']}</a></td>
+                    <td style="">{lesson['date']}</td>
+                    <td style="width: 40px; padding: 5px; text-align: right;">{lesson['number']}</td>
+                </tr>
+                """
+                toc_rows += toc_row
+        
+        return f"""
+        <div class="toc-title">{table_title}</div>
+        <table class="toc-table">
+            <tr class="header">
+                <td style="width: 40px; padding: 5px;">{lesson_column}</td>
+                <td style="padding: 5px;">{title_column}</td>
+                <td style="width: 100px; padding: 5px;">{date_column}</td>
+                <td style="width: 40px; padding: 5px; text-align: right;">{page_column}</td>
+            </tr>
+            {toc_rows}
+        </table>
+        <div class="sectionbreaknone"></div>
+        """
+
     @staticmethod
     def fix_markdown_lists(markdown_content):
         """
-        Fix markdown list rendering by indenting all non-numbered list item lines.
-        This ensures that multi-paragraph list items are correctly rendered as part
-        of the same list item rather than causing the list to restart numbering.
+        Fix markdown list rendering by indenting all non-numbered list item lines,
+        but only if at least one numbered list item exists in the content.
         
         Args:
-            markdown_content (str): Markdown content with numbered lists
+            markdown_content (str): Markdown content with or without numbered lists
                 
         Returns:
             str: Fixed markdown content with proper indentation for list continuity
@@ -481,8 +507,12 @@ class HtmlGenerator:
         if len(lines) == 1:
             return markdown_content
         
-        # Otherwise, indent non-numbered list lines with a tab
-        lines = list(map(lambda line: "\t" + line if not re.match(r'^\s*(\d+)\.\s+', line) else line, lines))
+        # Check if there's at least one numbered list item
+        has_numbered_list = any(re.match(r'^\s*(\d+)\.\s+', line) for line in lines)
+        
+        # Only indent non-numbered list lines if there's at least one numbered list item
+        if has_numbered_list:
+            lines = list(map(lambda line: "\t" + line if not re.match(r'^\s*(\d+)\.\s+', line) else line, lines))
         
         # Join the lines back together and return the modified content
         return '\n'.join(lines)
@@ -616,6 +646,9 @@ class HtmlGenerator:
         frontmatter = content_data['frontmatter']
         backmatter = content_data['backmatter']
         
+        # Get language code from config
+        language_code = config.get('language', 'en') if config else 'en'
+        
         # Initialize state tracking
         state = {
             'absolute_page_number': 1
@@ -638,10 +671,6 @@ class HtmlGenerator:
             "Cover page", cover_html,
             start_on_odd=True, reset_counter=False
         )
-        # # Always add a blank page after cover for simplicity
-        # content_parts.append('<div class="blank-page" style="page-break-after: always; height: 100vh;"></div>')
-        # content_parts.append('<!-- Blank page after cover -->')
-        # state['absolute_page_number'] += 1
         
         # 2. Add front matter if present
         if frontmatter:
@@ -652,8 +681,8 @@ class HtmlGenerator:
                 start_on_odd=True, reset_counter=True
             )
         
-        # 3. Add table of contents
-        toc_html = f'<div class="frontmatter-container">{HtmlGenerator.create_table_of_contents(lessons)}</div>'
+        # 3. Add table of contents - pass language_code
+        toc_html = f'<div class="frontmatter-container">{HtmlGenerator.create_table_of_contents(lessons, language_code)}</div>'
         content_parts, dynamic_css, state = HtmlGenerator.add_section(
             content_parts, dynamic_css, state,
             "Table of contents", toc_html,
@@ -663,10 +692,9 @@ class HtmlGenerator:
         # 4. Add main content (lessons)
         main_content_html = '<div class="mainmatter-container">'
         
-        # Add each lesson
+        # Add each lesson - pass language_code
         for lesson in lessons:
-            main_content_html += f'<div id="lesson-{lesson["number"]}">{HtmlGenerator.create_lesson_html(lesson)}</div>'
-            # main_content_html += '<div style="page-break-after: always;"></div>'
+            main_content_html += f'<div id="lesson-{lesson["number"]}">{HtmlGenerator.create_lesson_html(lesson, language_code)}</div>'
         
         # Add back matter if present
         if backmatter:

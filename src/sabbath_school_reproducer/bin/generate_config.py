@@ -84,6 +84,269 @@ special:
     print(f"Default burgundy theme generated at: {theme_path}")
     return theme_path
 
+
+def generate_language_template(language_code='en', output_directory='languages'):
+    """
+    Generate a language configuration template file for the specified language
+    
+    Args:
+        language_code (str): Language code (e.g., 'en', 'sw', 'luo')
+        output_directory (str): Directory to save the language file
+        
+    Returns:
+        str: Path to the generated language file
+    """
+    # Create languages directory if it doesn't exist
+    os.makedirs(output_directory, exist_ok=True)
+    
+    # Define the language file path
+    language_path = os.path.join(output_directory, f"{language_code}.yaml")
+    
+    # Skip if the language file already exists
+    if os.path.exists(language_path):
+        print(f"Language file already exists at: {language_path}")
+        return language_path
+    
+    # Define default translations based on language code
+    translations = {}
+    
+    if language_code == 'en':
+        translations = {
+            'notes': 'NOTES',
+            'note': 'NOTE',
+            'questions': 'QUESTIONS',
+            'answer_prefix': 'Ans.',
+            'lesson': 'LESSON',
+            'sabbath_school': 'SABBATH SCHOOL',
+            'lessons': 'LESSONS',
+            'adapted_from': 'Adapted from',
+            'from_text': 'from',
+            'quarter_names': {
+                'q1': 'FIRST QUARTER',
+                'q2': 'SECOND QUARTER',
+                'q3': 'THIRD QUARTER',
+                'q4': 'FOURTH QUARTER'
+            },
+            'quarter_months': {
+                'q1': 'January - March',
+                'q2': 'April - June',
+                'q3': 'July - September',
+                'q4': 'October - December'
+            },
+            'table_of_contents': 'TABLE OF CONTENTS',
+            'lesson_column': 'Lesson',
+            'title_column': 'Title',
+            'date_column': 'Date',
+            'page_column': 'Page'
+        }
+    elif language_code == 'sw':
+        translations = {
+            'notes': 'MAELEZO',
+            'note': 'ELEZO',
+            'questions': 'MASWALI',
+            'answer_prefix': 'Jibu',
+            'lesson': 'SOMO',
+            'sabbath_school': 'SHULE YA SABATO',
+            'lessons': 'MASOMO',
+            'adapted_from': 'Imetoholewa kutoka',
+            'from_text': 'kutoka',
+            'quarter_names': {
+                'q1': 'ROBO YA KWANZA',
+                'q2': 'ROBO YA PILI',
+                'q3': 'ROBO YA TATU',
+                'q4': 'ROBO YA NNE'
+            },
+            'quarter_months': {
+                'q1': 'Januari - Machi',
+                'q2': 'Aprili - Juni',
+                'q3': 'Julai - Septemba',
+                'q4': 'Oktoba - Desemba'
+            },
+            'table_of_contents': 'YALIYOMO',
+            'lesson_column': 'Somo',
+            'title_column': 'Kichwa',
+            'date_column': 'Tarehe',
+            'page_column': 'Ukurasa'
+        }
+    elif language_code == 'luo':
+        translations = {
+            'notes': 'WECHE',
+            'note': 'WACH',
+            'questions': 'PENJO',
+            'answer_prefix': 'Duoko',
+            'lesson': 'PUONJ',
+            'sabbath_school': 'SKUL MAR SABATO',
+            'lessons': 'PUONJO',
+            'adapted_from': 'Olos kuom',
+            'from_text': 'kuom',
+            'quarter_names': {
+                'q1': 'NUT MOKWONGO MAR HIGA',
+                'q2': 'NUT MAR ARIYO MAR HIGA',
+                'q3': 'NUT MAR ADEK MAR HIGA',
+                'q4': 'NUT MAR ANGʼWEN MAR HIGA'
+            },
+            'quarter_months': {
+                'q1': 'Januari - Mach',
+                'q2': 'April - Jun',
+                'q3': 'July - September',
+                'q4': 'October - December'
+            },
+            'table_of_contents': 'GIKO MAR PUONJ',
+            'lesson_column': 'Puonj',
+            'title_column': 'Wach Motelo',
+            'date_column': 'Tarik',
+            'page_column': 'Kama Ondike'
+        }
+    else:
+        # For unsupported languages, use English as template
+        translations = {
+            'notes': 'NOTES',
+            'note': 'NOTE',
+            'questions': 'QUESTIONS',
+            'answer_prefix': 'Ans.',
+            'lesson': 'LESSON',
+            'sabbath_school': 'SABBATH SCHOOL',
+            'lessons': 'LESSONS',
+            'adapted_from': 'Adapted from',
+            'from_text': 'from',
+            'quarter_names': {
+                'q1': 'FIRST QUARTER',
+                'q2': 'SECOND QUARTER',
+                'q3': 'THIRD QUARTER',
+                'q4': 'FOURTH QUARTER'
+            },
+            'quarter_months': {
+                'q1': 'January - March',
+                'q2': 'April - June',
+                'q3': 'July - September',
+                'q4': 'October - December'
+            },
+            'table_of_contents': 'TABLE OF CONTENTS',
+            'lesson_column': 'Lesson',
+            'title_column': 'Title',
+            'date_column': 'Date',
+            'page_column': 'Page'
+        }
+    
+    # Add month names
+    if language_code == 'en':
+        translations['month_names'] = [
+            'January', 'February', 'March', 'April', 'May', 'June',
+            'July', 'August', 'September', 'October', 'November', 'December'
+        ]
+    elif language_code == 'sw':
+        translations['month_names'] = [
+            'Januari', 'Februari', 'Machi', 'Aprili', 'Mei', 'Juni',
+            'Julai', 'Agosti', 'Septemba', 'Oktoba', 'Novemba', 'Desemba'
+        ]
+    elif language_code == 'luo':
+        translations['month_names'] = [
+            'Januari', 'Februari', 'Mach', 'April', 'May', 'Jun',
+            'July', 'Agost', 'September', 'October', 'November', 'December'
+        ]
+    else:
+        translations['month_names'] = [
+            'January', 'February', 'March', 'April', 'May', 'June',
+            'July', 'August', 'September', 'October', 'November', 'December'
+        ]
+    
+    # Add date formats
+    if language_code == 'en':
+        translations['date_formats'] = [
+            '([A-Za-z]+ \d+, \d{4})',  # e.g., "May 20, 1905"
+            '(\d+ [A-Za-z]+, \d{4})',   # e.g., "20 May, 1905"
+            '(\d{1,2}/\d{1,2}/\d{4})'   # e.g., "5/20/1905"
+        ]
+    elif language_code == 'sw':
+        translations['date_formats'] = [
+            '([A-Za-z]+ \d+, \d{4})',  # e.g., "Mei 20, 1905"
+            '(\d+ [A-Za-z]+, \d{4})',   # e.g., "20 Mei, 1905"
+            '(\d{1,2}/\d{1,2}/\d{4})'   # e.g., "20/5/1905"
+        ]
+    elif language_code == 'luo':
+        translations['date_formats'] = [
+            '([A-Za-z]+ \d+, \d{4})',  # e.g., "May 20, 1905"
+            '(\d+ [A-Za-z]+, \d{4})',   # e.g., "20 May, 1905"
+            '(\d{1,2}/\d{1,2}/\d{4})'   # e.g., "20/5/1905"
+        ]
+    else:
+        translations['date_formats'] = [
+            '([A-Za-z]+ \d+, \d{4})',  # e.g., "May 20, 1905"
+            '(\d+ [A-Za-z]+, \d{4})',   # e.g., "20 May, 1905"
+            '(\d{1,2}/\d{1,2}/\d{4})'   # e.g., "5/20/1905"
+        ]
+    
+    # Add date format template
+    translations['date_format_template'] = '{month} {day}, {year}' if language_code == 'en' else '{day} {month}, {year}'
+    
+    # Create the YAML content with comments
+    yaml_content = f"""# Language configuration for {language_code}
+# This file contains language-specific translations for Sabbath School Lesson Downloader
+
+# Basic terms
+notes: '{translations['notes']}'  # Used for section headers and headings
+note: '{translations['note']}'    # Used for single-note sections
+questions: '{translations['questions']}'  # Questions section header
+answer_prefix: '{translations['answer_prefix']}'  # Prefix for answers in questions
+lesson: '{translations['lesson']}'  # Used for lesson titles
+
+# Cover page terms
+sabbath_school: '{translations['sabbath_school']}'  # Main title on cover page
+lessons: '{translations['lessons']}'  # Secondary title on cover page
+adapted_from: '{translations['adapted_from']}'  # Text used in "Adapted from X" on cover
+from_text: '{translations['from_text']}'  # Text used in "from X" in titles
+
+# Quarter names (used in headings and footers)
+quarter_names:
+  q1: '{translations['quarter_names']['q1']}'
+  q2: '{translations['quarter_names']['q2']}'
+  q3: '{translations['quarter_names']['q3']}'
+  q4: '{translations['quarter_names']['q4']}'
+
+# Quarter month ranges (used in cover pages)
+quarter_months:
+  q1: '{translations['quarter_months']['q1']}'
+  q2: '{translations['quarter_months']['q2']}'
+  q3: '{translations['quarter_months']['q3']}'
+  q4: '{translations['quarter_months']['q4']}'
+
+# Table of contents translations
+table_of_contents: '{translations['table_of_contents']}'
+lesson_column: '{translations['lesson_column']}'
+title_column: '{translations['title_column']}'
+date_column: '{translations['date_column']}'
+page_column: '{translations['page_column']}'
+
+# Month names for date formatting
+month_names:
+"""
+
+    # Add month names
+    for month in translations['month_names']:
+        yaml_content += f"  - '{month}'\n"
+    
+    # Add date formats
+    yaml_content += """
+# Date format regular expressions (used for extracting dates from content)
+date_formats:
+"""
+    for format_regex in translations['date_formats']:
+        yaml_content += f"  - '{format_regex}'\n"
+    
+    # Add date format template
+    yaml_content += f"""
+# Date format template for generating new dates
+date_format_template: '{translations['date_format_template']}'
+"""
+    
+    # Write the YAML content to file
+    with open(language_path, 'w', encoding='utf-8') as f:
+        f.write(yaml_content)
+    
+    print(f"Language template for '{language_code}' generated at: {language_path}")
+    return language_path
+
+
 def generate_template_config(output_path="config.yaml"):
     """
     Generate a template configuration file with default values
@@ -125,7 +388,7 @@ def generate_template_config(output_path="config.yaml"):
 
     yaml_output += "\n# File paths\n"
     yaml_output += "# Path to the output PDF file for the lessons\n"
-    yaml_output += f"output_file: ./output/sabbath_school_lesson_{year}_{quarter}_en.pdf\n"
+    # yaml_output += f"output_file: ./output/sabbath_school_lesson_{year}_{quarter}_en.pdf\n"
     yaml_output += "# Path to the front cover SVG file\n"
     yaml_output += "front_cover_svg: ./assets/front_cover.svg\n"
     yaml_output += "# Path to the back cover SVG file\n"
@@ -154,6 +417,13 @@ def generate_template_config(output_path="config.yaml"):
     yaml_output += "# The publisher of the generated PDF\n"
     yaml_output += f"publisher: Gospel Sounders\n"
 
+    yaml_output += "\n# Language settings\n"
+    yaml_output += "# Path to the language configuration file\n"
+    yaml_output += f"languages_dir: ./languages\n"
+    yaml_output += "# lesson title: will use lesson title from english repo if this is not give"
+    yaml_output += "lesson_title: lesson title"
+
+
     # Write the output to the specified file
     with open(output_path, 'w', encoding='utf-8') as f:
         f.write(yaml_output)
@@ -170,6 +440,10 @@ def main():
     """
     # Get output path from command line argument or use default
     output_path = sys.argv[1] if len(sys.argv) > 1 else "config.yaml"
+
+    os.makedirs("languages", exist_ok=True)
+    for lang in ["en", "swa", "luo"]:
+        generate_language_template(lang, "languages")
     
     # Generate the configuration file (won't overwrite existing files)
     generate_template_config(output_path)

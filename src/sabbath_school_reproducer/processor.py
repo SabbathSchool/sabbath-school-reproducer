@@ -1,3 +1,5 @@
+# Modifications to processor.py
+
 """
 Markdown Processor for Sabbath School Lessons
 
@@ -7,6 +9,7 @@ This module processes markdown files, extracting lesson content, front matter, a
 import re
 import markdown
 from bs4 import BeautifulSoup
+from .utils.language_utils import LanguageConfig
 
 
 class MarkdownProcessor:
@@ -35,6 +38,9 @@ class MarkdownProcessor:
             # Set new lesson numbers if needed
             start_lesson = config['reproduce'].get('start_lesson', 1)
             
+            # Get language code
+            language_code = config.get('language', 'en')
+            
             # Sort lessons by their original number
             lessons.sort(key=lambda l: int(l.get('number', 0)))
             
@@ -51,12 +57,9 @@ class MarkdownProcessor:
                 # Calculate new date (one week apart)
                 lesson_date = quarter_start + timedelta(days=7 * i)
                 
-                # Format the date in the expected format (e.g., "April 1, 2025")
-                new_date = lesson_date.strftime('%B %d, %Y')
+                # Format the date based on language
+                new_date = LanguageConfig.format_date(lesson_date, language_code)
                 lesson['date'] = new_date
-                
-                # No need to clean preliminary note here as we've already handled
-                # date extraction during initial parsing
             
             return lessons
                 
@@ -75,7 +78,6 @@ class MarkdownProcessor:
         Returns:
             tuple: (lessons_content, frontmatter_content, backmatter_content)
         """
-        # [Existing implementation remains the same]
         # Find all file sections
         file_sections = re.findall(r'# File: ([^\n]+)[\r\n]+#-+[\r\n]+(.*?)(?=# File:|$)', content, re.DOTALL)
         
@@ -94,23 +96,21 @@ class MarkdownProcessor:
                 lessons_content += section_content + "\n\n"
         
         return lessons_content, frontmatter_content, backmatter_content
+    
     @staticmethod
-    def extract_and_remove_date(markdown_text):
+    def extract_and_remove_date(markdown_text, language_code='en'):
         """
         Extract date from markdown and return the text with the date removed
         
         Args:
             markdown_text (str): The markdown text to process
+            language_code (str): The language code
             
         Returns:
             tuple: (extracted_date, cleaned_text)
         """
-        # Common date formats in lessons
-        date_patterns = [
-            r'([A-Za-z]+ \d+, \d{4})',  # e.g., "May 20, 1905"
-            r'(\d+ [A-Za-z]+, \d{4})',   # e.g., "20 May, 1905"
-            r'(\d{1,2}/\d{1,2}/\d{4})'   # e.g., "5/20/1905"
-        ]
+        # Get date formats for the specified language
+        date_patterns = LanguageConfig.get_date_formats(language_code)
         
         extracted_date = ""
         cleaned_text = markdown_text
@@ -157,20 +157,48 @@ class MarkdownProcessor:
         return '\n'.join(result)
 
     @staticmethod
-    def parse_lessons(markdown_content):
+    def parse_lessons(markdown_content, language_code='en'):
         """
         Parse the markdown content to extract lessons using a line-by-line approach
         
         Args:
             markdown_content (str): Markdown content containing lessons
+            language_code (str): Language code for translations
             
         Returns:
             list: List of lesson dictionaries
         """
-        # add paragraph and line spacing
+        # Add paragraph and line spacing
         markdown_content = MarkdownProcessor.add_new_lines_to_markdown(markdown_content)
-        # Split the content by lesson headers
-        lesson_blocks = re.split(r'(?=^#\s*LESSON\s+\d+|^#\s*Lesson\s+\d+)', markdown_content, flags=re.MULTILINE)
+        
+        # Get language-specific terms
+        lesson_term = LanguageConfig.get_translation(language_code, 'lesson', 'LESSON')
+        notes_term = LanguageConfig.get_translation(language_code, 'notes', 'NOTES')
+        print(notes_term)
+        print(notes_term)
+        print(notes_term)
+        print(notes_term)
+        print(notes_term)
+        print(notes_term)
+        print(notes_term)
+        print(notes_term)
+        note_term = LanguageConfig.get_translation(language_code, 'note', 'NOTE')
+        questions_term = LanguageConfig.get_translation(language_code, 'questions', 'QUESTIONS')
+        
+        # # Create case-insensitive patterns for language-specific terms
+        # lesson_pattern = re.compile(r'^#\s*' + re.escape(lesson_term) + r'\s+\d+', re.IGNORECASE)
+        # notes_pattern = re.compile(r'^#{2,3}\s+(' + re.escape(notes_term) + r'|' + re.escape(note_term) + r')$', re.IGNORECASE)
+        # questions_pattern = re.compile(r'^#{2,3}\s+' + re.escape(questions_term) + r'$', re.IGNORECASE)
+        
+        # # Split the content by lesson headers
+        # lesson_blocks = re.split(r'(?=' + lesson_pattern.pattern + r')', markdown_content, flags=re.MULTILINE)
+        lesson_pattern = re.compile(r'^#\s*' + re.escape(lesson_term) + r'\s+\d+', re.IGNORECASE | re.MULTILINE)
+        notes_pattern = re.compile(r'^#{2,3}\s+(' + re.escape(notes_term) + r'|' + re.escape(note_term) + r')$', re.IGNORECASE | re.MULTILINE)
+        questions_pattern = re.compile(r'^#{2,3}\s+' + re.escape(questions_term) + r'$', re.IGNORECASE | re.MULTILINE)
+
+        # Split the content by lesson headers - IMPORTANT: Use the re.MULTILINE flag here too!
+        lesson_blocks = re.split(r'(?=^#\s*' + re.escape(lesson_term) + r'\s+\d+)', markdown_content, flags=re.MULTILINE | re.IGNORECASE)
+
         
         # Remove any empty blocks
         lesson_blocks = [block.strip() for block in lesson_blocks if block.strip()]
@@ -192,11 +220,11 @@ class MarkdownProcessor:
             }
             
             # Process the lesson header (first line)
-            if lines and (lines[0].startswith('# LESSON') or lines[0].startswith('# Lesson')):
+            if lines and re.match(lesson_pattern, lines[0]):
                 header_line = lines[0]
                 
                 # Extract lesson number
-                number_match = re.search(r'#\s*(?:LESSON|Lesson)\s+(\d+)', header_line)
+                number_match = re.search(r'#\s*(?:' + re.escape(lesson_term) + r')\s+(\d+)', header_line, re.IGNORECASE)
                 if number_match:
                     lesson['number'] = number_match.group(1)
                 
@@ -234,18 +262,22 @@ class MarkdownProcessor:
             if not lesson['date'] and line_index < len(lines):
                 for i in range(line_index, min(line_index + 5, len(lines))):
                     if i < len(lines):
-                        date_match = re.search(r'^([A-Za-z]+ \d+, \d{4})$', lines[i].strip())
-                        if date_match:
-                            lesson['date'] = date_match.group(1)
-                            line_index = i + 1
-                            break
+                        # Use language-specific date patterns
+                        for pattern in LanguageConfig.get_date_formats(language_code):
+                            date_match = re.search(pattern, lines[i].strip())
+                            if date_match:
+                                lesson['date'] = date_match.group(1)
+                                line_index = i + 1
+                                break
                         
                         # Also check for italicized date
-                        italics_date_match = re.search(r'^\*([A-Za-z]+ \d+, \d{4})\*$', lines[i].strip())
-                        if italics_date_match:
-                            lesson['date'] = italics_date_match.group(1)
-                            line_index = i + 1
-                            break
+                        for pattern in LanguageConfig.get_date_formats(language_code):
+                            italics_pattern = r'^\*(' + pattern[1:-1] + r')\*$'
+                            italics_date_match = re.search(italics_pattern, lines[i].strip())
+                            if italics_date_match:
+                                lesson['date'] = italics_date_match.group(1)
+                                line_index = i + 1
+                                break
             
             # Find where content actually starts
             while line_index < len(lines) and not lines[line_index].strip():
@@ -259,9 +291,8 @@ class MarkdownProcessor:
             # Scan ahead to find patterns
             for i in range(line_index, len(lines)):
                 line = lines[i]
-                # If we find a numbered list or letter-based item, this is likely where questions start
-                # if re.match(r'^\s*\d+\.\s+', line) or re.match(r'^\s*\([a-z]\)\s+', line):
-                if re.match(r'^\s*\d+\.\s+', line) :
+                # If we find a numbered list, this is likely where questions start
+                if re.match(r'^\s*\d+\.\s+', line):
                     # If there was content between line_index and i, it might be preliminary
                     if i > line_index:
                         # Check if the non-blank line right before this is a section header
@@ -285,24 +316,6 @@ class MarkdownProcessor:
                             has_preliminary = True
                             preliminary_end_index = i
                     break
-                
-                # # If we find a section header, check if it's followed by questions
-                # elif re.match(r'^#{2,3}\s+', line):
-                #     # Look ahead to see if this section contains questions
-                #     found_questions = False
-                #     for j in range(i+1, min(i+10, len(lines))):
-                #         # if j < len(lines) and (re.match(r'^\s*\d+\.\s+', lines[j]) or re.match(r'^\s*\([a-z]\)\s+', lines[j])):
-                #         if j < len(lines) and (re.match(r'^\s*\d+\.\s+', lines[j])):
-                #             found_questions = True
-                #             break
-                    
-                #     if found_questions:
-                #         # This header is the start of a question section
-                #         # Everything before this header (if anything) is preliminary
-                #         if i > line_index:
-                #             has_preliminary = True
-                #             preliminary_end_index = i
-                #         break
             
             # Collect the preliminary content if we found some
             if has_preliminary:
@@ -326,14 +339,15 @@ class MarkdownProcessor:
                 if header_match:
                     # If we were collecting a question, save it
                     if in_question and current_question_text and not seen_non_question_section:
-                        question_obj = MarkdownProcessor._parse_question(current_question_text, current_question_section or "QUESTIONS")
+                        question_obj = MarkdownProcessor._parse_question(current_question_text, current_question_section or questions_term, language_code)
                         question_list.append(question_obj)
                         current_question_text = ""
                         in_question = False
                     
                     # Save the previous section if we have one
                     if current_section:
-                        if current_section.upper() in ['NOTES', 'NOTE']:
+                        # Check if this is notes section using language-specific pattern
+                        if re.match(notes_pattern, f"## {current_section}"):
                             fixed_notes = MarkdownProcessor._fix_notes_numbering(section_buffer)
                             lesson['notes'] = '\n'.join(fixed_notes).strip()
                         elif current_section != 'questions':
@@ -364,11 +378,11 @@ class MarkdownProcessor:
                                     break
                     
                     # Determine the type of the new section
-                    if re.search(r'^notes?$', header_text, re.IGNORECASE):
-                        current_section = 'NOTES'
+                    if re.match(notes_pattern, line):
+                        current_section = header_text
                         current_question_section = None
                         seen_non_question_section = True
-                    elif (is_question_section or re.search(r'^questions$', header_text, re.IGNORECASE)) and not seen_non_question_section:
+                    elif (is_question_section or re.match(questions_pattern, line)) and not seen_non_question_section:
                         # This is a questions section (only if we haven't seen non-question sections yet)
                         current_section = 'questions'
                         
@@ -386,14 +400,14 @@ class MarkdownProcessor:
                     # This is a numbered list item, which could be a question or a note
                     
                     # If this is immediately after the NOTES header, it's a note
-                    if current_section and current_section.upper() == 'NOTES':
+                    if current_section and re.match(notes_pattern, f"## {current_section}"):
                         section_buffer.append(line)
                     elif not seen_non_question_section:
                         # This is a question (only if we haven't seen non-question sections yet)
                         
                         # If we were collecting a question, save it
                         if in_question and current_question_text:
-                            question_obj = MarkdownProcessor._parse_question(current_question_text, current_question_section or "QUESTIONS")
+                            question_obj = MarkdownProcessor._parse_question(current_question_text, current_question_section or questions_term, language_code)
                             question_list.append(question_obj)
                         
                         # Start collecting a new question
@@ -403,8 +417,8 @@ class MarkdownProcessor:
                         # If this is the first question and we don't have a section yet, use default
                         if not current_section or current_section != 'questions':
                             current_section = 'questions'
-                            if "QUESTIONS" not in lesson['question_headers']:
-                                current_question_section = "QUESTIONS"
+                            if questions_term not in lesson['question_headers']:
+                                current_question_section = questions_term
                                 lesson['question_headers'].append(current_question_section)
                     else:
                         # This is numbered content in another section
@@ -422,12 +436,12 @@ class MarkdownProcessor:
             
             # Save any final question
             if in_question and current_question_text and not seen_non_question_section:
-                question_obj = MarkdownProcessor._parse_question(current_question_text, current_question_section or "QUESTIONS")
+                question_obj = MarkdownProcessor._parse_question(current_question_text, current_question_section or questions_term, language_code)
                 question_list.append(question_obj)
             
             # Save the final section if there is one
             if current_section:
-                if current_section.upper() == 'NOTES':
+                if re.match(notes_pattern, f"## {current_section}"):
                     fixed_notes = MarkdownProcessor._fix_notes_numbering(section_buffer)
                     lesson['notes'] = '\n'.join(fixed_notes).strip()
                 elif current_section != 'questions':
@@ -444,6 +458,7 @@ class MarkdownProcessor:
             lessons.append(lesson)
         
         return lessons
+        
     @staticmethod
     def _fix_notes_numbering(lines):
         """
@@ -488,17 +503,19 @@ class MarkdownProcessor:
             i += 1
         
         return fixed_lines
+        
     @staticmethod
-    def _parse_question(question_text, section_name=None):
+    def _parse_question(question_text, section_name=None, language_code='en'):
         """
         Parse a question text into question and answer parts
         
         Args:
             question_text (str): The full text of the question
             section_name (str, optional): The section this question belongs to
+            language_code (str): Language code for translations
             
         Returns:
-            dict: A dictionary with 'text', 'answer', and 'section' keys
+            dict: A dictionary with 'text', 'answer', 'scripture', and 'section' keys
         """
         # Remove the question number
         num_match = re.match(r'^\s*\d+\.\s+', question_text)
@@ -527,13 +544,15 @@ class MarkdownProcessor:
             'section': section_name
         }
     
+
     @staticmethod
-    def parse_questions_from_markdown(markdown_content):
+    def parse_questions_from_markdown(markdown_content, language_code='en'):
         """
         Parse questions from markdown content.
         
         Args:
             markdown_content (str): Markdown content containing questions
+            language_code (str): Language code for translations
             
         Returns:
             list: List of question dictionaries
@@ -551,7 +570,7 @@ class MarkdownProcessor:
             if num_match:
                 # If we were collecting a question, save it
                 if in_question and current_question_text:
-                    question_obj = MarkdownProcessor._parse_question(current_question_text)
+                    question_obj = MarkdownProcessor._parse_question(current_question_text, None, language_code)
                     question_list.append(question_obj)
                 
                 # Start collecting a new question
@@ -564,10 +583,11 @@ class MarkdownProcessor:
         
         # Save any final question
         if in_question and current_question_text:
-            question_obj = MarkdownProcessor._parse_question(current_question_text)
+            question_obj = MarkdownProcessor._parse_question(current_question_text, None, language_code)
             question_list.append(question_obj)
         
         return question_list
+        
     @staticmethod
     def process_markdown_file(markdown_file, config=None):
         """
@@ -580,6 +600,9 @@ class MarkdownProcessor:
         Returns:
             dict: Dictionary with extracted content
         """
+        # Get language code from config
+        language_code = config.get('language', 'en') if config else 'en'
+        
         # Read the markdown file
         with open(markdown_file, 'r', encoding='utf-8') as f:
             content = f.read()
@@ -587,8 +610,8 @@ class MarkdownProcessor:
         # Extract file sections first
         lessons_content, frontmatter_content, backmatter_content = MarkdownProcessor.parse_file_sections(content)
         
-        # Parse lessons from the lessons content
-        lessons = MarkdownProcessor.parse_lessons(lessons_content)
+        # Parse lessons from the lessons content (pass language code)
+        lessons = MarkdownProcessor.parse_lessons(lessons_content, language_code)
         
         # Apply date adjustments if reproduction settings exist
         if config and 'reproduce' in config:

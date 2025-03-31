@@ -7,6 +7,8 @@ from sabbath_school_reproducer.generator.css_editor import  CSSEditor
 import re
 import os
 import yaml
+from sabbath_school_reproducer.utils.language_utils import  LanguageConfig
+
 
 CSS_TEMPLATE = """
 /* Main styling for Sabbath School Lessons */
@@ -661,11 +663,18 @@ class CssUpdater:
         """
         try:
             year = config['year']
-            quarter = config['quarter'].upper()
+            quarter = config['quarter']
+            language_code = config.get('language', 'en')
             
-            # Format as "Quarter X YYYY"
-            quarter_num = quarter[1] if quarter.startswith('Q') and len(quarter) >= 2 else ''
-            return f"Quarter {quarter_num} {year}"
+            # Get the localized quarter name
+            quarter_name = LanguageConfig.get_translation(
+                language_code,
+                f'quarter_names.{quarter.lower()}',
+                f"Quarter {quarter[1] if quarter.startswith('q') or quarter.startswith('Q') else ''}"
+            )
+            
+            # Format as "Quarter X YYYY" based on language
+            return f"{quarter_name}, {year}"
         except (KeyError, ValueError):
             # Default if config is missing
             return "Quarter & Year"
@@ -765,6 +774,9 @@ class CssUpdater:
             return css_template
         
         try:
+            # Get language code
+            language_code = config.get('language', 'en')
+            
             # Get quarter display for footer
             quarter_display = CssUpdater.get_quarter_display(config)
             
@@ -776,13 +788,6 @@ class CssUpdater:
             # Get title from config or generate a default
             lesson_title = config.get("lesson_title", CSSEditor.get_lesson_title(year_orig, quarter_orig))
 
-            # if 'title' in config:
-            #     lesson_title = config['title']
-            # elif lesson_data and 'front_matter' in lesson_data:
-            #     title_match = re.search(r'(?:^|\n)#\s+(.*?)(?:\n|$)', lesson_data['front_matter'])
-            #     if title_match:
-            #         lesson_title = title_match.group(1).strip()
-            
             # Update CSS footer content
             updated_css = css_template
             
@@ -806,6 +811,33 @@ class CssUpdater:
                 color_theme = CssUpdater.load_color_theme(color_theme_path)
                 if color_theme:
                     updated_css = CssUpdater.apply_color_theme(updated_css, color_theme)
+            
+            # Update language-specific labels
+            if language_code != 'en':
+                # Replace "NOTES" with translated version
+                notes_label = LanguageConfig.get_translation(language_code, 'notes', 'NOTES')
+                updated_css = re.sub(
+                    r'\.notes-header.*?{[^}]*content:\s*["\']NOTES["\']',
+                    f'.notes-header{{content: "{notes_label}"',
+                    updated_css
+                )
+                
+                # Replace "NOTE" with translated version
+                note_label = LanguageConfig.get_translation(language_code, 'note', 'NOTE')
+                updated_css = re.sub(
+                    r'\.note-header.*?{[^}]*content:\s*["\']NOTE["\']',
+                    f'.note-header{{content: "{note_label}"',
+                    updated_css
+                )
+                
+                # Replace "TABLE OF CONTENTS" with translated version
+                toc_label = LanguageConfig.get_translation(language_code, 'table_of_contents', 'TABLE OF CONTENTS')
+                updated_css = re.sub(
+                    r'\.toc-title.*?{[^}]*content:\s*["\']TABLE OF CONTENTS["\']',
+                    f'.toc-title{{content: "{toc_label}"',
+                    updated_css
+                )
+            
             return updated_css
             
         except Exception as e:
