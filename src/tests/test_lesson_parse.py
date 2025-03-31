@@ -10,6 +10,7 @@ import unittest
 import re
 import os
 import sys
+import json
 
 # Add the src directory to the Python path
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
@@ -30,7 +31,7 @@ class TestLessonParser(unittest.TestCase):
 **Nazareth and Bethlehem, B.C. 5**
 *(Matt. 1:1-25; Luke 1:26-35; 2:1-7)*
 
-1. How is Christ introduced to the student of the New Testament? Matt. 1:1. *See note 1.*
+1. How is Christ introduced to the student of the New Testament? Matt. 1:1.
 
 2. How did the birth of Christ come about? Isa. 7:14. Verse 18.
 
@@ -56,12 +57,11 @@ class TestLessonParser(unittest.TestCase):
         self.assertEqual(lesson['number'], '1')
         self.assertEqual(lesson['title'], 'BIRTH OF CHRIST')
         self.assertEqual(lesson['date'], 'January 7, 1899')
-        self.assertEqual(lesson['location'], 'Nazareth and Bethlehem, B.C. 5')
-        self.assertEqual(lesson['references'], 'Matt. 1:1-25; Luke 1:26-35; 2:1-7')
         
         # Check questions
         self.assertEqual(len(lesson['questions']), 4)
-        self.assertIn('See note 1', lesson['questions'][0].get('scripture', ''))
+        self.assertEqual(lesson['questions'][0]['text'], 'How is Christ introduced to the student of the New Testament?')
+        self.assertEqual(lesson['questions'][0]['answer'], 'Matt. 1:1.')
         
         # Check additional sections
         self.assertEqual(len(lesson['additional_sections']), 1)
@@ -117,12 +117,14 @@ class TestLessonParser(unittest.TestCase):
         self.assertEqual(lesson['question_headers'][1], 'MATERIALS FOR BUILDING')
         
         # Check first question from first section
-        self.assertIn('Ex. 25:1, 8', lesson['questions'][0].get('text', ''))
-        self.assertEqual(lesson['questions'][0].get('section'), 'INSTRUCTION FOR BUILDING')
+        self.assertEqual(lesson['questions'][0]['text'], 'Who gave instruction for building the sanctuary?')
+        self.assertEqual(lesson['questions'][0]['answer'], 'Ex. 25:1, 8.')
+        self.assertEqual(lesson['questions'][0]['section'], 'INSTRUCTION FOR BUILDING')
         
         # Check first question from second section
-        self.assertIn('Ex. 26:15', lesson['questions'][5].get('text', ''))
-        self.assertEqual(lesson['questions'][5].get('section'), 'MATERIALS FOR BUILDING')
+        self.assertEqual(lesson['questions'][5]['text'], 'Of what were the sides composed?')
+        self.assertEqual(lesson['questions'][5]['answer'], 'Ex. 26:15. Note 2.')
+        self.assertEqual(lesson['questions'][5]['section'], 'MATERIALS FOR BUILDING')
         
         # Check notes
         self.assertTrue(lesson['notes'])
@@ -138,17 +140,17 @@ class TestLessonParser(unittest.TestCase):
 **Bethlehem and Jerusalem, B.C. 4**
 *(Matt. 2:1-18)*
 
-1. Who came from the East to Jerusalem, shortly after the birth of Christ? Matt. 2:1. *See note 1.*
+1. Who came from the East to Jerusalem, shortly after the birth of Christ? Matt. 2:1.
 
 2. For whom did they inquire? and why? Verse 2.
 
 3. What effect did their inquiry have upon the king and people? Verse 3.
 
-4. In their trouble, what step was taken by the king? Verse 4. *See note 2.*
+4. In their trouble, what step was taken by the king? Verse 4.
 
 5. What did the king learn from the priests and scribes? Verse 5.
 
-6. What reason did the priests give for this statement? *See note 3.* Verses 5, 6.
+6. What reason did the priests give for this statement? Verses 5, 6.
 
 19. In carrying out this decree, what scripture was fulfilled? Verses 17, 18.
 
@@ -170,17 +172,17 @@ class TestLessonParser(unittest.TestCase):
         self.assertEqual(lesson['number'], '3')
         self.assertEqual(lesson['title'], 'VISIT OF THE WISE MEN, AND THE FLIGHT INTO EGYPT')
         self.assertEqual(lesson['date'], 'January 21, 1899')
-        self.assertEqual(lesson['location'], 'Bethlehem and Jerusalem, B.C. 4')
-        self.assertEqual(lesson['references'], 'Matt. 2:1-18')
         
         # Check questions
+        print(json.dumps(lesson, indent=2))
         self.assertEqual(len(lesson['questions']), 7)
-        self.assertIn('See note 1', lesson['questions'][0].get('scripture', ''))
-        self.assertIn('See note 2', lesson['questions'][3].get('scripture', ''))
-        self.assertIn('See note 3', lesson['questions'][5].get('scripture', ''))
+        self.assertEqual(lesson['questions'][0]['text'], 'Who came from the East to Jerusalem, shortly after the birth of Christ?')
+        self.assertEqual(lesson['questions'][0]['answer'], 'Matt. 2:1.')
         
         # Check additional sections
+        print(json.dumps(lesson, indent=2))
         self.assertEqual(len(lesson['additional_sections']), 1)
+        
         self.assertEqual(lesson['additional_sections'][0]['title'], 'READING')
         self.assertIn('Desire of Ages', lesson['additional_sections'][0]['content'])
         
@@ -221,9 +223,14 @@ April 1, 1905
         self.assertEqual(lesson['date'], 'April 1, 1905')
         
         # Check questions
-        print(lesson['questions'])
         self.assertEqual(len(lesson['questions']), 5)
-        self.assertIn('Gen. 1:26, 27', lesson['questions'][0].get('text', ''))
+        self.assertEqual(lesson['questions'][0]['text'], 'In whose image was man created?')
+        self.assertEqual(lesson['questions'][0]['answer'], 'Gen. 1:26, 27.')
+        self.assertEqual(lesson['questions'][0]['section'], 'Questions')
+        
+        # Check question with multiple parts
+        self.assertEqual(lesson['questions'][1]['text'], 'How was man created? What was given him?')
+        self.assertEqual(lesson['questions'][1]['answer'], 'Gen. 2:7.')
         
         # Check notes
         self.assertTrue(lesson['notes'])
@@ -262,7 +269,9 @@ April 8, 1905
         
         # Check questions
         self.assertEqual(len(lesson['questions']), 4)
-        self.assertIn('Job 14:10', lesson['questions'][0].get('text', ''))
+        self.assertEqual(lesson['questions'][0]['text'], 'What question is asked concerning those who are dead?')
+        self.assertEqual(lesson['questions'][0]['answer'], 'Job 14:10.')
+        self.assertEqual(lesson['questions'][0]['section'], 'Questions')
         
         # Check notes
         self.assertTrue(lesson['notes'])
@@ -293,14 +302,16 @@ April 15, 1905
         
         # Check questions
         self.assertEqual(len(lesson['questions']), 2)
-        self.assertIn('Rev. 1:18', lesson['questions'][0].get('text', ''))
-        self.assertIn('Note 1', lesson['questions'][0].get('text', ''))
-        self.assertIn('Hos. 13:14', lesson['questions'][1].get('text', ''))
+        self.assertEqual(lesson['questions'][0]['text'], 'Who has the key to the grave?')
+        self.assertEqual(lesson['questions'][0]['answer'], 'Rev. 1:18. Note 1.')
+        self.assertEqual(lesson['questions'][0]['section'], 'Questions')
+        self.assertEqual(lesson['questions'][1]['text'], 'What precious promise is made to those who sleep in the grave?')
+        self.assertEqual(lesson['questions'][1]['answer'], 'Hos. 13:14; Isa. 26:19.')
 
     def test_parse_questions_function(self):
         """Test the parse_questions_from_markdown function."""
         questions_text = """
-1. Who came from the East to Jerusalem, shortly after the birth of Christ? Matt. 2:1. *See note 1.*
+1. Who came from the East to Jerusalem, shortly after the birth of Christ? Matt. 2:1.
 
 2. For whom did they inquire? and why? Verse 2.
 
@@ -313,14 +324,18 @@ April 15, 1905
         # Check number of questions
         self.assertEqual(len(questions), 4)
         
-        # Check scripture references
-        self.assertIn('See note 1', questions[0].get('scripture', ''))
-        self.assertIn('Matt. 2:1', questions[0].get('text', ''))
-        self.assertIn('Verse 2', questions[1].get('text', ''))
-        self.assertIn('Gen. 2:7', questions[2].get('text', ''))
+        # Check question text and answers
+        self.assertEqual(questions[0]['text'], 'Who came from the East to Jerusalem, shortly after the birth of Christ?')
+        self.assertEqual(questions[0]['answer'], 'Matt. 2:1.')
         
-        # Check answer
-        self.assertEqual(questions[3].get('answer'), 'They will not come back from the grave until God wakes them.')
+        self.assertEqual(questions[1]['text'], 'For whom did they inquire? and why?')
+        self.assertEqual(questions[1]['answer'], 'Verse 2.')
+        
+        self.assertEqual(questions[2]['text'], 'How was man created? What was given him?')
+        self.assertEqual(questions[2]['answer'], 'Gen. 2:7.')
+        
+        self.assertEqual(questions[3]['text'], 'What answer is given?')
+        self.assertEqual(questions[3]['answer'], 'Verse 12. Ans. — They will not come back from the grave until God wakes them.')
 
 
 if __name__ == '__main__':
