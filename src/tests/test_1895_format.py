@@ -79,13 +79,13 @@ class TestWorldlySanctuaryFormat(unittest.TestCase):
         first_section_question = next((q for q in lesson['questions'] if q['section'] == 'INSTRUCTION FOR BUILDING' and q['text'].startswith('Who gave instruction')), None)
         self.assertIsNotNone(first_section_question)
         self.assertEqual(first_section_question['text'], 'Who gave instruction for building the sanctuary?')
-        self.assertEqual(first_section_question['answer'], 'Ex. 25:1, 8.')
+        self.assertEqual(first_section_question['scripture'], 'Ex. 25:1, 8.')
         
         # Check a question from second section
         second_section_question = next((q for q in lesson['questions'] if q['section'] == 'MATERIALS FOR BUILDING' and q['text'].startswith('Of what were the sides')), None)
         self.assertIsNotNone(second_section_question)
         self.assertEqual(second_section_question['text'], 'Of what were the sides composed?')
-        self.assertEqual(second_section_question['answer'], 'Ex. 26:15. Note 2.')
+        self.assertEqual(second_section_question['scripture'], 'Ex. 26:15. Note 2.')
         
         # Check notes
         self.assertTrue(lesson['notes'])
