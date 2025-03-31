@@ -179,7 +179,6 @@ class MarkdownProcessor:
         
         for block in lesson_blocks:
             lines = block.split('\n')
-            
             # Initialize lesson structure
             lesson = {
                 'number': '',
@@ -260,32 +259,50 @@ class MarkdownProcessor:
             # Scan ahead to find patterns
             for i in range(line_index, len(lines)):
                 line = lines[i]
-                
-                # If we find a numbered list, this is likely where questions start
-                if re.match(r'^\s*\d+\.\s+', line):
-                    # If there was content between line_index and i, it's preliminary
+                # If we find a numbered list or letter-based item, this is likely where questions start
+                # if re.match(r'^\s*\d+\.\s+', line) or re.match(r'^\s*\([a-z]\)\s+', line):
+                if re.match(r'^\s*\d+\.\s+', line) :
+                    # If there was content between line_index and i, it might be preliminary
                     if i > line_index:
                         # Check if the non-blank line right before this is a section header
-                        prev_line = ""
-                        for j in range(i-1, max(0, i-5), -1):
+                        # If it is, don't include the header in preliminary
+                        question_start_index = i
+                        header_index = None
+                        
+                        for j in range(i-1, max(0, line_index-1), -1):
                             if j >= 0 and lines[j].strip():
-                                prev_line = lines[j]
+                                if re.match(r'^#{2,3}\s+', lines[j]):
+                                    # Found a header right before questions
+                                    header_index = j
                                 break
-                        if not re.match(r'^#{2,3}\s+', prev_line):
-                            # Only collect as preliminary if it's not immediately after a header
+                        if header_index is not None:
+                            # If a header was found, preliminary ends before that header
+                            if header_index > line_index:
+                                has_preliminary = True
+                                preliminary_end_index = header_index
+                        else:
+                            # No header found before questions, everything up to questions is preliminary
                             has_preliminary = True
                             preliminary_end_index = i
                     break
                 
-                # If we find a section header followed by numbered list, it's not preliminary
-                if re.match(r'^#{2,3}\s+', line):
-                    # Look ahead to see if this section contains numbered lists
-                    for j in range(i+1, min(i+5, len(lines))):
-                        if j < len(lines) and re.match(r'^\s*\d+\.\s+', lines[j]):
-                            # This is a question section header, not preliminary
-                            has_preliminary = False
-                            preliminary_end_index = i
-                            break
+                # # If we find a section header, check if it's followed by questions
+                # elif re.match(r'^#{2,3}\s+', line):
+                #     # Look ahead to see if this section contains questions
+                #     found_questions = False
+                #     for j in range(i+1, min(i+10, len(lines))):
+                #         # if j < len(lines) and (re.match(r'^\s*\d+\.\s+', lines[j]) or re.match(r'^\s*\([a-z]\)\s+', lines[j])):
+                #         if j < len(lines) and (re.match(r'^\s*\d+\.\s+', lines[j])):
+                #             found_questions = True
+                #             break
+                    
+                #     if found_questions:
+                #         # This header is the start of a question section
+                #         # Everything before this header (if anything) is preliminary
+                #         if i > line_index:
+                #             has_preliminary = True
+                #             preliminary_end_index = i
+                #         break
             
             # Collect the preliminary content if we found some
             if has_preliminary:
@@ -295,7 +312,6 @@ class MarkdownProcessor:
             
             # Save preliminary matter
             lesson['preliminary_note'] = '\n'.join(preliminary_lines).strip()
-            
             # Process sections (questions, notes, and additional)
             section_buffer = []
             current_question_text = ""
@@ -445,7 +461,6 @@ class MarkdownProcessor:
         
         while i < len(lines):
             line = lines[i]
-            # print(line)
             num_match = re.match(r'^\s*(\d+)\.\s+', line)
             
             if num_match:
