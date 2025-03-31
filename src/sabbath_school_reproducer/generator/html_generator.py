@@ -442,14 +442,14 @@ class HtmlGenerator:
         notes_html = ""
         if lesson.get('notes'):
             # Convert markdown to HTML with proper formatting
-            notes_content = HtmlGenerator.convert_markdown_to_html(lesson['notes'])
+            notes_content = HtmlGenerator.convert_markdown_to_html(HtmlGenerator.fix_markdown_lists(lesson['notes']))
             paragraphs = notes_content.split('</p>')
             non_empty_paragraphs = [p for p in paragraphs if p.strip()]
             header = "NOTE" if len(non_empty_paragraphs) == 1 else "NOTES"
 
             notes_html = f"""
                 <div class="notes-section">
-                    <div class="notes-header">{header} {non_empty_paragraphs}</div>
+                    <div class="notes-header">{header}</div>
                     <div class="notes-content">
                         {notes_content}
                     </div>
@@ -477,6 +477,33 @@ class HtmlGenerator:
         </div>
         """
     
+    @staticmethod
+    def fix_markdown_lists(markdown_content):
+        """
+        Fix markdown list rendering by indenting all non-numbered list item lines.
+        This ensures that multi-paragraph list items are correctly rendered as part
+        of the same list item rather than causing the list to restart numbering.
+        
+        Args:
+            markdown_content (str): Markdown content with numbered lists
+                
+        Returns:
+            str: Fixed markdown content with proper indentation for list continuity
+        """
+        # Split the content into lines
+        lines = markdown_content.split('\n')
+
+        # If there's only one line, return the content as is
+        if len(lines) == 1:
+            return markdown_content
+        
+        # Otherwise, indent non-numbered list lines with a tab
+        lines = list(map(lambda line: "\t" + line if not re.match(r'^\s*(\d+)\.\s+', line) else line, lines))
+        
+        # Join the lines back together and return the modified content
+        return '\n'.join(lines)
+
+
     @staticmethod
     def create_debug_html_with_css(content_parts, dynamic_css):
         """

@@ -318,7 +318,8 @@ class MarkdownProcessor:
                     # Save the previous section if we have one
                     if current_section:
                         if current_section.upper() in ['NOTES', 'NOTE']:
-                            lesson['notes'] = '\n'.join(section_buffer).strip()
+                            fixed_notes = MarkdownProcessor._fix_notes_numbering(section_buffer)
+                            lesson['notes'] = '\n'.join(fixed_notes).strip()
                         elif current_section != 'questions':
                             # This is an additional section
                             lesson['additional_sections'].append({
@@ -411,7 +412,8 @@ class MarkdownProcessor:
             # Save the final section if there is one
             if current_section:
                 if current_section.upper() == 'NOTES':
-                    lesson['notes'] = '\n'.join(section_buffer).strip()
+                    fixed_notes = MarkdownProcessor._fix_notes_numbering(section_buffer)
+                    lesson['notes'] = '\n'.join(fixed_notes).strip()
                 elif current_section != 'questions':
                     # This is an additional section
                     lesson['additional_sections'].append({
@@ -426,7 +428,51 @@ class MarkdownProcessor:
             lessons.append(lesson)
         
         return lessons
-    
+    @staticmethod
+    def _fix_notes_numbering(lines):
+        """
+        Fix numbering in the Notes section to handle multi-paragraph notes correctly.
+        
+        Args:
+            lines (list): List of lines in the notes section
+            
+        Returns:
+            list: Fixed lines with correct numbering
+        """
+        fixed_lines = []
+        expected_number = 1
+        i = 0
+        
+        while i < len(lines):
+            line = lines[i]
+            # print(line)
+            num_match = re.match(r'^\s*(\d+)\.\s+', line)
+            
+            if num_match:
+                # Found a numbered item
+                current_number = int(num_match.group(1))
+                
+                # If the number is 1 but we expect a higher number
+                # and this isn't the first numbered item
+                if current_number == 1 and expected_number > 1:
+                    # Look ahead to see if the next numbered item is 2
+                    for j in range(i+1, len(lines)):
+                        next_match = re.match(r'^\s*(\d+)\.\s+', lines[j])
+                        if next_match:
+                            next_number = int(next_match.group(1))
+                            # If next is 2, this confirms it's a restart
+                            if next_number == 2:
+                                # Fix this number
+                                line = re.sub(r'^\s*\d+\.', f'{expected_number}.', line)
+                            break
+                
+                # Update expected number for next item
+                expected_number = int(num_match.group(1)) + 1
+            
+            fixed_lines.append(line)
+            i += 1
+        
+        return fixed_lines
     @staticmethod
     def _parse_question(question_text, section_name=None):
         """

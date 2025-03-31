@@ -286,13 +286,33 @@ body {
     padding: 10px 20px;
     background-color: #f9f7f1;
     border-left: 3px solid #8b4513;
+    page-break-inside: avoid;
+    page-break-before: avoid;
 }
 
 .questions-section {
+    display:block;
     border: 1px solid #8b4513;
     padding: 20px;
     margin-bottom: 20px;
-    display: block;
+    border-radius: 12px;
+    page-break-before: auto;
+    page-break-inside: auto; /* Allow breaks within paragraphs */
+    orphans: 1; /* Allow at least one question to appear with header */
+    widows: 1; /* Allow at least one question at the bottom of a page */
+}
+
+.questions-section .question:first-of-type {
+    page-break-before: avoid; /* Keep first question with header */
+    page-break-inside: avoid; /* Keep first question intact */
+    page-break-after: auto; /* Allow a page break after first question */
+}
+
+/* The clearfix shouldn't force breaks */
+.clearfix {
+    clear: both;
+    page-break-before: auto;
+    page-break-after: auto;
 }
 
 .questions-header {
@@ -301,14 +321,13 @@ body {
     margin-bottom: 10px;
     border-bottom: 1px solid #8b4513;
     padding-bottom: 5px;
-    page-break-after: avoid;
 }
 
 .question {
-    margin-bottom: 5px;
+    margin-bottom: 3px;
     position: relative;
     clear: both;
-    page-break-inside: auto;
+    page-break-inside: avoid;
 }
 
 .question-number {
@@ -330,6 +349,8 @@ body {
     margin-left: 30px; /* Minimum margin for one-digit numbers */
     text-align: left;
     position: relative;
+    break-inside: auto;
+    page-break-inside: auto;
 }
 
 /* For two-digit question numbers */
@@ -543,6 +564,70 @@ table caption {
 .sectionbreaknone {
     page-break-after: always;
 }
+
+.additional-section {
+    border: 1px solid #6a4e23; /* Darker border color for additional section */
+    margin-bottom: 20px;
+    padding: 20px;
+    background-color: #f0e5d8; /* Lighter background color for differentiation */
+    page-break-before: auto;
+    border-radius: 8px;
+}
+
+/* Header styling for additional sections */
+.additional-header {
+    font-size: 18pt;
+    font-weight: bold;
+    color: #4b3b2f; /* Darker brown for the header text */
+    margin-bottom: 10px;
+    border-bottom: 3px solid #6a4e23; /* A stronger border below the header */
+    padding-bottom: 5px;
+    text-align: left;
+    font-family: 'Georgia', serif; /* Different font family for header */
+}
+
+/* Content styling for the additional sections */
+.additional-content {
+    font-size: 12pt;
+    line-height: 1.5;
+    color: #4b3b2f; /* Darker brown text */
+    text-align: justify; /* Justified text for a clean look */
+    margin-top: 10px;
+    font-family: 'Georgia', serif; /* Different font family for content */
+}
+
+/* Optional: First paragraph inside the additional content */
+.additional-content p:first-child {
+    margin-top: 0;
+}
+
+/* Style for hyperlinks in additional sections */
+.additional-content a {
+    color: #4b3b2f; /* Dark brown for links */
+    text-decoration: underline;
+}
+
+.additional-content a:hover {
+    color: #6a4e23; /* Change to a lighter brown when hovering */
+    text-decoration: none;
+}
+
+/* Optional: Add specific spacing between paragraphs for clarity */
+.additional-content p {
+    margin-bottom: 1em;
+}
+
+/* Optional: Style for lists inside the additional section */
+.additional-content ul,
+.additional-content ol {
+    margin-left: 1.5em;
+    margin-bottom: 1em;
+}
+
+.additional-content li {
+    margin-bottom: 0.5em;
+}
+
 
 @media print {
     .lesson-title {
