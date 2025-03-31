@@ -41,8 +41,9 @@ def main():
     
     # Handle generate-config option
     if args.generate_config:
-        from .bin.generate_config import generate_template_config
+        from .bin.generate_config import generate_template_config,  generate_default_theme
         config_path = generate_template_config()
+        generate_default_theme()
         print(f"Sample configuration file generated at: {config_path}")
         return 0
 

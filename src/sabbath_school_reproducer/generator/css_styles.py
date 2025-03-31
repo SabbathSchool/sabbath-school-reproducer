@@ -3,6 +3,10 @@ CSS Styles for Sabbath School Lessons PDF
 
 This module defines the CSS styles used in the generated PDF.
 """
+from sabbath_school_reproducer.generator.css_editor import  CSSEditor
+import re
+import os
+import yaml
 
 CSS_TEMPLATE = """
 /* Main styling for Sabbath School Lessons */
@@ -662,9 +666,87 @@ class CssUpdater:
             return "Quarter & Year"
     
     @staticmethod
+    def load_color_theme(theme_path):
+        """
+        Load color theme from a YAML file
+        
+        Args:
+            theme_path (str): Path to the color theme YAML file
+            
+        Returns:
+            dict: Color theme dictionary or None if file not found
+        """
+        if not theme_path or not os.path.exists(theme_path):
+            return None
+            
+        try:
+            with open(theme_path, 'r') as file:
+                return yaml.safe_load(file)
+        except (yaml.YAMLError, IOError) as e:
+            print(f"Error loading color theme: {e}")
+            return None
+    
+    @staticmethod
+    def apply_color_theme(css_template, color_theme):
+        """
+        Apply color theme to CSS template
+        
+        Args:
+            css_template (str): Original CSS template string
+            color_theme (dict): Color theme dictionary
+            
+        Returns:
+            str: Updated CSS template with applied color theme
+        """
+        if not css_template or not color_theme:
+            return css_template
+            
+        updated_css = css_template
+        
+        # Define color mappings from theme to CSS
+        color_mappings = {
+            # Text colors
+            "#3c1815": color_theme["text"]["primary"],
+            "#5a4130": color_theme["text"]["secondary"],
+            "#7d2b2b": color_theme["text"]["accent"],
+            "#007bff": color_theme["text"]["link"],
+            
+            # Background colors
+            "#f9f7f1": color_theme["background"]["light"],
+            "#f5f1e6": color_theme["background"]["medium"],
+            "#e0d5c0": color_theme["background"]["dark"],
+            "#f0e5d8": color_theme["background"]["additional"],
+            "#f4f4f4": color_theme["background"]["tableHeader"],
+            "#f0f0f0": color_theme["background"]["hover"],
+            
+            # Border colors
+            "#8b4513": color_theme["border"]["primary"],
+            "#d4c7a5": color_theme["border"]["secondary"],
+            "#6a4e23": color_theme["border"]["additional"],
+            "#ddd": color_theme["border"]["table"],
+            
+            # Accent colors
+            "#4b3b2f": color_theme["accent"]["secondary"],
+            "#696969": color_theme["accent"]["tertiary"],
+            "#808080": color_theme["accent"]["quaternary"]
+        }
+        
+        # Apply each color mapping
+        for original_color, new_color in color_mappings.items():
+            # Escape the hash character for regex
+            original_color_escaped = original_color.replace('#', r'\#')
+            updated_css = re.sub(
+                original_color_escaped,
+                new_color,
+                updated_css
+            )
+        
+        return updated_css
+    
+    @staticmethod
     def update_css_template(css_template, config, lesson_data=None):
         """
-        Update CSS template with configuration data
+        Update CSS template with configuration data and color theme
         
         Args:
             css_template (str): Original CSS template string
@@ -678,19 +760,23 @@ class CssUpdater:
             return css_template
         
         try:
-            import re
-            
             # Get quarter display for footer
             quarter_display = CssUpdater.get_quarter_display(config)
             
             # Get lesson title for footer
-            lesson_title = "Sabbath School Lessons"
-            if 'title' in config:
-                lesson_title = config['title']
-            elif lesson_data and 'front_matter' in lesson_data:
-                title_match = re.search(r'(?:^|\n)#\s+(.*?)(?:\n|$)', lesson_data['front_matter'])
-                if title_match:
-                    lesson_title = title_match.group(1).strip()
+            reproduce = config.get("reproduce", {})
+            year_orig = reproduce.get("year", 2025)  # Default to 2025 if 'year' is not found
+            quarter_orig = reproduce.get("quarter", "q1") 
+            
+            # Get title from config or generate a default
+            lesson_title = config.get("lesson_title", CSSEditor.get_lesson_title(year_orig, quarter_orig))
+
+            # if 'title' in config:
+            #     lesson_title = config['title']
+            # elif lesson_data and 'front_matter' in lesson_data:
+            #     title_match = re.search(r'(?:^|\n)#\s+(.*?)(?:\n|$)', lesson_data['front_matter'])
+            #     if title_match:
+            #         lesson_title = title_match.group(1).strip()
             
             # Update CSS footer content
             updated_css = css_template
@@ -709,6 +795,12 @@ class CssUpdater:
                 updated_css
             )
             
+            # Apply color theme if specified
+            color_theme_path = config.get("color_theme_path")
+            if color_theme_path:
+                color_theme = CssUpdater.load_color_theme(color_theme_path)
+                if color_theme:
+                    updated_css = CssUpdater.apply_color_theme(updated_css, color_theme)
             return updated_css
             
         except Exception as e:
