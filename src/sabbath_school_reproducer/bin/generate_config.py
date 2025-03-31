@@ -124,8 +124,6 @@ def generate_template_config(output_path="config.yaml"):
     yaml_output += f"language: en\n"
 
     yaml_output += "\n# File paths\n"
-    yaml_output += "# Path to the input markdown file containing the lessons\n"
-    yaml_output += f"input_file: ./combined_lessons_{year}_{quarter}_en.md\n"
     yaml_output += "# Path to the output PDF file for the lessons\n"
     yaml_output += f"output_file: ./output/sabbath_school_lesson_{year}_{quarter}_en.pdf\n"
     yaml_output += "# Path to the front cover SVG file\n"

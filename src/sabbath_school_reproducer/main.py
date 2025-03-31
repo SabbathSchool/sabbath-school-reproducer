@@ -36,12 +36,13 @@ def main():
     parser.add_argument('--debug-html-only', action='store_true', help='Only generate debug HTML without PDF')
     parser.add_argument('--generate-config', action='store_true', help='Generate a sample config file and exit')
     parser.add_argument('--quiet-deps', action='store_true', help='Silence debug messages from dependencies')
+    parser.add_argument('-y', '--yes', action='store_true', help='Answer yes to all prompts (force overwrite)')
     
     args = parser.parse_args()
     
     # Handle generate-config option
     if args.generate_config:
-        from .bin.generate_config import generate_template_config,  generate_default_theme
+        from .bin.generate_config import generate_template_config, generate_default_theme
         config_path = generate_template_config()
         generate_default_theme()
         print(f"Sample configuration file generated at: {config_path}")
@@ -66,11 +67,23 @@ def main():
         logging.getLogger('fontTools.ttLib.ttFont').setLevel(logging.WARNING)
         logging.getLogger('fontTools.subset.timer').setLevel(logging.WARNING)
     
-    
     try:
         # Load configuration
         print(f"Loading configuration from {args.config_file}...")
         config = Config(args.config_file)
+        
+        # Generate input filename with lesson range information
+        range_filename = GitHubDownloader.get_lesson_range_filename(config)
+        
+        # Check if file path is absolute or relative
+        import os
+        if not os.path.isabs(range_filename):
+            # Make sure the filename is in the same directory as the config file
+            config_dir = os.path.dirname(args.config_file)
+            range_filename = os.path.join(config_dir, range_filename)
+        
+        # Update config with the new filename
+        config.config['input_file'] = range_filename
         
         # Print reproduction settings if configured
         if 'reproduce' in config.config and config.config['reproduce'].get('year'):
@@ -93,14 +106,25 @@ def main():
         github_paths = config.get_github_paths()
         print(f"Processing source: year {github_paths['base_url'].split('/')[-3]}, quarter {github_paths['base_url'].split('/')[-2]}, language {config['language']}")
         
-        # Download lesson data
-        print("Downloading lesson content from GitHub...")
-        downloader = GitHubDownloader(github_paths, config)
-        lesson_data = downloader.download_lesson_data()
+        # Check if we should download the file
+        should_download = GitHubDownloader.check_existing_file(range_filename, args.yes)
         
-        # Combine into a single markdown file
-        print("Combining lesson content...")
-        markdown_path = ContentAggregator.combine_lesson_content(lesson_data, config['input_file'])
+        if should_download:
+            # Download lesson data
+            print("Downloading lesson content from GitHub...")
+            downloader = GitHubDownloader(github_paths, config)
+            lesson_data = downloader.download_lesson_data()
+            
+            # Combine into a single markdown file
+            print("Combining lesson content...")
+            markdown_path = ContentAggregator.combine_lesson_content(lesson_data, range_filename)
+        else:
+            # Use existing file
+            print(f"Using existing file: {range_filename}")
+            markdown_path = range_filename
+            with open(range_filename, 'r') as file:
+                lesson_data = file.read()
+
         
         # Generate debug HTML if requested
         if args.debug_html_only:
@@ -137,7 +161,6 @@ def main():
             back_cover_svg_path=back_cover_path,
             config=config.config
         )
-        print("Done Generating HTML...")
         
         # Save debug HTML
         debug_html_path = config['output_file'].replace('.pdf', '_debug.html')

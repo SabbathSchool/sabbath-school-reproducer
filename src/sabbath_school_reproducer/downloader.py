@@ -134,3 +134,58 @@ class GitHubDownloader:
             'back_matter': back_matter,
             'lessons': lessons
         }
+    
+    @staticmethod
+    def get_lesson_range_filename(config):
+        """
+        Generate a filename that includes the lesson range information
+        
+        Args:
+            config (Config): Configuration object
+            
+        Returns:
+            str: Filename with lesson range information
+        """
+        year = config['year']
+        quarter = config['quarter']
+        language = config['language']
+        
+        # Get lesson range from reproduction settings
+        start_lesson = 1
+        stop_lesson = "null"
+        
+        if 'reproduce' in config.config:
+            reproduce = config.config['reproduce']
+            if 'start_lesson' in reproduce and reproduce['start_lesson']:
+                start_lesson = reproduce['start_lesson']
+            
+            if 'stop_lesson' in reproduce and reproduce['stop_lesson'] is not None:
+                stop_lesson = reproduce['stop_lesson']
+        
+        # Create filename with lesson range
+        return f"combined_lessons_{year}_{quarter}_{language}_{start_lesson}_{stop_lesson}.md"
+
+    @staticmethod
+    def check_existing_file(filename, force_overwrite=False):
+        """
+        Check if the file already exists and prompt for overwrite
+        
+        Args:
+            filename (str): Path to the file
+            force_overwrite (bool): Whether to force overwrite without prompting
+            
+        Returns:
+            bool: True if should proceed with download, False otherwise
+        """
+        import os
+        
+        if not os.path.exists(filename):
+            return True  # File doesn't exist, proceed with download
+        
+        if force_overwrite:
+            print(f"File {filename} exists, will overwrite (force mode)")
+            return True
+        
+        # Prompt user for confirmation
+        response = input(f"File {filename} already exists. Overwrite? (y/n): ")
+        return response.lower() in ['y', 'yes']
