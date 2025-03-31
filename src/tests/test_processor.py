@@ -110,6 +110,6 @@ Some other content."""
         
         updated = MarkdownProcessor.adjust_dates(lessons, config)
         
-        assert updated[0]['date'] == 'April 01, 2025'
-        assert updated[1]['date'] == 'April 08, 2025'
+        assert updated[0]['date'] == 'April 1, 2025'
+        assert updated[1]['date'] == 'April 8, 2025'
         assert updated[0]['original_date'] == 'January 1, 1905'
