@@ -24,7 +24,7 @@ data_files = [
 
 setup(
     name="sabbath-school-reproducer",
-    version="0.1.2",
+    version="0.1.3",
     description="Download and process Sabbath School lessons from GitHub",
     long_description=long_description,
     long_description_content_type="text/markdown",

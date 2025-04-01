@@ -46,6 +46,7 @@ body {
 
 @page :first {
     margin: 0;
+    padding: 0px;
     @bottom-center { content: ""; }
     @bottom-left { content: ""; }
     @bottom-right { content: ""; }
@@ -440,9 +441,10 @@ body {
     bottom: 0;
     width: 100%;
     height: 100vh;
-    margin: 0;
-    padding: 0;
+    margin: 0px;
+    padding: 0px;
     page: :last;
+    
 }
 
 @page :last {
@@ -639,10 +641,37 @@ table caption {
     margin-bottom: 0.5em;
 }
 
+.full-page-image-container {
+    width: 100%;
+    height: 11in;
+    /*display: flex; 
+    align-items: center;
+    justify-content: center;*/
+    overflow: hidden;
+    padding: 0px;
+    margin: 0px;
+    page: 
+
+}
 
 @media print {
     .lesson-title {
         font-size: 20pt;
+    }
+
+    .full-page-image-container {
+        width: 100%;
+        height: height: 11in;
+        display: block; /* Ensure it’s block-level for printing */
+        overflow: hidden;
+        padding: 0;
+        margin: 0;
+    }
+
+    .full-page-image-container img {
+        width: 100%;
+        height: 100%;
+        object-fit: fill; /* Adjust image fitting for printing */
     }
 }
 """

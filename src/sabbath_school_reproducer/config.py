@@ -175,7 +175,7 @@ class Config:
                     raise ValueError(f"Invalid quarter start date format: {reproduce['quarter_start_date']}. Use YYYY-MM-DD format.")
         
         # Check if output directory exists, create if not
-        output_dir = os.path.dirname(config['output_file'])
+        output_dir = 'output' #os.path.dirname(config['output_file'])
         if output_dir and not os.path.exists(output_dir):
             os.makedirs(output_dir)
         

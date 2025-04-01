@@ -1,8 +1,9 @@
 import markdown
 import re
 import os
-import json
-import requests
+import mimetypes
+import base64
+
 from sabbath_school_reproducer.generator.css_styles import CSS_TEMPLATE, CssUpdater
 from sabbath_school_reproducer.generator.css_editor import  CSSEditor
 from sabbath_school_reproducer.utils.language_utils import  LanguageConfig
@@ -29,6 +30,43 @@ class HtmlGenerator:
             "Quarter"
         )
     @staticmethod
+    def read_file(filepath):
+        """
+        Read file content from the specified path
+        
+        Args:
+            filepath (str): Path to file
+            
+        Returns:
+            tuple: (content, mimetype) or (None, None) if error
+        """
+        # Check if the filepath is valid
+        if not filepath:
+            return None, None
+        
+        # Check if file exists
+        if not os.path.exists(filepath):
+            print(f"Warning: File does not exist: {filepath}")
+            return None, None
+            
+        try:
+            # Get mimetype based on file extension
+            mimetype, _ = mimetypes.guess_type(filepath)
+            
+            # Determine read mode based on file type
+            if mimetype and mimetype.startswith('text/'):
+                # Text files should be read as text
+                with open(filepath, 'r', encoding='utf-8') as f:
+                    return f.read(), mimetype
+            else:
+                # Binary files should be read as binary
+                with open(filepath, 'rb') as f:
+                    return f.read(), mimetype
+        except Exception as e:
+            print(f"Warning: Could not read file from {filepath}: {e}")
+            return None, None
+    
+    @staticmethod
     def read_svg_file(filepath):
         """
         Read SVG file content from the specified path
@@ -47,19 +85,93 @@ class HtmlGenerator:
             return None
     
     @staticmethod
-    def create_cover_page(front_cover_svg_path=None, config=None):
+    def is_svg_file(filepath):
         """
-        Creates the cover page HTML using the SVG from file if provided
+        Check if the file is an SVG by extension
         
         Args:
-            front_cover_svg_path (str, optional): Path to front cover SVG
+            filepath (str): Path to file
+            
+        Returns:
+            bool: True if file is SVG, False otherwise
+        """
+        if not filepath:
+            return False
+
+        # Check if the file ends with .svg (case-insensitive)
+        if filepath.lower().endswith('.svg'):
+            return True
+
+        # Otherwise, check the MIME type (just in case)
+        _, mimetype = mimetypes.guess_type(filepath)
+        print(filepath, mimetype)
+        return mimetype == 'image/svg+xml'
+    
+    @staticmethod
+    def get_image_dimensions(filepath):
+        """
+        Get image dimensions from file path
+        Can be replaced with more sophisticated method using PIL/Pillow
+        
+        Args:
+            filepath (str): Path to image file
+            
+        Returns:
+            tuple: (width, height) or (800, 1000) as default
+        """
+        # Check if file exists
+        if not filepath or not os.path.exists(filepath):
+            print(f"Warning: Cannot get dimensions, file does not exist: {filepath}")
+            return 800, 1000
+            
+        # This is a placeholder - ideally you would use PIL/Pillow to get actual dimensions
+        # For now, return default dimensions
+        return 800, 1000
+    
+    @staticmethod
+    @staticmethod
+    def get_base64_image(filepath):
+        """
+        Read an image file and convert it to a base64 data URI
+        
+        Args:
+            filepath (str): Path to the image file
+            
+        Returns:
+            str: Base64 data URI or None if error
+        """
+        # Handle invalid paths
+        # abs_path = HtmlGenerator.get_absolute_path(filepath)
+        abs_path = filepath
+        if not abs_path or not os.path.exists(filepath):
+            return None
+        
+        # Get the MIME type
+        mime_type, _ = mimetypes.guess_type(abs_path)
+        if not mime_type:
+            mime_type = 'application/octet-stream'
+        
+        try:
+            # Read and encode the file
+            with open(abs_path, 'rb') as f:
+                encoded = base64.b64encode(f.read()).decode('utf-8')
+                return f"data:{mime_type};base64,{encoded}"
+        except Exception as e:
+            print(f"Error encoding image {abs_path}: {e}")
+            return None
+    
+    @staticmethod
+    def create_cover_page(front_cover_path=None, config=None):
+        """
+        Creates the cover page HTML using the image from file if provided
+        
+        Args:
+            front_cover_path (str, optional): Path to front cover image
             config (dict, optional): Configuration dictionary
             
         Returns:
             str: HTML for cover page
         """
-        svg_content = ""
-                    
         # Set default values
         year = 2025
         quarter = "q1"
@@ -108,54 +220,84 @@ class HtmlGenerator:
             config
         )
         
-        # If a path is provided, try to read the SVG from file
-        if front_cover_svg_path:
-            svg_content = HtmlGenerator.read_svg_file(front_cover_svg_path)
-            if not svg_content:
-                print(f"Warning: Could not read SVG from {front_cover_svg_path}")
-                # We'll fall back to the default SVG
+        # Check if a cover image is provided
+        if front_cover_path:
+            # Check if the file exists
+            if not os.path.exists(front_cover_path):
+                print(f"Warning: Front cover file does not exist: {front_cover_path}")
+                # Will fall back to default cover
+            else:
+                # Check if the cover is an SVG
+                if HtmlGenerator.is_svg_file(front_cover_path):
+                    # Process SVG cover
+                    svg_content = HtmlGenerator.read_svg_file(front_cover_path)
+                    if svg_content:
+                        return f"""
+                        <div class="cover-page">
+                            {svg_content}
+                        </div>
+                        """
+                else:
+                    # Process non-SVG cover (JPG, PNG, etc.)
+                    # Get image dimensions (could be replaced with actual dimensions from PIL)
+                    width, height = HtmlGenerator.get_image_dimensions(front_cover_path)
+                    
+                    use_base64  = True
+                    if use_base64:
+                        img_src = HtmlGenerator.get_base64_image(front_cover_path)
+                    else:
+                        img_src = HtmlGenerator.get_file_uri(front_cover_path)
+                    
+                    if img_src:
+                        return f"""
+                            <div class="full-page-image-container">
+                                <img src="{img_src}" alt="Back Cover" class="full-page-image" 
+                                    style="width: 100%; height: 100%; object-fit: fill; display: block; margin: 0 0;">
+                            </div>
+                        """
+                    return ""
         
-        if not svg_content:
-            # Get translated text for the cover page
-            sabbath_school_text = LanguageConfig.get_translation(language_code, 'sabbath_school', 'SABBATH SCHOOL', config)
-            lessons_text = LanguageConfig.get_translation(language_code, 'lessons', 'LESSONS', config)
+        # No valid cover provided, create a default SVG cover
+        # Get translated text for the cover page
+        sabbath_school_text = LanguageConfig.get_translation(language_code, 'sabbath_school', 'SABBATH SCHOOL', config)
+        lessons_text = LanguageConfig.get_translation(language_code, 'lessons', 'LESSONS', config)
+        
+        # Use default fallback SVG with dynamic content
+        svg_content = f"""
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 1000" width="800" height="1000">
+            <rect width="800" height="1000" fill="#ffffff"/>
+            <rect x="30" y="30" width="740" height="940" stroke="#7d2b2b" stroke-width="3" fill="none"/>
+            <text x="400" y="170" font-family="Georgia, serif" font-size="48" font-weight="bold" text-anchor="middle" fill="#7d2b2b">{sabbath_school_text}</text>
+            <text x="400" y="230" font-family="Georgia, serif" font-size="48" font-weight="bold" text-anchor="middle" fill="#7d2b2b">{lessons_text}</text>
+            <text x="400" y="730" font-family="Georgia, serif" font-size="36" font-weight="bold" text-anchor="middle" fill="#5a4130">{lesson_title}</text>
+            <text x="400" y="790" font-family="Georgia, serif" font-size="24" text-anchor="middle" fill="#5a4130">{quarter_display}, {year}</text>
+            <text x="400" y="830" font-family="Georgia, serif" font-size="18" text-anchor="middle" fill="#5a4130">{quarter_months} {year}</text>
+        </svg>
+        """
             
-            # Use default fallback SVG with dynamic content
-            svg_content = f"""
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 1000" width="800" height="1000">
-                <rect width="800" height="1000" fill="#ffffff"/>
-                <rect x="30" y="30" width="740" height="940" stroke="#7d2b2b" stroke-width="3" fill="none"/>
-                <text x="400" y="170" font-family="Georgia, serif" font-size="48" font-weight="bold" text-anchor="middle" fill="#7d2b2b">{sabbath_school_text}</text>
-                <text x="400" y="230" font-family="Georgia, serif" font-size="48" font-weight="bold" text-anchor="middle" fill="#7d2b2b">{lessons_text}</text>
-                <text x="400" y="730" font-family="Georgia, serif" font-size="36" font-weight="bold" text-anchor="middle" fill="#5a4130">{lesson_title}</text>
-                <text x="400" y="790" font-family="Georgia, serif" font-size="24" text-anchor="middle" fill="#5a4130">{quarter_display}, {year}</text>
-                <text x="400" y="830" font-family="Georgia, serif" font-size="18" text-anchor="middle" fill="#5a4130">{quarter_months} {year}</text>
+        # Add source attribution if this is a reproduction
+        if config and config.get("reproduce", {}).get("year"):
+            source_year = config["reproduce"]["year"]
+            source_quarter = config["reproduce"]["quarter"].lower()
+            
+            # Get translated quarter name and adapted from text
+            source_quarter_name = LanguageConfig.get_translation(
+                language_code, 
+                f'quarter_names.{source_quarter}', 
+                HtmlGenerator.get_quarter_display(source_quarter, language_code),
+                config
+            )
+            
+            adapted_from = LanguageConfig.get_translation(language_code, 'adapted_from', 'Adapted from', config)
+            
+            # Add source attribution text to SVG
+            svg_content = svg_content.replace('</svg>', f"""
+            <text x="400" y="870" font-family="Georgia, serif" font-size="16" text-anchor="middle" font-style="italic" fill="#666666">
+                {adapted_from} {source_quarter_name}, {source_year}
+            </text>
             </svg>
-            """
-                
-            # Add source attribution if this is a reproduction
-            if config and config.get("reproduce", {}).get("year"):
-                source_year = config["reproduce"]["year"]
-                source_quarter = config["reproduce"]["quarter"].lower()
-                
-                # Get translated quarter name and adapted from text
-                source_quarter_name = LanguageConfig.get_translation(
-                    language_code, 
-                    f'quarter_names.{source_quarter}', 
-                    HtmlGenerator.get_quarter_display(source_quarter, language_code),
-                    config
-                )
-                
-                adapted_from = LanguageConfig.get_translation(language_code, 'adapted_from', 'Adapted from', config)
-                
-                # Add source attribution text to SVG
-                svg_content = svg_content.replace('</svg>', f"""
-                <text x="400" y="870" font-family="Georgia, serif" font-size="16" text-anchor="middle" font-style="italic" fill="#666666">
-                    {adapted_from} {source_quarter_name}, {source_year}
-                </text>
-                </svg>
-                """)
-        
+            """)
+    
         return f"""
         <div class="cover-page">
             {svg_content}
@@ -163,28 +305,51 @@ class HtmlGenerator:
         """
 
     @staticmethod
-    def create_back_cover(back_cover_svg_path=None):
+    def create_back_cover(back_cover_path=None):
         """
-        Creates the back cover page HTML using the SVG from file if provided
+        Creates the back cover page HTML using the image from file if provided
         
         Args:
-            back_cover_svg_path (str, optional): Path to back cover SVG
+            back_cover_path (str, optional): Path to back cover image
             
         Returns:
             str: HTML for back cover
         """
-        if not back_cover_svg_path:
+        # Return empty string if no path provided
+        if not back_cover_path:
             return ""
             
-        svg_content = HtmlGenerator.read_svg_file(back_cover_svg_path)
-        if not svg_content:
+        # Check if the file exists
+        if not os.path.exists(back_cover_path):
+            print(f"Warning: Back cover file does not exist: {back_cover_path}")
             return ""
-        
-        return f"""
-        <div class="back-cover-page">
-            {svg_content}
-        </div>
-        """
+            
+        # Check if the back cover is an SVG
+        if HtmlGenerator.is_svg_file(back_cover_path):
+            # Process SVG back cover
+            svg_content = HtmlGenerator.read_svg_file(back_cover_path)
+            if not svg_content:
+                return ""
+            
+            return f"""
+            <div class="back-cover-page">
+                {svg_content}
+            </div>
+            """
+        else:
+            # Process non-SVG back cover (JPG, PNG, etc.)
+            # Get image dimensions (could be replaced with actual dimensions from PIL)
+            width, height = HtmlGenerator.get_image_dimensions(back_cover_path)
+            
+            # For non-SVG, use the file path directly in an img tag
+            return f"""
+            <div class="back-cover-page">
+                <div class="full-page-image-container">
+                    <img src="{back_cover_path}" alt="Back Cover" class="full-page-image" 
+                         style="width: {width}px; height: {height}px; object-fit: contain; display: block; margin: 0 auto;">
+                </div>
+            </div>
+            """
     
     @staticmethod
     def convert_markdown_to_html(markdown_content):
